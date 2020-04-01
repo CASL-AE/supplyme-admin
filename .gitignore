@@ -1,0 +1,33 @@
+*.db
+venv
+env
+__pycache__
+static/node_modules
+.idea/*
+*.pyc
+tmp
+static/dist
+static/index.html
+.idea/
+chains/
+build/
+aenet.log
+/nodemodules
+/.eggs
+/static/index.html.gz
+celerybeat-schedule
+
+# Env Variables #
+######################
+/xupply-dev
+envdeploy.sh
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+
+# PyTest #
+######################
+.pytest_cache
+.github

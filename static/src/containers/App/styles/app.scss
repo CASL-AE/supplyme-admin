@@ -1,0 +1,26 @@
+/* global styles */
+@import 'fonts/poppins';
+@import 'typography';
+@import 'links';
+@import '~loaders.css/src/animations/ball-clip-rotate.scss';
+@import '~loaders.css/src/animations/ball-scale-multiple.scss';
+@import '~loaders.css/src/animations/ball-scale-ripple-multiple.scss';
+
+.loader-hidden {
+  display: none;
+}
+.loader-active {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%
+}
+
+:global(body) {
+  position: relative;
+  font-family: 'Poppins', sans-serif !important;
+  h1, h2, h3, h4 {
+    font-weight: 300;
+  }
+
+}

@@ -1,0 +1,75 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+
+jobs:
+  server_tests:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.6.1
+    steps:
+      - checkout
+      # Restore Cached Python Admin dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      # Install Python Admin Dependencies
+      - run: python3 -m venv venv && . venv/bin/activate && pip3 install -r requirements.txt && python3 test.py tests/
+
+      # Cache Python Admin Dependencies
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+  static_init:
+    docker:
+      - image: circleci/node:8
+      - image: circleci/node:8-browsers
+    steps:
+      - checkout
+      - run: sudo npm install -g npm@latest && sudo npm install -g npm && sudo npm install -g node-gyp && sudo npm install -g node-pre-gyp
+  static_tests:
+    docker:
+      - image: circleci/node:8
+      - image: circleci/node:8-browsers
+    environment:
+      - CHROME_BIN: "/usr/bin/google-chrome"
+    steps:
+      - checkout
+      - run: cd static && npm install && npm run test
+
+  build:
+    machine:
+      docker_layer_caching: false
+
+    steps:
+      - checkout
+      - run: npm run build:production
+
+workflows:
+  version: 2
+  the_whole_shebang:
+    jobs:
+      - static_init
+      - server_tests
+      # - static_tests:
+      #     requires:
+      #       - static_init
+      # - build:
+      #     requires:
+      #       - static_init
+      #       # - static_tests
+      #       - server_tests
+      # - deploy:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master

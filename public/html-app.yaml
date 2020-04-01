@@ -1,0 +1,21 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+service: html
+
+handlers:
+- url: /
+  static_files: www/index.html
+  upload: www/index.html
+
+# - url: /guest
+#   static_files: www/index-guest.html
+#   upload: www/index-guest.html
+#
+# - url: /establishment
+#   static_files: www/index-est.html
+#   upload: www/index-est.html
+
+- url: /(.*)
+  static_files: www/\1
+  upload: www/(.*)
