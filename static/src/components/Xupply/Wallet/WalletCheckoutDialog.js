@@ -136,15 +136,12 @@ class WalletCheckoutDialog extends Component {
         };
     }
 
-    componentDidMount() { }
+    componentDidMount() {
+        this.setState({open: this.props.open, request: this.props.request});
+    }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.open && !this.props.open) {
-            this.setState({open: true, request: nextProps.request});
-        }
-        if (!nextProps.open && this.props.open) {
-            this.setState({open: false, request: toNewRequest()});
-        }
+        this.setState({open: nextProps.open, request: nextProps.request});
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -171,6 +168,11 @@ class WalletCheckoutDialog extends Component {
 
     handleSkipPayment = () => {
         this.setState({needFinancing: true})
+    }
+
+    handleChangePayment = () => {
+        const { needFinancing } = this.state;
+        this.setState({needFinancing: !needFinancing})
     }
 
     renderWord = (word) => {
@@ -225,16 +227,18 @@ class WalletCheckoutDialog extends Component {
         }
     }
 
-    renderLineItem = (i) => {
-        const item = i[1];
+    renderLineItem = (menuItem) => {
+        const { stockPerItem } = this.state.request;
+        const quantity = Object.entries(stockPerItem).map((q) => {if (menuItem.itemID === q[0]) { return q[1].quantity}})
+        const pricePerUnit = Object.entries(stockPerItem).map((q) => {if (menuItem.itemID === q[0]) { return q[1].pricePerUnit}})
         return (
           <section style={{margin: 0}}>
               <Divider style={{margin: 10}} />
               <div style={{padding: 10, display: 'flex-inline'}}>
-                  <p style={{margin: 0, padding: 0}} >Face Shield <span style={{float: 'right'}}>{`$ ${formatNumbersWithCommas(item.quantity * item.pricePerUnit)}`} USD</span></p>
-                  <span>Quantity <span style={{fontSize: 12, color: 'gray', float: 'right'}}>{item.quantity}</span></span>
+                  <p style={{margin: 0, padding: 0}} >{menuItem.itemName}<span style={{float: 'right'}}>{`$ ${formatNumbersWithCommas(quantity * pricePerUnit)}`} USD</span></p>
+                  <span>Quantity <span style={{fontSize: 12, color: 'gray', float: 'right'}}>{quantity}</span></span>
                   <br />
-                  <span>Price Per Unit<span style={{fontSize: 12, color: 'gray', float: 'right'}}>{`$ ${formatNumbersWithCommas(item.pricePerUnit)}`} USD</span></span>
+                  <span>Price Per Unit<span style={{fontSize: 12, color: 'gray', float: 'right'}}>{`$ ${formatNumbersWithCommas(pricePerUnit)}`} USD</span></span>
               </div>
           </section>
         );
@@ -264,7 +268,7 @@ class WalletCheckoutDialog extends Component {
                             arrow
                             title={
                               <React.Fragment>
-                                  {Object.entries(request.stockPerItem).map(this.renderLineItem, this)}
+                                  {request.items.map(this.renderLineItem, this)}
                                   <Divider style={{margin: 10}} />
                                   <div style={{padding: 10, display: 'flex-inline'}}>
                                       <p style={{margin: 0, padding: 0}} >Tax <span style={{float: 'right'}}>{`$ ${formatNumbersWithCommas(request.totals.tax)}`} USD</span></p>
@@ -306,7 +310,7 @@ class WalletCheckoutDialog extends Component {
                                   <p style={{marginBottom: 0, fontWeight: 600, paddingTop: 10, color: '#000'}}>Through Xupply</p>
                               </div>
                               <div style={{ padding: 15, textAlign: 'right', margin: 'auto', width: '50%' }}>
-                                    <p style={{cursor: 'pointer', color: 'blue'}}>{'Manage'}</p>
+                                    <p onClick={e => this.handleChangePayment(e)} style={{cursor: 'pointer', color: 'blue'}}>{'Manage'}</p>
                                     <span style={{fontSize: 14, fontWeight: 400}}>{`$ ${formatNumbersWithCommas(request.totals.due)}`}</span>
                                     <br />
                                     <span style={{fontSize: 12, color: '#393999'}}>{'USD'}</span>
