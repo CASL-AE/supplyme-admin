@@ -92,7 +92,7 @@ class RequestListView extends React.Component {
         }
         const { accountID } = nextProps;
         if (nextProps.receivedAt !== null && nextProps.requests.length === 0) {
-            const route = `/accounts/${accountID}/requests/create`;
+            const route = `/accounts/${accountID}/requests/create/beta`;
             dispatchNewRoute(route);
         }
     }
@@ -152,7 +152,7 @@ class RequestListView extends React.Component {
               disableFocusRipple
               className={classes.firstButton}
               classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create`)}
+              onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
             >
                 {'+ New Request'}
             </Button>

@@ -151,7 +151,7 @@ class MenuItemListView extends React.Component {
               disableFocusRipple
               className={classes.firstButton}
               classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create`)}
+              onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
             >
                 {'+ New MenuItem'}
             </Button>
