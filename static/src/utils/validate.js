@@ -15,7 +15,6 @@ export function validateLocation(location) {
 }
 
 export function validateAddress(address) {
-    const active = address.active;
     const street = address.street;
     const locality = address.locality;
     const region = address.region;
@@ -47,9 +46,40 @@ export function validateAddress(address) {
         console.error('Invalid Address GeoHash');
         return false;
     }
-    if (!active) {
-        console.error('Address NOT Active');
-        return false;
-    }
     return true;
+}
+
+export function validateVarChar(string) {
+    if (typeof string === 'string' || string instanceof String && string !== null && string !== ''){
+        return true;
+    }
+    return false;
+}
+
+export function validateKey(string) {
+    const re = /^^(?!\.\.?$)(?!.*__.*__)([^/]{1,1500})$/;
+    return re.test(string);
+}
+
+export function validateDate(date) {
+    return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
+}
+
+export function validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
+export function validatePhone(name) {
+    const re = /^[\+]?[0-9]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+    return re.test(name);
+}
+
+export function validateString(string) {
+    const re = /^[A-Za-z].*$/;
+    return re.test(string);
+}
+export function validateNumber(string) {
+  const re = /^[-]?[0-9].*$/;
+  return re.test(string);
 }
