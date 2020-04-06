@@ -27,7 +27,10 @@ import LocationDetailView from './containers/Xupply/Location/LocationDetailView'
 import LocationCreateView from './containers/Xupply/Location/LocationCreateView';
 import RequestListView from './containers/Xupply/Request/RequestListView';
 import PublicRequestListView from './containers/Xupply/Request/PublicRequestListView';
-import RequestCreateView from './containers/Xupply/Request/RequestCreateView';
+
+/* For Beta Hospital */
+// import RequestCreateView from './containers/Xupply/Request/RequestCreateView';
+import RequestCreateBetaView from './containers/Xupply/Beta/RequestCreateBetaView';
 import RequestDetailView from './containers/Xupply/Request/RequestDetailView';
 import MenuItemListView from './containers/Xupply/MenuItem/MenuItemListView';
 import MenuItemDetailView from './containers/Xupply/MenuItem/MenuItemDetailView';
@@ -66,7 +69,7 @@ export default (
             <Route exact path="/accounts/:id/locations/:id" component={requireAuthentication(LocationDetailView)} />
             <Route exact path="/accounts/:id/locations/:id/edit" component={requireAuthentication(LocationCreateView)} />
             <Route exact path="/accounts/:id/requests" component={requireAuthentication(RequestListView)} />
-            <Route exact path="/accounts/:id/requests/create" component={requireAuthentication(RequestCreateView)} />
+            <Route exact path="/accounts/:id/requests/create" component={requireAuthentication(RequestCreateBetaView)} />
             <Route exact path="/accounts/:id/requests/:id" component={requireAuthentication(RequestDetailView)} />
             <Route exact path="/accounts/:id/menuItems" component={requireAuthentication(MenuItemListView)} />
             <Route exact path="/accounts/:id/menuItems/create" component={requireAuthentication(MenuItemCreateView)} />
