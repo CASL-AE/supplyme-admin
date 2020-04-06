@@ -135,15 +135,14 @@ function BetaMenuItemFormTable(props) {
               </TableCell>
               <TableCell>
                   <TextField
-                      placeholder="Quantity"
-                      label="Quantity"
-                      variant="outlined"
+                      placeholder="#/qty"
+                      label="#/qty"
                       margin="dense"
                       type="number"
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].quantity : ''}
-                      style={{width: 150}}
+                      style={{width: 100}}
                       onChange={e => handleChange(e, 'quantity', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
@@ -152,35 +151,41 @@ function BetaMenuItemFormTable(props) {
                   <TextField
                       placeholder="$/unit"
                       label="$/unit"
-                      variant="outlined"
                       margin="dense"
                       type="number"
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
-                      style={{width: 150}}
+                      style={{width: 100}}
                       onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
               <TableCell>
-                  <Checkbox
-                      // checked={approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                      // onChange={e => handleCheckBox(e, menuItem)}
-                      color="primary"
-                  />
-                  <Select
-                      // onChange={e => this.changeValue(e, 'activationCode', 'accountType')}
-                      value={'default'}
-                      variant="outlined"
-                      margin="dense"
-                      inputProps={{
-                          name: 'leadTimeType',
-                          id: 'leadTimeType',
-                      }}
-                  >
-                      {leadTimeTypes}
-                  </Select>
+              <TextField
+                  placeholder="#/qty"
+                  label="#/qty"
+                  margin="dense"
+                  type="number"
+                  disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                  // helperText={name_error_text}
+                  value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].leadQuantity : ''}
+                  style={{width: 75, paddingRight: 10}}
+                  onChange={e => handleChange(e, 'leadQuantity', menuItem.itemID)}
+                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+              />
+              <TextField
+                  placeholder="#/days"
+                  label="#/days"
+                  margin="dense"
+                  type="number"
+                  disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                  // helperText={name_error_text}
+                  value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].leadDays : ''}
+                  style={{width: 75}}
+                  onChange={e => handleChange(e, 'leadDays', menuItem.itemID)}
+                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+              />
               </TableCell>
               <TableCell>
                 {stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].quantity : 'N/A'}
