@@ -46,10 +46,12 @@ const styles = theme => ({
       backgroundColor: '#fff',
       borderRadius: 8,
       boxShadow: '0 0.5rem 4rem 0.5rem rgba(0,0,0,0.08)',
+      marginTop: 40,
+      marginLeft: 80,
+      marginRight: 80,
+      marginBottom: 80,
     },
-    gridItemBoxInner: {
-      margin: 80,
-    },
+    gridItemBoxInner: {},
     divider: {
         display: 'flex',
         color: '#5c5c5c',
@@ -320,7 +322,7 @@ class RequestCreateBetaView extends Component {
                   <div className={classes.gridItemBox}>
                       <div className={classes.gridItemBoxInner}>
                           <div style={{padding: 60}}>
-                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Tell us about your Request?'}</h4>
+                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Request'}</h4>
                               <div className={classes.divider} >
                                   <div className={classes.dividerLine} />
                               </div>
