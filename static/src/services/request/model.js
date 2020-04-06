@@ -16,7 +16,7 @@ export function getRequestFromSnapshot(request) {
         active: request.active,
         deleted: request.deleted,
         priority: request.priority,
-        budget: request.budget,
+        totals: request.totals,
         requestType: request.requestType,
         requiredBy: parseFirestoreTimeStamp(request.requiredBy),
         status: request.status,
@@ -33,7 +33,7 @@ export function toNewRequest() {
         active: false,
         deleted: false,
         priority: 'low',
-        budget: 0,
+        totals: toNewTotals(),
         private: false,
         requestType: 'b2c',
         requiredBy: null,
@@ -53,6 +53,20 @@ export function toNewRequest() {
         transactions: [],
     };
 }
+
+export function toNewTotals() {
+    return {
+        discounts: 0,
+        due: 0,
+        items: 0,
+        paid: 0,
+        serviceCharges: 0,
+        otherCharges: 0,
+        subTotal: 0,
+        tax: 0,
+        total: 0,
+    }
+};
 
 export function requestRowObject(request) {
     return {

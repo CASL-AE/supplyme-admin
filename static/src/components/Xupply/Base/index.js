@@ -185,9 +185,9 @@ class Base extends Component {
                     break;
                 case 'manufacturer':
                     listItems = [
-                        'requests',
                         'orders',
                         'menuItems',
+                        'requests',
                     ]
                     break;
                 case 'financier':

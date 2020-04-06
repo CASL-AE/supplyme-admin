@@ -15,17 +15,15 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import HomeIcon from '@material-ui/icons/Home';
 
-// Icons
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-
 // Components
 import AutoCompleteLocations from '../../../components/Xupply/AutoCompletes/AutoCompleteLocations';
-import PublicMenuItemResultsTable from '../../../components/Xupply/MenuItem/PublicMenuItemResultsTable';
+import BetaMenuItemFormTable from '../../../components/Xupply/Beta/BetaMenuItemFormTable';
 import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletCheckoutDialog';
+import XupplyLoader from '../../../components/Xupply/Base/XupplyLoader';
 
 
 import { filterBy } from '../../../utils/misc';
-import { validateAddress } from '../../../utils/validate';
+import { validateAddress, validateString } from '../../../utils/validate';
 import { toNewRequest } from '../../../services/request/model';
 import { saveNewRequest } from '../../../services/request/actions';
 import { fetchPublicMenuItems } from '../../../services/menuItem/actions';
@@ -38,7 +36,6 @@ const styles = theme => ({
     },
     rightContent: {
         margin: 'auto',
-        width: '90%',
     },
     gridItem: {
       marginLeft: '3%',
@@ -48,10 +45,12 @@ const styles = theme => ({
       backgroundColor: '#fff',
       borderRadius: 8,
       boxShadow: '0 0.5rem 4rem 0.5rem rgba(0,0,0,0.08)',
+      marginTop: 40,
+      marginLeft: 80,
+      marginRight: 80,
+      marginBottom: 80,
     },
-    gridItemBoxInner: {
-      margin: 80,
-    },
+    gridItemBoxInner: {},
     divider: {
         display: 'flex',
         color: '#5c5c5c',
@@ -117,21 +116,18 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-class RequestCreateView extends Component {
+class MenuItemCreateBetaView extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             request: toNewRequest(),
             searchLocation: false,
+            menuItemOpen: false,
             menuItems: [],
-            fmenuItems: [],
-            filter: {
-                isDonation: false,
-                isDIY: false,
-            },
             isCheckout: false,
             disabled: true,
+            loading: false,
         };
     }
 
@@ -167,7 +163,7 @@ class RequestCreateView extends Component {
     receiveMenuItems = (menuItems) => {
         console.warn('Received Search MenuItems');
         const _menuItems = filterBy(menuItems);
-        this.setState({menuItems: _menuItems, fmenuItems: _menuItems});
+        this.setState({menuItems: _menuItems});
     }
 
     loadCompData = () => {
@@ -182,39 +178,31 @@ class RequestCreateView extends Component {
         this.setState({request});
     }
 
-    handleChange = (e, name) => {
+    handleChange = (e, name, itemID) => {
         const { value } = e.target;
-        const { quantity, pricePerUnit } = this.state.request.package;
         const next_state = this.state;
-        next_state.request.package[name] = value;
-        if (name === 'quantity') {
-            next_state.request.budget = parseFloat(value, 2) * parseFloat(pricePerUnit, 2);
-        } else {
-            next_state.request.budget = parseFloat(quantity, 2) * parseFloat(value, 2);
+        if (!next_state.request.stockPerItem[itemID]) {
+            next_state.request.stockPerItem[itemID] = {};
         }
-        if (name === 'pricePerUnit' && value === 0) {
-            next_state.filter.isDonation = true;
-        }
-        this.setState(next_state, () => {});
+        next_state.request.stockPerItem[itemID][name] = value;
+        this.setState(next_state, () => {
+            this.isRequestDisabled();
+        });
     }
 
     handleCheckBox = (e, menuItem) => {
-        const { quantity } = this.state.request.package;
         const next_state = this.state;
         const itemID = menuItem.itemID;
-        const packageType = menuItem.quantities[0].packageType;
         const found = this.state.request.items.some(o => o.itemID === itemID);
         if (found) {
-            next_state.request.stockPerItem[menuItem.itemID] = {packageType: packageType, quantity: quantity};
-            if (quantity === 0) {
-              next_state.request.items = this.state.request.items.filter(o => o.itemID !== itemID);
-              delete next_state.request.stockPerItem[menuItem.itemID];
-            }
+            next_state.request.items = this.state.request.items.filter(o => o.itemID !== itemID);
+            delete next_state.request.stockPerItem[menuItem.itemID];
         } else {
             next_state.request.items = [...this.state.request.items, menuItem];
-            next_state.request.stockPerItem[menuItem.itemID] = {packageType: packageType, quantity: quantity};
         }
-        this.setState(next_state, () => {});
+        this.setState(next_state, () => {
+            this.isRequestDisabled();
+        });
     }
 
     handleLocationSelected = (location) => {
@@ -222,62 +210,26 @@ class RequestCreateView extends Component {
         console.log(location)
         next_state.request.location = location;
         next_state.searchLocation = false;
-        this.setState(next_state, () => {});
-    }
-
-    getWords = (menuItem) => {
-        var newWords = '';
-        if (menuItem.itemName && menuItem.itemName.length > 0) {
-            newWords += `${menuItem.itemName}`.slice(0, menuItem.itemName.length).toLowerCase() + ' ';
-        }
-        if (menuItem.brandName && menuItem.brandName.length > 0) {
-            newWords += `${menuItem.brandName}`.slice(0, menuItem.brandName.length).toLowerCase() + ' ';
-        }
-        if (menuItem.description && menuItem.description.length > 0) {
-            newWords += `${menuItem.description}`.slice(0, menuItem.description.length).toLowerCase() + ' ';
-        }
-        return newWords;
-    }
-
-    searchItems = (e) => {
-        const { value } = e.target;
-        const next_state = this.state;
-        const inputValue = deburr(value.trim()).toLowerCase();
-        const next_rows = this.state.menuItems.filter((i) => {
-            const words = this.getWords(i);
-            return words.includes(inputValue);
+        this.setState(next_state, () => {
+            this.isRequestDisabled();
         });
-        next_state.fmenuItems = next_rows;
-        this.setState(next_state, () => {});
-    }
-
-    handleFilter = (e, type) => {
-        const { checked } = e.target;
-        const next_state = this.state;
-        next_state.filter[type] = checked;
-        var next_rows = this.state.menuItems;
-        if (checked) {
-            if (type === 'isDonation') {
-                next_rows = this.state.menuItems.filter((i) => {
-                    return i.quantities[0].pricePerUnit === '0';
-                });
-            } else {
-                next_rows = this.state.menuItems.filter((i) => {
-                    return i[type] === checked;
-                });
-            }
-        }
-        next_state.fmenuItems = next_rows;
-        this.setState(next_state, () => {});
-    }
-
-    toggleAddMenuItem = (e, menuItemOpen) => {
-        this.setState({menuItemOpen: menuItemOpen})
     }
 
     requestCheckout = (e) => {
         e.preventDefault();
-        this.setState({isCheckout: true});
+        const next_state = this.state;
+        Object.entries(next_state.request.stockPerItem).forEach((s) => {
+            next_state.request.totals.items += s[1].quantity * s[1].pricePerUnit;
+        });
+        next_state.request.totals.serviceCharges = (next_state.request.totals.items * 0.025) + .30;
+        next_state.request.totals.subTotal = next_state.request.totals.items + next_state.request.totals.serviceCharges;
+        next_state.request.totals.tax = next_state.request.totals.subTotal * 0.085;
+        next_state.request.totals.total = next_state.request.totals.subTotal + next_state.request.totals.tax;
+        next_state.request.totals.due = next_state.request.totals.total;
+        next_state.isCheckout = true;
+        this.setState(next_state, () => {
+            this.isRequestDisabled();
+        });
     }
 
     handleClose = (e) => {
@@ -291,7 +243,6 @@ class RequestCreateView extends Component {
     }
 
     isRequestDisabled(e) {
-        e.preventDefault();
         this.setState({
             disabled: true,
         });
@@ -300,6 +251,8 @@ class RequestCreateView extends Component {
         let requestedBy_is_valid = false;
         let items_is_valid = false;
         let stock_is_valid = false;
+
+        console.log(this.state.request)
 
         // Validate Request Name
         if (this.state.request.location.address.active === false && this.state.request.location.address.street1 === null) {
@@ -354,13 +307,12 @@ class RequestCreateView extends Component {
         const {
           request,
           searchLocation,
-          fmenuItems,
-          filter,
+          menuItems,
           isCheckout,
           disabled,
+          loading,
         } = this.state;
 
-        console.log(fmenuItems)
         console.error(request)
 
         const RequestContainer = (
@@ -369,7 +321,7 @@ class RequestCreateView extends Component {
                   <div className={classes.gridItemBox}>
                       <div className={classes.gridItemBoxInner}>
                           <div style={{padding: 60}}>
-                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Tell us about your Request?'}</h4>
+                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Order'}</h4>
                               <div className={classes.divider} >
                                   <div className={classes.dividerLine} />
                               </div>
@@ -389,87 +341,30 @@ class RequestCreateView extends Component {
                                   </div>
                                 ) : null
                               }
-                              <div style={{paddingTop: 10}}>
-                              <TextField
-                                  placeholder="Search Item Name"
-                                  label="Search Item Name"
-                                  variant="outlined"
-                                  margin="dense"
-                                  type="text"
-                                  // helperText={name_error_text}
-                                  // value={location.contactInfo.name}
-                                  style={{paddingRight: 20, width: '60%'}}
-                                  onChange={e => this.searchItems(e)}
-                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                              <BetaMenuItemFormTable
+                                  menuItems={menuItems}
+                                  approvedMenuItems={request.items}
+                                  stockPerItem={request.stockPerItem}
+                                  handleCheckBox={this.handleCheckBox}
+                                  handleChange={this.handleChange}
                               />
-                              <TextField
-                                  placeholder="# of Pieces"
-                                  label="# of Pieces"
-                                  variant="outlined"
-                                  margin="dense"
-                                  type="number"
-                                  // helperText={name_error_text}
-                                  value={request.package.quantity || ''}
-                                  style={{paddingRight: 20, width: '20%'}}
-                                  onChange={e => this.handleChange(e, 'quantity')}
-                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              />
-                              <TextField
-                                  placeholder="Max Piece Price"
-                                  label="Max Piece Price"
-                                  variant="outlined"
-                                  margin="dense"
-                                  type="number"
-                                  // helperText={name_error_text}
-                                  value={request.package.pricePerUnit || ''}
-                                  style={{width: '20%'}}
-                                  onChange={e => this.handleChange(e, 'pricePerUnit')}
-                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              />
-                              <div style={{paddingTop: 10}}>
-                                  <FormControlLabel
-                                      classes={{ label: classes.checkboxLabel }}
-                                      control={
-                                        <Checkbox
-                                          checked={filter.isDIY}
-                                          onChange={e => this.handleFilter(e, 'isDIY')}
-                                          color="primary"
-                                          className={classes.checkbox}
-                                        />
-                                      }
-                                      label="DIY Only"
-                                  />
-                                  <FormControlLabel
-                                      classes={{ label: classes.checkboxLabel }}
-                                      control={
-                                        <Checkbox
-                                          checked={filter.isDonation}
-                                          onChange={e => this.handleFilter(e, 'isDonation')}
-                                          color="primary"
-                                          className={classes.checkbox}
-                                        />
-                                      }
-                                      label="Donations Only"
-                                  />
-                              </div>
-                                  <PublicMenuItemResultsTable
-                                      menuItems={fmenuItems}
-                                      approvedMenuItems={request.items}
-                                      handleCheckBox={this.handleCheckBox}
-                                  />
-                              </div>
-                              <div style={{width: '50%', margin: 'auto'}}>
-                                  <Button
-                                      disableRipple
-                                      disableFocusRipple
-                                      disabled={disabled}
-                                      onClick={e => this.requestCheckout(e)}
-                                      className={classes.continueButton}
-                                      variant="outlined"
-                                  >
-                                      {'Agree & Continue'}
-                                  </Button>
-                              </div>
+                              {
+                                !searchLocation
+                                ? (
+                                    <div style={{width: '50%', margin: 'auto'}}>
+                                        <Button
+                                            disableRipple
+                                            disableFocusRipple
+                                            disabled={disabled}
+                                            onClick={e => this.requestCheckout(e)}
+                                            className={classes.continueButton}
+                                            variant="outlined"
+                                        >
+                                            {'Agree & Continue'}
+                                        </Button>
+                                    </div>
+                                ) : null
+                              }
                           </div>
                       </div>
                   </div>
@@ -482,23 +377,34 @@ class RequestCreateView extends Component {
             <div className={classes.root}>
                 {RequestContainer}
             </div>
-            <WalletCheckoutDialog open={isCheckout} request={request} handleClose={this.handleClose} />
+            <WalletCheckoutDialog
+                open={isCheckout}
+                request={request}
+                handleClose={this.handleClose}
+                handleSubmit={this.createNewRequest}
+            />
+            {
+              loading
+              ? (
+                <XupplyLoader open={true} />
+              ) : null
+            }
             </section>
         );
     }
 }
 
-RequestCreateView.defaultProps = {
+MenuItemCreateBetaView.defaultProps = {
     saveNewRequest: f => f,
     fetchPublicMenuItems: f => f,
 };
 
-RequestCreateView.propTypes = {
+MenuItemCreateBetaView.propTypes = {
     saveNewRequest: PropTypes.func.isRequired,
     fetchPublicMenuItems: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(RequestCreateView);
+export default withStyles(styles)(MenuItemCreateBetaView);
 
 // <WalletCheckoutDialog />

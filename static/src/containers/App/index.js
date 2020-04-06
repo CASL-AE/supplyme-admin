@@ -30,7 +30,7 @@ class App extends React.PureComponent {
         const { children } = this.props;
         return (
             <MuiThemeProvider theme={theme}>
-                <section>
+                <section style={{margin: 0, padding: 0}}>
                     <MuiPickersUtilsProvider utils={MomentUtils}>
                         {children}
                     </MuiPickersUtilsProvider>
