@@ -70,9 +70,8 @@ export function getMenuItemFromSnapshot(menuItem) {
         deleted: menuItem.deleted,
         itemID: menuItem.itemID,
         upcID: menuItem.upcID,
+        skuID: menuItem.skuID,
         brandName: menuItem.brandName,
-        // tagLine: menuItem.tagLine,
-        // manufacturerName: menuItem.manufacturerName,
         itemName: menuItem.itemName,
         itemType: menuItem.itemType,
         description: menuItem.description,
@@ -85,10 +84,9 @@ export function getMenuItemFromSnapshot(menuItem) {
         createdDate: parseFirestoreTimeStamp(menuItem.createdDate),
         availableStockPerItem: menuItem.availableStockPerItem,
         unassignedStockPerItem: menuItem.unassignedStockPerItem,
-        // supplies: menuItem.supplies,
-        // supportingDocs: menuItem.supportingDocs,
-        isFinished: menuItem.isFinished,
-        // warningLabel: menuItem.warningLabel,
+        // materials: menuItem.materials,
+        supportingDocs: menuItem.supportingDocs,
+        isDIY: menuItem.isDIY,
         madeInCountry: menuItem.madeInCountry,
     };
 }
@@ -100,6 +98,7 @@ export function getPublicMenuItemFromSnapshot(menuItem) {
         deleted: menuItem.deleted,
         itemID: menuItem.itemID,
         upcID: menuItem.upcID,
+        skuID: menuItem.skuID,
         brandName: menuItem.brandName,
         itemName: menuItem.itemName,
         itemType: menuItem.itemType,
@@ -111,7 +110,9 @@ export function getPublicMenuItemFromSnapshot(menuItem) {
         createdDate: parseFirestoreTimeStamp(menuItem.createdDate),
         availableStockPerItem: menuItem.availableStockPerItem,
         unassignedStockPerItem: menuItem.unassignedStockPerItem,
-        isFinished: menuItem.isFinished,
+        // materials: menuItem.materials,
+        supportingDocs: menuItem.supportingDocs,
+        isDIY: menuItem.isDIY,
         madeInCountry: menuItem.madeInCountry,
     };
 }
@@ -123,10 +124,10 @@ export function toNewMenuItem() {
         deleted: false,
         itemID: null,
         upcID: null,
+        skuID: null,
         brandName: null,
-        // tagLiacturerName: null,
         itemName: null,
-        itemType: 'ppe',
+        itemType: 'product', // Product or Material
         description: null,
         oldItemRef: null,
         quantities: [],
@@ -134,20 +135,20 @@ export function toNewMenuItem() {
         //     label: null,
         //     units: 0,
         // },
-        // lwd: {
-        //     length: 0,
-        //     width: 0,
-        //     depth: 0,
-        // },
         thumbItemImageURL: null,
         updatedDate: null,
         createdDate: null,
         availableStockPerItem: {},
         unassignedStockPerItem: {},
-        // supplies: [],
-        // supportingDocs: [],
-        isFinished: false,
-        // warningLabel: null,
+        // materials: [
+        //     item: null, // Menu Item
+        //     measurement: {
+        //         label: null,
+        //         units: 0,
+        //     },
+        // ],
+        supportingDocs: [],
+        isDIY: false,
         madeInCountry: 'USA',
         imageData: null,
     };
@@ -160,6 +161,32 @@ export function toNewQuantity() {
         weightType: null,
         pricePerUnit: 0,
         stock: 0,
+        size: {
+            length: 0,
+            width: 0,
+            depth: 0,
+        },
+        weight: 0,
+        moq: 0,
+        leadTime: 0,
+    };
+}
+
+// Document Types
+
+/*
+Label
+Instructions
+Design
+*/
+
+export function toNewSupportingDoc() {
+    return {
+        name: null,
+        doc: null,
+        docType: 'label',
+        uploadDate: null,
+        metaData: null,
     };
 }
 export function menuItemRowObject(m, q) {
@@ -170,10 +197,11 @@ export function menuItemRowObject(m, q) {
         deleted: m.deleted,
         brandName: m.brandName,
         upcID: m.upcID,
+        skuID: m.skuID,
         itemName: m.itemName,
         itemType: m.itemType,
         madeInCountry: m.madeInCountry,
-        isFinished: m.isFinished,
+        isDIY: m.isDIY,
         thumbnail: m.thumbItemImageURL,
         updatedDate: m.updatedDate,
         createdDate: m.createdDate,

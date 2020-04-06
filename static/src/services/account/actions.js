@@ -5,14 +5,11 @@ import { xupplyAnalytic } from '../../utils/analytics';
 import {
   parseJSON,
   validateKey,
-  validateString,
-  validatePhone,
-  validateAddress,
-  validateMerchants,
 } from '../../utils/misc';
 import {
   apiActivateAccountCode,
-  apiMigrateAccountSmartBnB,
+  apiCreateBraintreeCustomer,
+  apiCreateDwollaCustomer,
 } from '../../utils/http_functions';
 
 import { getAccountFromSnapshot } from './model';
@@ -77,9 +74,9 @@ export const getAccountFailure = error => ({
         statusText: error.response.statusText,
     },
 });
-export const getAccount = accountId => (dispatch) => {
+export const getAccount = accountID => (dispatch) => {
     dispatch(getAccountRequest());
-    const accountRef = db().collection('Accounts').doc(accountId);
+    const accountRef = db().collection('Accounts').doc(accountID);
     accountRef.onSnapshot((doc) => {
         if (doc.exists) {
             console.log('Document data:', doc.data());
@@ -306,3 +303,49 @@ export const updateAccount = (employeeID, accountID, account, redirectRoute) => 
         });
 };
 // [END Activate Account]
+
+// Create Braintree Customer
+// TODO
+// [START Create Braintree Customer]
+export const createBraintreeCustomerRequest = () => ({
+    type: 'CREATE_BRAINTREE_CUSTOMER_REQUEST',
+});
+
+export const createBraintreeCustomerSuccess = () => ({
+    type: 'CREATE_BRAINTREE_CUSTOMER_SUCCESS',
+});
+
+export const createBraintreeCustomerFailure = error => ({
+    type: 'CREATE_BRAINTREE_CUSTOMER_FAILURE',
+    payload: {
+        status: error.response.status,
+        statusText: error.response.statusText,
+    },
+});
+export const createBraintreeCustomer = (token, employeeID, accountID, firstName, lastName) => (dispatch) => {
+    console.log(token)
+    console.log(employeeID)
+    console.log(accountID)
+    console.log(firstName)
+    console.log(lastName)
+    dispatch(createBraintreeCustomerRequest());
+    return apiCreateBraintreeCustomer(token, accountID, firstName, lastName)
+        .then(parseJSON)
+        .then((response) => {
+            dispatch(requestAccountUserSuccess());
+            xupplyAnalytic('create_braintree_customer_success');
+            successAlert('Create Braintree Customer Success');
+            dispatch(createBraintreeCustomerSuccess());
+        })
+        .catch((error) => {
+            errorAlert(error.message || error);
+            xupplyAnalytic('create_braintree_customer_failure');
+            dispatch(createBraintreeCustomerFailure({
+                response: {
+                    status: error.response.status,
+                    statusText: error.response.data.statusText,
+                },
+            }));
+        });
+};
+// [END Create Braintree Customer]

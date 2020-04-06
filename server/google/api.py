@@ -256,8 +256,6 @@ class SearchGooglePlaces(MethodView):
             incoming = request.args
             query = incoming['query']
             type = incoming['type']
-            print(query)
-            print(type)
             places = search_google_places(type, query)
             responseObject = {
                 'status': 'success',
@@ -281,17 +279,16 @@ class SearchGooglePlaces(MethodView):
 class GeocodeGooglePlace(MethodView):
     def get(self):
         try:
-            id_token = request.headers.get('Authorization').split(' ').pop()
-            claims = verify_firebase_token(id_token)
-            if not claims:
-                responseObject = {
-                    'status': 'failed',
-                    'statusText': 'Invalid Token'
-                }
-                return make_response(jsonify(responseObject)), 403
+            # id_token = request.headers.get('Authorization').split(' ').pop()
+            # claims = verify_firebase_token(id_token)
+            # if not claims:
+            #     responseObject = {
+            #         'status': 'failed',
+            #         'statusText': 'Invalid Token'
+            #     }
+            #     return make_response(jsonify(responseObject)), 403
             incoming = request.args
             place = incoming['place']
-            print(place)
             result = geocode_google_place(place)
             address = parse_google_geocode(result)
             responseObject = {

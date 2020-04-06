@@ -14,15 +14,19 @@ import TableFooter from '@material-ui/core/TableFooter';
 import Paper from '@material-ui/core/Paper';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Tooltip from '@material-ui/core/Tooltip';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import TablePaginationActions from '../../TablePaginationActions';
 
-import { formatDateWTime, formatAddress, formatDateNoTime } from '../../../utils/misc';
+import {
+    formatDateWTime,
+    formatAddress,
+    formatDateNoTime,
+    formatNumbersWithCommas
+} from '../../../utils/misc';
 
 const styles = (theme) => ({
   root: {
-    width: '100%',
-    marginTop: 40,
     boxShadow: 'none',
     borderRadius: 8,
     padding: 30,
@@ -80,17 +84,7 @@ const LocationTooltip = withStyles((theme) => ({
 
 
 function PublicMenuItemResultsTable(props) {
-  const { classes, menuItems, handleAction, handleChange } = props;
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, menuItems.length - page * rowsPerPage);
-  const handleChangePage = (e, newPage) => {
-    setPage(newPage);
-  };
-  const handleChangeRowsPerPage = e => {
-    setRowsPerPage(parseInt(e.target.value, 10));
-    setPage(0);
-  };
+  const { classes, menuItems, approvedMenuItems, handleCheckBox } = props;
   console.warn(menuItems)
   return (
     <Paper className={classes.root}>
@@ -102,14 +96,11 @@ function PublicMenuItemResultsTable(props) {
             <TableCell className={classes.tableHeaders} >Package Price</TableCell>
             <TableCell className={classes.tableHeaders} >Brand Name</TableCell>
             <TableCell className={classes.tableHeaders} >UPC ID</TableCell>
-            <TableCell style={{textAlign: 'center'}} className={classes.tableHeaders} >Add</TableCell>
+            <TableCell style={{textAlign: 'center'}} className={classes.tableHeaders} >Will Accept</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {(rowsPerPage > 0
-            ? menuItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : menuItems
-          ).map(menuItem => (
+          {menuItems.map(menuItem => (
             <TableRow key={menuItem.itemID}>
               <TableCell>
                   <ImageTooltip
@@ -136,7 +127,7 @@ function PublicMenuItemResultsTable(props) {
                   </LocationTooltip>
               </TableCell>
               <TableCell>
-                {'$ 30.00'}
+                {menuItem.quantities[0].pricePerUnit > 0 ? `$ ${formatNumbersWithCommas(menuItem.quantities[0].pricePerUnit)}` : 'donation'}
               </TableCell>
               <TableCell>
                 {menuItem.brandName}
@@ -145,41 +136,15 @@ function PublicMenuItemResultsTable(props) {
                 {menuItem.upcID || 'None'}
               </TableCell>
               <TableCell style={{textAlign: 'center'}}>
-                  <TextField
-                    placeholder="Ex. 100"
-                    margin="dense"
-                    type="number"
-                    className={classes.textField}
-                    onChange={e => handleChange(e, menuItem)}
-                    autoComplete=""
-                  />
+              <Checkbox
+                  checked={approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                  onChange={e => handleCheckBox(e, menuItem)}
+                  color="primary"
+              />
               </TableCell>
             </TableRow>
           ))}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={6}
-              count={menuItems.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              selectProps={{
-                inputProps: { 'aria-label': 'rows per page' },
-                native: true,
-              }}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              actionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
       </Table>
     </Paper>
   );
@@ -189,7 +154,8 @@ function PublicMenuItemResultsTable(props) {
 
 PublicMenuItemResultsTable.propTypes = {
   menuItems: PropTypes.array.isRequired,
-  handleChange: PropTypes.func.isRequired,
+  approvedMenuItems: PropTypes.array.isRequired,
+  handleCheckBox: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(PublicMenuItemResultsTable);

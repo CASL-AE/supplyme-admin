@@ -8,10 +8,13 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import App from './containers/App';
 import NotFoundView from './containers/Global/NotFoundView';
 import LoginView from './containers/NotAuth/Register/LoginView';
-import AccountRegisterView from './containers/NotAuth/Register/AccountRegisterView';
+import RegisterView from './containers/NotAuth/Register/RegisterView';
 import ValorListView from './containers/NotAuth/Valor/ValorListView';
 import ValorCreateView from './containers/NotAuth/Valor/ValorCreateView';
 import PublicRequestMapView from './containers/Xupply/Request/PublicRequestMapView';
+
+/* Determine Containers */
+import VerifyEmailView from './containers/NotAuth/Register/VerifyEmailView';
 
 /* Private Containers */
 import EmployeeListView from './containers/Xupply/Employee/EmployeeListView';
@@ -37,16 +40,21 @@ import OpportunityCreateView from './containers/Xupply/Opportunity/OpportunityCr
 
 /* Public Components */
 import { requireNoAuthentication } from './components/NotAuthenticatedComponent';
+import { determineAuth } from './components/DetermineAuthComponent';
 import { requireAuthentication } from './components/AuthenticatedComponent';
 
 export default (
     <App>
         <Switch>
-            // Auth Views
+            // NOT Auth Views
             <Route exact path="/" component={requireAuthentication(LocationListView)} />
-            <Route exact path="/register" component={requireNoAuthentication(AccountRegisterView)} />
+            <Route exact path="/register" component={requireNoAuthentication(RegisterView)} />
             <Route exact path="/login" component={requireNoAuthentication(LoginView)} />
 
+            // Determine Auth Views
+            <Route exact path="/verify/email" component={requireNoAuthentication(VerifyEmailView)} />
+
+            // Auth Views
             <Route exact path="/accounts/:id/account" component={requireAuthentication(LocationListView)} />
             <Route exact path="/accounts/:id/employees" component={requireAuthentication(EmployeeListView)} />
             <Route exact path="/accounts/:id/employees/codes" component={requireAuthentication(EmployeeCodeListView)} />

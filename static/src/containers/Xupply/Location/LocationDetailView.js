@@ -227,9 +227,9 @@ class LocationDetailView extends React.Component {
                               <div className={classes.detailTitle}>
                                 <span className={classes.detailTitleText}>{`${location.contactInfo.name}`}</span>
                                 <br />
-                                <span>{`${location.name}`}</span>
+                                <span style={{fontSize: 14, color: '#505050'}}>{`${location.name}`}</span>
                                 <br />
-                                <span>{location.active ? `Lat: ${location.address.location.lat} Lng: ${location.address.location.lng}` : null}</span>
+                                <span style={{fontSize: 12, color: '#8c8c8c'}}>{location.active ? `Lat: ${location.address.location.lat} Lng: ${location.address.location.lng}` : null}</span>
                               </div>
                           </div>
                       </div>
@@ -256,6 +256,26 @@ class LocationDetailView extends React.Component {
                                       {location.locationID}
                                   </dd>
                                   </div>
+                                  <div className={classes.detailListFlex}>
+                                  <dt className={classes.detailListDt}>
+                                      Location Type
+                                  </dt>
+                                  <dd className={classes.detailListDd}>
+                                      {location.locationType}
+                                  </dd>
+                                  </div>
+                                  {
+                                    location.licenseID
+                                  ? (
+                                    <div className={classes.detailListFlex}>
+                                    <dt className={classes.detailListDt}>
+                                        License ID
+                                    </dt>
+                                    <dd className={classes.detailListDd}>
+                                        {location.licenseID}
+                                    </dd>
+                                    </div>
+                                  ): null}
                                   <div className={classes.detailListFlex}>
                                   <dt className={classes.detailListDt}>
                                       Created
