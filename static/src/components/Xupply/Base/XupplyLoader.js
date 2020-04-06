@@ -26,9 +26,9 @@ function XupplyLoader(props) {
   const { classes, open } = props;
   if (open) {
     return (
-      <div style={{ top: '50%', left: '50%', position: 'fixed', textAlign: 'center', paddingTop: 20 }}>
+      <div style={{ textAlign: 'center', padding: 20 }}>
           <CircularProgress style={{marginBottom: 15}} color="inherit" />
-          <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{'Loading...'}</h4>
+          <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{`Creating your Request...`}</h4>
           <div className={classes.divider} >
               <div className={classes.dividerLine} />
           </div>
