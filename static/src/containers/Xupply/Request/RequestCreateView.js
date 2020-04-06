@@ -6,8 +6,6 @@ import PropTypes from 'prop-types';
 
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -17,19 +15,13 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 import { toNewRequest, toNewRequestItem } from '../../../services/request/model';
 import { saveNewRequest, updateRequest, deleteRequest } from '../../../services/request/actions';
-import { geocodeGooglePlace } from '../../../services/google/actions';
 import {
     getKeys,
     validateString,
-    validateDate,
     validateEmail,
-    validateDatePick,
-    roundUp,
 } from '../../../utils/misc';
 
 import AutoCompleteLocations from '../../../components/Xupply/AutoCompletes/AutoCompleteLocations';
-import AutoCompleteMenuItems from '../../../components/Xupply/AutoCompletes/AutoCompleteMenuItems';
-
 import MenuItemSearchView from '../../../containers/Xupply/MenuItem/MenuItemSearchView';
 
 function renderPriorityType() {
@@ -165,7 +157,6 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-@connect(mapStateToProps, mapDispatchToProps)
 class RequestCreateView extends React.Component {
 
     constructor(props) {
@@ -525,4 +516,6 @@ RequestCreateView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(RequestCreateView);
+let RequestCreateViewWithStyles = withStyles(styles)(RequestCreateView);
+
+export default connect(mapStateToProps, mapDispatchToProps)(RequestCreateViewWithStyles);
