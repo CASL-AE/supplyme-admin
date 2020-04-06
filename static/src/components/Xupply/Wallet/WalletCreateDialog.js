@@ -12,8 +12,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
+import StepButton from '@material-ui/core/StepButton';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -143,6 +142,7 @@ class WalletCreateDialog extends Component {
         super(props);
         this.state = {
             activeStep: 0,
+            completed: {},
             words: ['list', 'of', 'test', 'words', 'and', 'more', 'defined', 'nature', 'science'],
             mixedWords: [],
             isBusiness: false,
@@ -160,19 +160,57 @@ class WalletCreateDialog extends Component {
         return true;
     }
 
+    totalSteps = () => {
+      const steps = getSteps();
+      return steps.length;
+    };
+
+    completedSteps = () => {
+      const { completed } = this.state;
+      return Object.keys(completed).length;
+    };
+
+    isLastStep = () => {
+      const { activeStep } = this.state;
+      return activeStep === this.totalSteps() - 1;
+    };
+
+    allStepsCompleted = () => {
+      return this.completedSteps() === this.totalSteps();
+    };
+
     handleNext = () => {
-        const { activeStep } = this.state;
-        this.setState({activeStep: activeStep + 1})
+      const { activeStep, completed,  } = this.state;
+      console.log(steps)
+      const steps = getSteps();
+      const newActiveStep =
+        this.isLastStep() && !this.allStepsCompleted()
+          ? // It's the last step, but not all steps have been completed,
+            // find the first step that has been completed
+            steps.findIndex((step, i) => !(i in completed))
+          : activeStep + 1;
+      this.setState({activeStep: newActiveStep})
     };
 
     handleBack = () => {
-        const { activeStep } = this.state;
-        this.setState({activeStep: activeStep - 1})
+      const { activeStep } = this.state;
+      this.setState({activeStep: activeStep - 1})
+    };
+
+    handleStep = (step) => () => {
+      this.setState({activeStep: step})
+    };
+
+    handleComplete = () => {
+      const { completed, activeStep } = this.state;
+      const newCompleted = completed;
+      newCompleted[activeStep] = true;
+      this.setState({completed: newCompleted})
+      this.handleNext()
     };
 
     handleReset = () => {
-        const { activeStep } = this.state;
-        this.setState({activeStep: 0})
+      this.setState({activeStep: 0, completed: {}})
     };
 
     renderWord = (word) => {
@@ -657,9 +695,8 @@ class WalletCreateDialog extends Component {
 
     render() {
         const { classes } = this.props;
-        const { activeStep } = this.state;
+        const { activeStep, completed } = this.state;
         const steps = getSteps();
-        console.log(activeStep)
         return (
           <div>
           <Dialog
@@ -669,11 +706,11 @@ class WalletCreateDialog extends Component {
           >
                 <DialogContent>
                   <DialogContentText>
-                    <Stepper activeStep={activeStep} alternativeLabel>
-                      {steps.map((label) => (
-                        <Step key={label}>
-                          <StepLabel>{label}</StepLabel>
-                        </Step>
+                    <Stepper nonLinear activeStep={activeStep}>
+                      {steps.map((label, index) => (
+                        <StepButton key={label} onClick={this.handleStep(index)} completed={completed[index]}>
+                          {label}
+                        </StepButton>
                       ))}
                     </Stepper>
                   </DialogContentText>
@@ -689,7 +726,7 @@ class WalletCreateDialog extends Component {
                     </div>
                 </DialogContent>
                   {
-                    activeStep === steps.length - 1
+                    activeStep !== steps.length && completed[activeStep]
                     ? (
                       <DialogActions>
                           <Button
@@ -707,8 +744,7 @@ class WalletCreateDialog extends Component {
                             {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
                           </Button>
                     </DialogActions>
-                    )
-                    : null}
+                    ) : null}
           </Dialog>
           </div>
         );
