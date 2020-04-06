@@ -26,6 +26,7 @@ import { toNewRequest } from '../../../services/request/model';
 
 import WalletCreateDialog from './WalletCreateDialog';
 import CheckoutTooltip from '../Misc/CheckoutTooltip';
+import XupplyLoader from '../../../components/Xupply/Base/XupplyLoader';
 
 const styles = theme => ({
   root: {
@@ -245,7 +246,7 @@ class WalletCheckoutDialog extends Component {
     }
 
     render() {
-        const { classes, handleClose, merchantHash, handleSubmit } = this.props;
+        const { classes, loading, handleClose, merchantHash, handleSubmit } = this.props;
         const { activeStep, open, request, needFinancing } = this.state;
         const steps = getSteps();
         console.warn(merchantHash);
@@ -271,12 +272,12 @@ class WalletCheckoutDialog extends Component {
                                   {request.items.map(this.renderLineItem, this)}
                                   <Divider style={{margin: 10}} />
                                   <div style={{padding: 10, display: 'flex-inline'}}>
-                                      <p style={{margin: 0, padding: 0}} >Tax <span style={{float: 'right'}}>{`$ ${formatNumbersWithCommas(request.totals.tax)}`} USD</span></p>
                                       <p style={{margin: 0, padding: 0, paddingTop: 5}} >Merchant <span style={{float: 'right'}}>{`$ ${formatNumbersWithCommas(request.totals.serviceCharges)}`} USD</span></p>
+                                      <p style={{margin: 0, padding: 0}} >Tax <span style={{float: 'right'}}>{`$ ${formatNumbersWithCommas(request.totals.tax)}`} USD</span></p>
                                   </div>
                                   <Divider style={{margin: 10}} />
                                   <div style={{padding: 10, display: 'flex-inline'}}>
-                                      <p style={{margin: 0, padding: 0, color: 'black', fontWeight: 600}} >Subtotal <span style={{float: 'right', color: 'black', fontWeight: 600}}>{`$ ${formatNumbersWithCommas(request.totals.subTotal)}`} USD</span></p>
+                                      <p style={{margin: 0, padding: 0, color: 'black', fontWeight: 600}} >Total <span style={{float: 'right', color: 'black', fontWeight: 600}}>{`$ ${formatNumbersWithCommas(request.totals.due)}`} USD</span></p>
                                   </div>
                               </React.Fragment>
                             }
@@ -338,35 +339,51 @@ class WalletCheckoutDialog extends Component {
                           <p style={{paddingLeft: 25, paddingRight: 25, color: 'blue'}}>{'+ Add new payment'}</p>
                         ) : null
                       }
-                      <p style={{ fontSize: 12, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>
+
+                      {
+                        loading
+                        ? (<XupplyLoader open={loading} />)
+                        : (
+                          <section>
                           <Checkbox
                             // checked={filter.isDIY}
                             // onChange={e => this.handleFilter(e, 'isDIY')}
                             color="primary"
                             className={classes.checkbox}
                           />
-                          {'I understand and acknowledge the Liability & Open-Sourced Policy.'}
-                      </p>
-                      <p style={{ fontSize: 12, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>
-                          <Checkbox
-                            // checked={filter.isDIY}
-                            // onChange={e => this.handleFilter(e, 'isDIY')}
-                            color="primary"
-                            className={classes.checkbox}
-                          />
-                          {'I understand and acknowledge the Terms & Conditions. '}
-                      </p>
-                      <div style={{paddingLeft: 25, paddingRight: 25, paddingBottom: 25}}>
-                          <Button
-                              disableRipple
-                              disableFocusRipple
-                              onClick={e => handleSubmit(e)}
-                              className={classes.continueButton}
-                              variant="outlined"
-                          >
-                              {'Agree & Finish'}
-                          </Button>
-                      </div>
+                          <div style={{ fontSize: 12, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>
+                              <Checkbox
+                                // checked={filter.isDIY}
+                                // onChange={e => this.handleFilter(e, 'isDIY')}
+                                color="primary"
+                                className={classes.checkbox}
+                              />
+                              {'I understand and acknowledge the Liability & Open-Sourced Policy.'}
+                          </div>
+
+                          <div style={{ fontSize: 12, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>
+                              <Checkbox
+                                // checked={filter.isDIY}
+                                // onChange={e => this.handleFilter(e, 'isDIY')}
+                                color="primary"
+                                className={classes.checkbox}
+                              />
+                              {'I understand and acknowledge the Terms & Conditions. '}
+                          </div>
+                          <div style={{paddingLeft: 25, paddingRight: 25, paddingBottom: 25}}>
+                              <Button
+                                  disableRipple
+                                  disableFocusRipple
+                                  onClick={e => handleSubmit(e)}
+                                  className={classes.continueButton}
+                                  variant="outlined"
+                              >
+                                  {'Agree & Finish'}
+                              </Button>
+                          </div>
+                          </section>
+                        )
+                      }
                       <Divider />
                       <div style={{width: 500, display: 'inline-flex', padding: 10}}>
                           <div style={{ padding: 15, textAlign: 'left', margin: 'auto', width: '70%' }}>
@@ -385,10 +402,10 @@ class WalletCheckoutDialog extends Component {
                           </div>
                       </div>
                     </DialogContent>
+
               </Dialog>
             )
           }
-
           </div>
         );
     }
@@ -399,6 +416,7 @@ WalletCheckoutDialog.defaultProps = {};
 WalletCheckoutDialog.propTypes = {
     merchantHash: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
+    loading: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
