@@ -34,7 +34,7 @@ import RequestCreateBetaView from './containers/Xupply/Beta/RequestCreateBetaVie
 import RequestDetailView from './containers/Xupply/Request/RequestDetailView';
 import MenuItemListView from './containers/Xupply/MenuItem/MenuItemListView';
 import MenuItemDetailView from './containers/Xupply/MenuItem/MenuItemDetailView';
-// import MenuItemCreateView from './containers/Xupply/MenuItem/MenuItemCreateView';
+import MenuItemCreateView from './containers/Xupply/MenuItem/MenuItemCreateView';
 import MenuItemCreateBetaView from './containers/Xupply/Beta/MenuItemCreateBetaView';
 import OrderListView from './containers/Xupply/Order/OrderListView';
 import OrderCreateView from './containers/Xupply/Order/OrderCreateView';
