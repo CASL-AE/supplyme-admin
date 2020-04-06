@@ -21,7 +21,6 @@ import HomeIcon from '@material-ui/icons/Home';
 import AutoCompleteLocations from '../../../components/Xupply/AutoCompletes/AutoCompleteLocations';
 import BetaMenuItemFormTable from '../../../components/Xupply/Beta/BetaMenuItemFormTable';
 import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletCheckoutDialog';
-import XupplyLoader from '../../../components/Xupply/Base/XupplyLoader';
 
 
 import { filterBy } from '../../../utils/misc';
@@ -118,8 +117,8 @@ class MenuItemCreateBetaView extends Component {
             menuItemOpen: false,
             menuItems: [],
             isCheckout: false,
-            disabled: true,
-            loading: false,
+            disabled: false,
+            loading: true,
         };
     }
 
@@ -173,13 +172,8 @@ class MenuItemCreateBetaView extends Component {
     handleChange = (e, name, itemID) => {
         const { value } = e.target;
         const next_state = this.state;
-        if (!next_state.request.stockPerItem[itemID]) {
-            next_state.request.stockPerItem[itemID] = {};
-        }
         next_state.request.stockPerItem[itemID][name] = value;
-        this.setState(next_state, () => {
-            this.isRequestDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleCheckBox = (e, menuItem) => {
@@ -191,10 +185,9 @@ class MenuItemCreateBetaView extends Component {
             delete next_state.request.stockPerItem[menuItem.itemID];
         } else {
             next_state.request.items = [...this.state.request.items, menuItem];
+            next_state.request.stockPerItem[itemID] = {itemName: menuItem.itemName};
         }
-        this.setState(next_state, () => {
-            this.isRequestDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleLocationSelected = (location) => {
@@ -202,9 +195,7 @@ class MenuItemCreateBetaView extends Component {
         console.log(location)
         next_state.request.location = location;
         next_state.searchLocation = false;
-        this.setState(next_state, () => {
-            this.isRequestDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     requestCheckout = (e) => {
@@ -219,9 +210,7 @@ class MenuItemCreateBetaView extends Component {
         next_state.request.totals.total = next_state.request.totals.subTotal + next_state.request.totals.tax;
         next_state.request.totals.due = next_state.request.totals.total;
         next_state.isCheckout = true;
-        this.setState(next_state, () => {
-            this.isRequestDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleClose = (e) => {
@@ -278,9 +267,6 @@ class MenuItemCreateBetaView extends Component {
             });
         }
 
-        // console.warn(this.state.request)
-        // console.warn(name_is_valid)
-
         if (
             location_is_valid && items_is_valid
         ) {
@@ -306,6 +292,7 @@ class MenuItemCreateBetaView extends Component {
         } = this.state;
 
         console.error(request)
+        console.error(isCheckout)
 
         return (
           <Grid container alignItems="center" justify="center" className={classes.root} spacing={isMobileAndTablet() ? 0 : 2}>
@@ -360,6 +347,18 @@ class MenuItemCreateBetaView extends Component {
                           </div>
                       </div>
                   </Paper>
+                  {
+                    isCheckout
+                    ? (
+                      <WalletCheckoutDialog
+                          open={isCheckout}
+                          loading={loading}
+                          request={request}
+                          handleClose={this.handleClose}
+                          handleSubmit={this.createNewRequest}
+                      />
+                    ) : null
+                  }
               </Grid>
           </Grid>
         );
@@ -378,16 +377,3 @@ MenuItemCreateBetaView.propTypes = {
 };
 
 export default withStyles(styles)(MenuItemCreateBetaView);
-
-// <WalletCheckoutDialog
-//     open={isCheckout}
-//     request={request}
-//     handleClose={this.handleClose}
-//     handleSubmit={this.createNewRequest}
-// />
-// {
-//   loading
-//   ? (
-//     <XupplyLoader open={true} />
-//   ) : null
-// }
