@@ -486,7 +486,7 @@ class RequestCreateView extends React.Component {
         );
 
         return (
-            <section>
+            <section style={{margin: 0, padding: 0}}>
             {
               menuItemOpen
               ? (

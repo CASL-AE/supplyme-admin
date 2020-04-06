@@ -370,7 +370,7 @@ class LoginView extends Component {
         )
 
         const LoginAccountContainer = (
-            <section>
+            <section style={{margin: 0, padding: 0}}>
             <div style={{ margin: 'auto', textAlign: 'center', paddingTop: 40 }}>
                 <a style={{cursor: 'pointer'}} onClick={e => this.isDisabled(e)}><img alt="google_signup" height="48px" width="300px" src="/src/containers/App/styles/img/google.png" /></a>
             </div>

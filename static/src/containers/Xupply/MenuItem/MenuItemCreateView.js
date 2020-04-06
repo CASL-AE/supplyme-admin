@@ -554,7 +554,7 @@ class MenuItemCreateView extends React.Component {
                 {
                   menuItem.isDIY
                   ? (
-                    <section>
+                    <section style={{margin: 0, padding: 0}}>
                         <label className={classes.inputLabel}>DIY Instructions</label>
                         <div className={classes.textCell}>
                             <UploadMedia media={menuItem.fullSizeItemImageURL} onFinishedSelecting={this.onFinishedMediaSelected} />

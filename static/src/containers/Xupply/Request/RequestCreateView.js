@@ -478,7 +478,7 @@ class RequestCreateView extends Component {
         );
 
         return (
-            <section>
+            <section style={{margin: 0, padding: 0}}>
             <div className={classes.root}>
                 {RequestContainer}
             </div>
