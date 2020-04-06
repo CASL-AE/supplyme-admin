@@ -97,11 +97,11 @@ class RequestListView extends React.Component {
         if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
             this.receiveRequests(nextProps.requests);
         }
-        // const { accountID } = nextProps;
-        // if (nextProps.receivedAt !== null && nextProps.requests.length === 0) {
-        //     const route = `/accounts/${accountID}/requests/create/beta`;
-        //     dispatchNewRoute(route);
-        // }
+        const { accountID } = nextProps;
+        if (nextProps.receivedAt !== null && nextProps.requests.length === 0) {
+            const route = `/accounts/${accountID}/requests/create/beta`;
+            dispatchNewRoute(route);
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
