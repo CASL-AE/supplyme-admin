@@ -92,6 +92,11 @@ class MenuItemListView extends React.Component {
         if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
             this.receiveMenuItems(nextProps.menuItems);
         }
+        const { accountID } = nextProps;
+        if (nextProps.receivedAt !== null && nextProps.menuItems.length === 0) {
+            const route = `/accounts/${accountID}/menuItems/create/beta`;
+            dispatchNewRoute(route);
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
