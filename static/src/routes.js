@@ -28,14 +28,15 @@ import LocationCreateView from './containers/Xupply/Location/LocationCreateView'
 import RequestListView from './containers/Xupply/Request/RequestListView';
 import PublicRequestListView from './containers/Xupply/Request/PublicRequestListView';
 
-/* For Beta Hospital */
-// import RequestCreateView from './containers/Xupply/Request/RequestCreateView';
+/* For Beta */
 import RequestCreateBetaView from './containers/Xupply/Beta/RequestCreateBetaView';
+import MenuItemCreateBetaView from './containers/Xupply/Beta/MenuItemCreateBetaView';
+
+import RequestCreateView from './containers/Xupply/Request/RequestCreateView';
 import RequestDetailView from './containers/Xupply/Request/RequestDetailView';
 import MenuItemListView from './containers/Xupply/MenuItem/MenuItemListView';
 import MenuItemDetailView from './containers/Xupply/MenuItem/MenuItemDetailView';
 import MenuItemCreateView from './containers/Xupply/MenuItem/MenuItemCreateView';
-import MenuItemCreateBetaView from './containers/Xupply/Beta/MenuItemCreateBetaView';
 import OrderListView from './containers/Xupply/Order/OrderListView';
 import OrderCreateView from './containers/Xupply/Order/OrderCreateView';
 import OrderDetailView from './containers/Xupply/Order/OrderDetailView';
@@ -70,10 +71,12 @@ export default (
             <Route exact path="/accounts/:id/locations/:id" component={requireAuthentication(LocationDetailView)} />
             <Route exact path="/accounts/:id/locations/:id/edit" component={requireAuthentication(LocationCreateView)} />
             <Route exact path="/accounts/:id/requests" component={requireAuthentication(RequestListView)} />
-            <Route exact path="/accounts/:id/requests/create" component={requireAuthentication(RequestCreateBetaView)} />
+            <Route exact path="/accounts/:id/requests/create" component={requireAuthentication(RequestCreateView)} />
+            <Route exact path="/accounts/:id/requests/create/beta" component={requireAuthentication(RequestCreateBetaView)} />
             <Route exact path="/accounts/:id/requests/:id" component={requireAuthentication(RequestDetailView)} />
             <Route exact path="/accounts/:id/menuItems" component={requireAuthentication(MenuItemListView)} />
-            <Route exact path="/accounts/:id/menuItems/create" component={requireAuthentication(MenuItemCreateBetaView)} />
+            <Route exact path="/accounts/:id/menuItems/create" component={requireAuthentication(MenuItemCreateView)} />
+            <Route exact path="/accounts/:id/menuItems/create/beta" component={requireAuthentication(MenuItemCreateBetaView)} />
             <Route exact path="/accounts/:id/menuItems/:id" component={requireAuthentication(MenuItemDetailView)} />
             <Route exact path="/accounts/:id/menuItems/:id/edit" component={requireAuthentication(MenuItemCreateView)} />
             <Route exact path="/accounts/:id/orders" component={requireAuthentication(OrderListView)} />
