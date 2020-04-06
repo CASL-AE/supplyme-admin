@@ -46,6 +46,17 @@ export const loginEmployeeWithPermissions = (employeeID, redirectRoute) => (disp
   try {
     console.log('User ID: ' + employeeID)
     const refresh = true;
+    // if (auth().currentUser && auth().currentUser.emailVerified === false) {
+    //       history.push('/verify/email');
+    //       console.log('Email Not Verified: ' + auth().currentUser.email);
+    //       dispatch(loginEmployeeFailure({
+    //           response: {
+    //               status: 401,
+    //               statusText: 'Email Not Verified: ' + auth().currentUser.email,
+    //           },
+    //       }));
+    //       return;
+    // }
     auth().currentUser.getIdToken(refresh).then((idToken) => {
         console.error(idToken)
         const userRef = db().collection('MasterUserList').doc(employeeID);

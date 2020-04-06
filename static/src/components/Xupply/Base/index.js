@@ -24,7 +24,7 @@ const styles = theme => ({
     root: {
         flexGrow: 1,
         height: '100%',
-        backgroundColor: theme.palette.primary.background,
+        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
     },
     appFrame: {
         zIndex: 1,
@@ -43,7 +43,7 @@ const styles = theme => ({
     content: {
         height: '100%',
         flexGrow: 1,
-        backgroundColor: theme.palette.primary.background,
+        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
     },
     sectionDesktop: {
         display: 'none',
@@ -69,10 +69,10 @@ const styles = theme => ({
         color: '#ffffff',
         fontSize: 12,
         lineHeight: 2,
-        paddingTop: 20,
+        marginTop: 20,
         paddingBottom: 20,
         textAlign: 'center',
-        position: 'absolute',
+        position: 'fixed',
         bottom: 0,
         width: '100%'
     },
@@ -162,7 +162,7 @@ class Base extends Component {
         this.getBreadcrumb();
     }
 
-    componentWillReceiveProps(nextProps) { }
+    componentWillReceiveProps(nextProps) {}
 
     componentWillUnmount() { }
 
@@ -180,24 +180,19 @@ class Base extends Component {
             switch (accountType) {
                 case 'retailer':
                     listItems = [
-                        'locations',
                         'requests',
-                        'employees',
                     ]
                     break;
                 case 'manufacturer':
                     listItems = [
-                        'locations',
                         'requests',
                         'orders',
                         'menuItems',
-                        'employees',
                     ]
                     break;
                 case 'financier':
                     listItems = [
                         'opportunities',
-                        'employees',
                     ]
                     break;
                 default:
@@ -259,7 +254,6 @@ class Base extends Component {
     }
 
     dispatchNewRoute(e, route) {
-        console.log(route)
         e.preventDefault();
         history.push(route);
     }
@@ -401,9 +395,6 @@ class Base extends Component {
                         {this.props.children}
                     </div>
                 </div>
-                <div className={classes.footer}>
-                    <span>©2020 Clean Alternative. Sustainable. Life. 501(c)(3) All rights reserved.</span>
-                </div>
             </div>
         );
     }
@@ -423,3 +414,6 @@ Base.propTypes = {
 };
 
 export default withStyles(styles)(Base);
+// <div className={classes.footer}>
+//     <span>©2020 Clean Alternative. Sustainable. Life. 501(c)(3) All rights reserved.</span>
+// </div>

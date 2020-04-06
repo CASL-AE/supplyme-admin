@@ -13,7 +13,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { loginEmployee, forgotPassword } from '../../../services/app/actions';
 import { validateEmail, dispatchNewRoute, getRegistrationSearch } from '../../../utils/misc';
@@ -39,7 +39,7 @@ function mapDispatchToProps(dispatch) {
 const styles = theme => ({
     root: {
         flex: 1,
-        backgroundColor: theme.palette.primary.background,
+        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
         height: '100vh',
     },
     loginStyle: {
@@ -119,6 +119,51 @@ const styles = theme => ({
         color: theme.palette.primary.main,
         backgroundColor: theme.palette.primary.secondary,
     },
+
+
+
+    innerContent: {
+        margin: 'auto',
+        display: 'flex-inline',
+        width: '90%',
+    },
+    gridItem: {
+      marginLeft: '3%',
+      marginRight: '3%',
+    },
+    gridItemBox: {
+      backgroundColor: theme.palette.primary.background,
+      borderRadius: 8,
+      boxShadow: '0 0.5rem 4rem 0.5rem rgba(0,0,0,0.08)',
+    },
+    gridItemBoxInner: {
+      padding: 80,
+    },
+    divider: {
+        display: 'flex',
+        color: '#5c5c5c',
+        fontSize: 15,
+    },
+    dividerLine: {
+        margin: 'auto',
+        content: "",
+        borderTop: '10px solid #000000',
+        // flex: 1,
+        width: 40,
+        transform: 'translateY(50%)',
+    },
+    textField: {
+        width: 300,
+        marginTop: 10,
+    },
+    registerButton: {
+        color: '#fff',
+        backgroundColor: theme.palette.primary.main,
+        textTransform: 'none',
+        fontSize: 14,
+        width: 300,
+        marginTop: 10,
+    },
 });
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -131,11 +176,12 @@ class LoginView extends Component {
             password: '',
             email_error_text: null,
             password_error_text: null,
-            disabled: false,
+            disabled: true,
             forgotDisabled: true,
             showDialog: false,
             redirectRoute: '/',
             loading: false,
+            showEmail: false,
         };
     }
 
@@ -252,9 +298,7 @@ class LoginView extends Component {
 
     login(e) {
         e.preventDefault();
-        this.setState({
-            loading: true,
-        });
+        this.setState({ loading: true });
         this.props.actions.loginEmployee(this.state.email, this.state.password, this.state.redirectRoute);
     }
 
@@ -299,6 +343,15 @@ class LoginView extends Component {
         actions.forgotPassword(email)
     }
 
+    emailSignup = () => {
+        this.setState({showEmail: true})
+    }
+
+    dispatchNewRoute = (e) => {
+        e.preventDefault();
+        dispatchNewRoute('/register');
+    }
+
     render() {
         const { classes } = this.props;
         const {
@@ -309,63 +362,97 @@ class LoginView extends Component {
             disabled,
             showDialog,
             loading,
+            showEmail,
         } = this.state;
 
         const ForgotComponent = (
             <div className={classes.forgotPasswordLabel} onClick={e => this.toggleForgotPassword(!showDialog)}>Forgot</div>
         )
 
-        const LoginUser = (
-            <div className={classes.loginBoxInner}>
-                <label className={classes.inputLabel}>Email</label>
-                <div className={classes.text}>
+        const LoginAccountContainer = (
+            <section>
+            <div style={{ margin: 'auto', textAlign: 'center', paddingTop: 40 }}>
+                <a style={{cursor: 'pointer'}} onClick={e => this.isDisabled(e)}><img alt="google_signup" height="48px" width="300px" src="/src/containers/App/styles/img/google.png" /></a>
+            </div>
+            <div style={{ margin: 'auto', textAlign: 'center', paddingTop: 10 }}>
+            {
+              showEmail
+              ? (
+                <div>
                     <TextField
+                        placeholder="Email Address"
+                        label="Email Address"
                         type="email"
                         value={email}
                         variant="outlined"
                         autoComplete="username email"
-                        fullWidth
+                        className={classes.textField}
                         helpertext={email_error_text}
                         onChange={e => this.changeValue(e, 'email')}
                     />
-                </div>
-                <label className={classes.inputLabel}>Password</label>
-                <div className={classes.text}>
+                    < br/>
                     <TextField
+                        placeholder="Password"
+                        label="Password"
                         type="password"
                         value={password}
                         variant="outlined"
                         autoComplete="current-password"
-                        fullWidth
+                        className={classes.textField}
                         helpertext={password_error_text}
                         onChange={e => this.changeValue(e, 'password')}
                         InputProps={{
                             endAdornment: ForgotComponent,
                         }}
                     />
+                    < br/>
+                    <Button
+                        disableRipple
+                        disableFocusRipple
+                        disabled={disabled}
+                        onClick={e => this.login(e)}
+                        className={classes.registerButton}
+                        variant="outlined"
+                    >
+                        {'Login'}
+                    </Button>
                 </div>
+              ) : (
+                <div>
+                    <a style={{cursor: 'pointer'}} onClick={e => this.emailSignup(e)}><img alt="google_signup" height="48px" width="300px" src="/src/containers/App/styles/img/email.png" /></a>
+                </div>
+              )
+            }
             </div>
+            <div style={{ margin: 'auto', width: '50%' }}>
+                <p onClick={e => this.dispatchNewRoute(e, '/register')} style={{ fontSize: 14, textAlign: 'center', paddingTop: 20, cursor: 'pointer', color: 'blue'}}>Don't have an account?</p>
+            </div>
+            </section>
         );
+
         return (
             <div className={classes.root}>
-                <div className={classes.loginStyle}>
-                    <div onKeyPress={e => this._handleKeyPress(e)}>
-                        <div className={classes.loginBoxStyle}>
-                            <div className={classes.loginHeader}>
-                                Log into Xupply
-                            </div>
-                            <div style={{margin: 10}}>
-                                {
-                                    loading ?
-                                    (<LinearProgress className={classes.loader} />)
-                                    : null
-                                }
-                            </div>
-                            {LoginUser}
-                            <div className={classes.loginActions}>
-                                <Button disabled={disabled} className={classes.loginButtom} variant="outlined" onClick={e => this.login(e)}>
-                                    Login
-                                </Button>
+                <div style={{paddingTop: 66}} onKeyPress={e => this._handleKeyPress(e)}>
+                    <div className={classes.content}>
+                        <div className={classes.innerContent}>
+                            <div className={classes.gridItem}>
+                                <div className={classes.gridItemBox}>
+                                    <div className={classes.gridItemBoxInner}>
+                                        <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
+                                              <img alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-named.png" />
+                                        </div>
+                                        <div style={{ textAlign: 'center', paddingTop: 20 }}>
+                                            {loading
+                                              ? (<CircularProgress style={{marginBottom: 15}} color="inherit" />)
+                                              : null}
+                                            <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{loading ? 'Logging into your account...' : 'Please login in to your account'}</h4>
+                                            <div className={classes.divider} >
+                                                <div className={classes.dividerLine} />
+                                            </div>
+                                        </div>
+                                        {!loading ? LoginAccountContainer : null}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

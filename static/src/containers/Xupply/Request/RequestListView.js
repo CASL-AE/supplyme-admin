@@ -22,7 +22,6 @@ const styles = (theme) => ({
         flex: 1,
         display: 'inline-block',
         width: '100%',
-        backgroundColor: theme.palette.primary.background,
     },
     content: {
         paddingTop: 42,
@@ -80,20 +79,22 @@ class RequestListView extends React.Component {
     componentDidMount() {
         console.log('Requests View Mounted');
         const { receivedAt, requests } = this.props;
-        if (!receivedAt) {
-            // this.loadCompData();
+        if (!receivedAt === null) {
+            this.loadCompData();
         } else {
             this.receiveRequests(requests);
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.receivedAt && !this.props.receivedAt) {
+        if (nextProps.receivedAt !== null && !this.props.receivedAt === null) {
             this.receiveRequests(nextProps.requests);
         }
-        // if (nextProps.request.isLoaded && this.props.request.isFetching) {
-        //     this.handledClose();
-        // }
+        const { accountID } = nextProps;
+        if (nextProps.receivedAt !== null && nextProps.requests.length === 0) {
+            const route = `/accounts/${accountID}/requests/create`;
+            dispatchNewRoute(route);
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -133,7 +134,7 @@ class RequestListView extends React.Component {
     dispatchNewRequest = (e, requestID) => {
         e.preventDefault();
         const { accountID } = this.props;
-        const route = `/accounts/${accountID}/requests/${requestID}`
+        const route = `/accounts/${accountID}/requests/${requestID}`;
         dispatchNewRoute(route);
     }
 

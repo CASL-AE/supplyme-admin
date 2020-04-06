@@ -23,6 +23,8 @@ export function getRequestFromSnapshot(request) {
         location: request.location,
         items: request.items,
         stockPerItem: request.stockPerItem,
+        orders: request.orders,
+        transactions: request.transactions,
     };
 }
 export function toNewRequest() {
@@ -42,7 +44,13 @@ export function toNewRequest() {
         },
         location: toNewLocation(),
         items: [],
+        package: {
+            quantity: 0,
+            pricePerUnit: 0,
+        },
         stockPerItem: {},
+        orders: [],
+        transactions: [],
     };
 }
 
@@ -58,7 +66,7 @@ export function requestRowObject(request) {
         isStatus: request.status.isStatus,
         isStatusTime: parseFirestoreTimeStamp(request.status.isStatusTime),
         locationName: request.location.name,
-        items: request.items.map(i => `${i.itemName}, `),
+        items: request.items.length > 0 ? request.items.map(i => `${i.itemName}, `) : '',
     };
 }
 export function requestMarkerObject(request) {

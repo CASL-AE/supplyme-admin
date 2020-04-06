@@ -12,6 +12,8 @@ import parse from 'autosuggest-highlight/parse';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
+import HomeIcon from '@material-ui/icons/Home';
 
 import { fetchLocations } from '../../../services/location/actions';
 import { validateString } from '../../../utils/misc';
@@ -84,7 +86,7 @@ function getSuggestionValue(suggestion) {
 const styles = theme => ({
     container: {
         position: 'relative',
-        width: 250,
+        width: '100%',
     },
     suggestionsContainerOpen: {
         position: 'absolute',

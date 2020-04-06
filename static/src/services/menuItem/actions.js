@@ -170,13 +170,14 @@ export const saveNewMenuItem = (token, employeeID, accountID, menuItem, redirect
     const storageRef = storage().ref();
     const imgRef = storageRef.child(accountID + "/itemImage/" + menuItemInfo.itemID + ".png");
 
-    var itemImageUrl = null;
     if (menuItem.imageData !== null) {
       console.warn('MenuItem ID Image Found!! Saving...')
       const downloadURL = await saveMenuItemMedia(menuItem.imageData, imgRef);
-      if (itemImageUrl !== null) {
-          menuItemInfo.fullSizeItemImageURL = itemImageUrl;
-          menuItemInfo.thumbItemImageURL = itemImageUrl;
+      console.log(downloadURL)
+      if (downloadURL !== null) {
+          console.log(downloadURL)
+          menuItemInfo.fullSizeItemImageURL = downloadURL;
+          menuItemInfo.thumbItemImageURL = downloadURL;
       }
     }
 

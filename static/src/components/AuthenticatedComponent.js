@@ -79,7 +79,19 @@ export function requireAuthentication(Component) {
                     if (props.accountID === process.env.PRIVALGO_ADMIN_KEY) {
                         history.push(`/admin/locations`);
                     } else {
-                        history.push(`/accounts/${props.accountID}/locations`);
+                        switch(props.accountType) {
+                            case 'retailer':
+                                history.push(`/accounts/${props.accountID}/requests`);
+                                break;
+                            case 'manufacturer':
+                                history.push(`/accounts/${props.accountID}/orders`);
+                                break;
+                            case 'financier':
+                                history.push(`/accounts/${props.accountID}/opportunities`);
+                                break;
+
+                        }
+
                     }
                 } else {
                     console.log('A4');
