@@ -17,7 +17,7 @@ import HomeIcon from '@material-ui/icons/Home';
 
 // Components
 import AutoCompleteLocations from '../../../components/Xupply/AutoCompletes/AutoCompleteLocations';
-import BetaRequestFormTable from '../../../components/Xupply/Beta/BetaRequestFormTable';
+import BetaMenuItemFormTable from '../../../components/Xupply/Beta/BetaMenuItemFormTable';
 import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletCheckoutDialog';
 import XupplyLoader from '../../../components/Xupply/Base/XupplyLoader';
 
@@ -36,7 +36,6 @@ const styles = theme => ({
     },
     rightContent: {
         margin: 'auto',
-        width: '90%',
     },
     gridItem: {
       marginLeft: '3%',
@@ -46,10 +45,12 @@ const styles = theme => ({
       backgroundColor: '#fff',
       borderRadius: 8,
       boxShadow: '0 0.5rem 4rem 0.5rem rgba(0,0,0,0.08)',
+      marginTop: 40,
+      marginLeft: 80,
+      marginRight: 80,
+      marginBottom: 80,
     },
-    gridItemBoxInner: {
-      margin: 80,
-    },
+    gridItemBoxInner: {},
     divider: {
         display: 'flex',
         color: '#5c5c5c',
@@ -115,7 +116,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-class RequestCreateBetaView extends Component {
+class MenuItemCreateBetaView extends Component {
 
     constructor(props) {
         super(props);
@@ -320,7 +321,7 @@ class RequestCreateBetaView extends Component {
                   <div className={classes.gridItemBox}>
                       <div className={classes.gridItemBoxInner}>
                           <div style={{padding: 60}}>
-                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Tell us about your Request?'}</h4>
+                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Order'}</h4>
                               <div className={classes.divider} >
                                   <div className={classes.dividerLine} />
                               </div>
@@ -340,7 +341,7 @@ class RequestCreateBetaView extends Component {
                                   </div>
                                 ) : null
                               }
-                              <BetaRequestFormTable
+                              <BetaMenuItemFormTable
                                   menuItems={menuItems}
                                   approvedMenuItems={request.items}
                                   stockPerItem={request.stockPerItem}
@@ -393,17 +394,17 @@ class RequestCreateBetaView extends Component {
     }
 }
 
-RequestCreateBetaView.defaultProps = {
+MenuItemCreateBetaView.defaultProps = {
     saveNewRequest: f => f,
     fetchPublicMenuItems: f => f,
 };
 
-RequestCreateBetaView.propTypes = {
+MenuItemCreateBetaView.propTypes = {
     saveNewRequest: PropTypes.func.isRequired,
     fetchPublicMenuItems: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(RequestCreateBetaView);
+export default withStyles(styles)(MenuItemCreateBetaView);
 
 // <WalletCheckoutDialog />

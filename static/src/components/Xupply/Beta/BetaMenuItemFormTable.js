@@ -15,6 +15,19 @@ import Paper from '@material-ui/core/Paper';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Checkbox from '@material-ui/core/Checkbox';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+
+function renderLeadTimeType() {
+    const array = [];
+    array.push(<MenuItem key={'default'} value={'default'} disabled>Lead Time</MenuItem>);
+    array.push(<MenuItem key={'1'} value={'1'}>1 Day</MenuItem>);
+    array.push(<MenuItem key={'7'} value={'7'}>1 Week</MenuItem>);
+    array.push(<MenuItem key={'21'} value={'21'}>3 Weeks</MenuItem>);
+    array.push(<MenuItem key={'28'} value={'28'}>1 Month</MenuItem>);
+    array.push(<MenuItem key={'56'} value={'56'}>2 Months</MenuItem>);
+    return array;
+}
 
 import {
     formatDateWTime,
@@ -81,18 +94,20 @@ const LocationTooltip = withStyles((theme) => ({
 }))(Tooltip);
 
 
-function BetaRequestFormTable(props) {
+function BetaMenuItemFormTable(props) {
   const { classes, menuItems, approvedMenuItems, stockPerItem, handleCheckBox, handleChange } = props;
   console.warn(menuItems)
+  const leadTimeTypes = renderLeadTimeType();
   return (
     <Paper className={classes.root}>
       <Table size="small" className={classes.table}>
         <TableHead>
           <TableRow>
-            <TableCell className={classes.tableHeaders} >Need Item</TableCell>
+            <TableCell className={classes.tableHeaders} >Have Item</TableCell>
             <TableCell className={classes.tableHeaders} >Quantity</TableCell>
             <TableCell className={classes.tableHeaders} >Max Price</TableCell>
-            <TableCell className={classes.tableHeaders} >Total Cost</TableCell>
+            <TableCell className={classes.tableHeaders} >Resupply</TableCell>
+            <TableCell className={classes.tableHeaders} >Total Value</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -145,6 +160,25 @@ function BetaRequestFormTable(props) {
                   />
               </TableCell>
               <TableCell>
+                  <Checkbox
+                      // checked={approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      // onChange={e => handleCheckBox(e, menuItem)}
+                      color="primary"
+                  />
+                  <Select
+                      // onChange={e => this.changeValue(e, 'activationCode', 'accountType')}
+                      value={'default'}
+                      variant="outlined"
+                      margin="dense"
+                      inputProps={{
+                          name: 'leadTimeType',
+                          id: 'leadTimeType',
+                      }}
+                  >
+                      {leadTimeTypes}
+                  </Select>
+              </TableCell>
+              <TableCell>
                 {stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].quantity : 'N/A'}
               </TableCell>
             </TableRow>
@@ -157,7 +191,7 @@ function BetaRequestFormTable(props) {
 
 
 
-BetaRequestFormTable.propTypes = {
+BetaMenuItemFormTable.propTypes = {
   menuItems: PropTypes.array.isRequired,
   approvedMenuItems: PropTypes.array.isRequired,
   stockPerItem: PropTypes.object.isRequired,
@@ -165,4 +199,4 @@ BetaRequestFormTable.propTypes = {
   handleChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(BetaRequestFormTable);
+export default withStyles(styles)(BetaMenuItemFormTable);
