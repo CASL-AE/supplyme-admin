@@ -74,13 +74,15 @@ export function requestRowObject(request) {
         id: request.requestID,
         active: request.active,
         deleted: request.deleted,
-        budget: request.budget,
         priority: request.priority,
         requiredBy: request.requiredBy,
         isStatus: request.status.isStatus,
         isStatusTime: parseFirestoreTimeStamp(request.status.isStatusTime),
         locationName: request.location.name,
         items: request.items.length > 0 ? request.items.map(i => `${i.itemName}, `) : '',
+        due: request.totals.due,
+        paid: request.totals.paid,
+        location: request.location.address.location,
     };
 }
 export function requestMarkerObject(request) {
@@ -93,6 +95,8 @@ export function requestMarkerObject(request) {
         priority: request.priority,
         requiredBy: request.requiredBy,
         items: request.items.map(i => `${i.itemName}, `),
+        due: request.totals.due,
+        paid: request.totals.paid,
         location: request.location.address.location,
         img: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/info-i_maps.png',
     };

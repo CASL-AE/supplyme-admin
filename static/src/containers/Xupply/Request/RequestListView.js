@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -12,16 +13,17 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 
 import RequestResultsTable from '../../../components/Xupply/Request/RequestResultsTable';
+import RequestCard from '../../../components/Xupply/Request/RequestCard';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchRequests } from '../../../services/request/actions';
 import { requestRowObject } from '../../../services/request/model';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        display: 'inline-block',
-        width: '100%',
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
@@ -33,7 +35,7 @@ const styles = (theme) => ({
         marginBottom: 80,
     },
     headerCell: {
-        marginBottom: 40,
+        marginBottom: 20,
         display: 'block',
     },
     firstButton: {
@@ -44,6 +46,10 @@ const styles = (theme) => ({
     },
     buttonLabel: {
         padding: 3,
+    },
+    paper: {
+      padding: theme.spacing(2),
+      textAlign: 'center',
     },
 });
 
@@ -87,14 +93,15 @@ class RequestListView extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.receivedAt !== null && !this.props.receivedAt === null) {
+        console.warn('Requests View Received Props')
+        if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
             this.receiveRequests(nextProps.requests);
         }
-        const { accountID } = nextProps;
-        if (nextProps.receivedAt !== null && nextProps.requests.length === 0) {
-            const route = `/accounts/${accountID}/requests/create/beta`;
-            dispatchNewRoute(route);
-        }
+        // const { accountID } = nextProps;
+        // if (nextProps.receivedAt !== null && nextProps.requests.length === 0) {
+        //     const route = `/accounts/${accountID}/requests/create/beta`;
+        //     dispatchNewRoute(route);
+        // }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -119,8 +126,7 @@ class RequestListView extends React.Component {
 
     receiveRequests = (requests) => {
         console.warn('Received Requests');
-        const rows = filterBy(requests).map(e => requestRowObject(e));
-
+        const rows = requests.map(e => requestRowObject(e));
         this.setState({
             rows,
         });
@@ -138,39 +144,30 @@ class RequestListView extends React.Component {
         dispatchNewRoute(route);
     }
 
+    renderRequestCard = (row) => {
+        console.warn(row)
+        return (
+            <Grid item xs={isMobileAndTablet() ? 12 : 3}>
+              <RequestCard row={row} />
+            </Grid>
+        )
+    }
+
     render() {
         const { classes, accountID } = this.props;
         const {
             rows,
         } = this.state;
 
-        const GeneralContainer = (
-            <div className={classes.outerCell}>
-            <Button
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              className={classes.firstButton}
-              classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
-            >
-                {'+ New Request'}
-            </Button>
-            </div>
-        );
+        console.error(rows)
+
         return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
-                    <RequestResultsTable
-                        type={'request'}
-                        rows={rows}
-                        handleLink={this.dispatchNewRequest}
-                    />
-                </div>
-            </div>
+            <Grid container className={classes.root} spacing={2}>
+                {rows.length > 0
+                  ? rows.map(this.renderRequestCard, this)
+                  : null
+                }
+            </Grid>
         );
     }
 }
@@ -189,3 +186,13 @@ RequestListView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(RequestListView);
+
+// <Grid item xs={isMobileAndTablet() ? 12 : 3}>
+//     <div className={classes.headerCell}>
+//         {GeneralContainer}
+//     </div>
+//     <RequestResultsTable
+//         rows={rows}
+//         handleLink={this.dispatchNewRequest}
+//     />
+// </Grid>

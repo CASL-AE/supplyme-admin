@@ -38,6 +38,7 @@ const styles = theme => ({
     },
     toolbar: theme.mixins.toolbar,
     content: {
+        flexGrow: 1,
         overflow: 'scroll',
         background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
         padding: isMobileAndTablet() ? 0 : theme.spacing(3),
