@@ -44,10 +44,6 @@ export function toNewRequest() {
         },
         location: toNewLocation(),
         items: [],
-        package: {
-            quantity: 0,
-            pricePerUnit: 0,
-        },
         stockPerItem: {},
         orders: [],
         transactions: [],

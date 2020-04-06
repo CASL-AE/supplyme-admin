@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 // Core UI
 import deburr from 'lodash/deburr';
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -27,27 +29,20 @@ import { validateAddress, validateString } from '../../../utils/validate';
 import { toNewRequest } from '../../../services/request/model';
 import { saveNewRequest } from '../../../services/request/actions';
 import { fetchPublicMenuItems } from '../../../services/menuItem/actions';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = theme => ({
     root: {
-        flex: '1 1 100%',
-        display: 'flex',
-        height: '100%',
-        flexDirection: 'column',
+        flexGrow: 1,
     },
-    rightContent: {
-        margin: 'auto',
+    content: {
+        padding: isMobileAndTablet() ? 0 : theme.spacing(2),
+        backgroundColor: theme.palette.primary.background,
+        borderRadius: 8,
     },
-    gridItemBox: {
-      backgroundColor: '#fff',
-      borderRadius: 8,
-      boxShadow: '0 0.5rem 4rem 0.5rem rgba(0,0,0,0.08)',
-      marginTop: 40,
-      marginLeft: 80,
-      marginRight: 80,
-      marginBottom: 80,
+    gridItemBoxInner: {
+        padding: 30,
     },
-    gridItemBoxInner: {},
     divider: {
         display: 'flex',
         color: '#5c5c5c',
@@ -312,16 +307,17 @@ class MenuItemCreateBetaView extends Component {
 
         console.error(request)
 
-        const RequestContainer = (
-          <div className={classes.rightContent}>
-                  <div className={classes.gridItemBox}>
+        return (
+          <Grid container alignItems="center" justify="center" className={classes.root} spacing={isMobileAndTablet() ? 0 : 2}>
+              <Grid item xs={isMobileAndTablet() ? 12 : 10}>
+                  <Paper className={classes.content}>
                       <div className={classes.gridItemBoxInner}>
-                          <div style={{padding: 60}}>
+                          <div>
                               <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Menu Items'}</h4>
                               <div className={classes.divider} >
                                   <div className={classes.dividerLine} />
                               </div>
-                              <div style={{paddingTop: 40}}>
+                              <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
                                   <HomeIcon className={classes.iconButton} />
                                   <span style={{ fontSize: 16, paddingLeft: 10 }}>{`${request.location.name}`}</span>
                                   <span onClick={e => this.toggleLocation(e)} style={{ fontSize: 14, paddingLeft: 10, color: 'blue', cursor: 'pointer' }}>Change Location</span>
@@ -329,7 +325,7 @@ class MenuItemCreateBetaView extends Component {
                               {
                                 searchLocation
                                 ? (
-                                  <div style={{paddingTop: 10}}>
+                                  <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
                                       <AutoCompleteLocations
                                           name={request.location.name}
                                           onFinishedSelecting={this.handleLocationSelected}
@@ -363,28 +359,9 @@ class MenuItemCreateBetaView extends Component {
                               }
                           </div>
                       </div>
-                  </div>
-          </div>
-        );
-
-        return (
-            <section style={{margin: 0, padding: 0}}>
-            <div className={classes.root}>
-                {RequestContainer}
-            </div>
-            <WalletCheckoutDialog
-                open={isCheckout}
-                request={request}
-                handleClose={this.handleClose}
-                handleSubmit={this.createNewRequest}
-            />
-            {
-              loading
-              ? (
-                <XupplyLoader open={true} />
-              ) : null
-            }
-            </section>
+                  </Paper>
+              </Grid>
+          </Grid>
         );
     }
 }
@@ -402,4 +379,15 @@ MenuItemCreateBetaView.propTypes = {
 
 export default withStyles(styles)(MenuItemCreateBetaView);
 
-// <WalletCheckoutDialog />
+// <WalletCheckoutDialog
+//     open={isCheckout}
+//     request={request}
+//     handleClose={this.handleClose}
+//     handleSubmit={this.createNewRequest}
+// />
+// {
+//   loading
+//   ? (
+//     <XupplyLoader open={true} />
+//   ) : null
+// }

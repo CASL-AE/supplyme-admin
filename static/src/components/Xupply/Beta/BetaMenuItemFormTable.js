@@ -36,11 +36,15 @@ import {
     formatNumbersWithCommas
 } from '../../../utils/misc';
 
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
+
 const styles = (theme) => ({
   root: {
     boxShadow: 'none',
     borderRadius: 8,
-    padding: 30,
+    padding: isMobileAndTablet() ? 0 : 30,
+    backgroundColor: theme.palette.primary.background,
+    overflow: 'scroll',
   },
   table: {},
   tableHeaders: {

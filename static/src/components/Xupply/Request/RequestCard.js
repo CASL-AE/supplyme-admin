@@ -76,14 +76,14 @@ function RecipeReviewCard(props) {
       />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
-          {row.locationName}
+          {'Requested: '}
         </Typography>
         <Typography style={{fontWeight: 600}} variant="body2" color="textSecondary" component="p">
           {row.items}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <span style={{fontSize: 12, color: 'gray', padding: 12}}>{formatDateNoTime(row.isStatusTime)}</span>
+        <span style={{fontSize: 12, color: 'gray', padding: 12}}>{`Created: ${formatDateNoTime(row.isStatusTime)}`}</span>
         <IconButton className={classes.expand} aria-label="delete">
           <DeleteForeverIcon />
         </IconButton>
