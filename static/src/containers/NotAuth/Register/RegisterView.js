@@ -5,9 +5,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -19,6 +20,7 @@ import AutoCompletePlaces from '../../../components/Xupply/AutoCompletes/AutoCom
 import { registerAccount } from '../../../services/accountRegistration/actions';
 import { toNewLocation } from '../../../services/location/model';
 import { geocodeGooglePlace } from '../../../services/google/actions';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 import {
   validateVarChar,
   validateEmail,
@@ -36,34 +38,25 @@ function renderAccountType() {
 
 const styles = theme => ({
     root: {
-        flex: 1,
-        height: '100%',
+        flexGrow: 1,
         background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+        overflow: 'scroll',
     },
-    registerHeader: {
-        // lineHeight: '40px',
-        fontSize: 60,
+    appFrame: {
+        zIndex: 1,
+        height: '100vh',
+        overflow: 'hidden',
+        position: 'relative',
+        display: 'flex',
+        width: '100%',
     },
-    registerSubHeader: {
-        lineHeight: '30px',
-        fontSize: 20,
-    },
-    innerContent: {
-        margin: 'auto',
-        paddingTop: 60,
-    },
-    gridItem: {
-      marginLeft: '3%',
-      marginRight: '3%',
-    },
-    gridItemBox: {
-      backgroundColor: theme.palette.primary.background,
-      borderRadius: 8,
-      boxShadow: '0 0.5rem 4rem 0.5rem rgba(0,0,0,0.08)',
-      minHeight: 700,
+    content: {
+        padding: isMobileAndTablet() ? 0 : theme.spacing(2),
+        backgroundColor: theme.palette.primary.background,
+        borderRadius: 8,
     },
     gridItemBoxInner: {
-      padding: 80,
+        padding: 30,
     },
     text: {
         marginBottom: 14,
@@ -496,240 +489,224 @@ class RegisterView extends Component {
             }
             </div>
 
-            <div style={{ margin: 'auto', width: '50%' }}>
+            <div style={{ margin: 'auto', width: isMobileAndTablet() ? '100%' : '50%'}}>
                 <p style={{ fontSize: 14, textAlign: 'center', paddingTop: 20 }}>By creating an account, you confirm that you accept the<a style={{color: 'blue'}} href=""> terms and conditions.</a></p>
             </div>
             </section>
         )
 
         const SignupContainer = (
-          <div className={classes.innerContent}>
-              <div className={classes.gridItem}>
-                  <div className={classes.gridItemBox}>
-                      <div className={classes.gridItemBoxInner}>
-                          <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
-                              <a onClick={e => this.handleBack(e)}>{this.renderAccountTypeLogo(accountType)}</a>
-                          </div>
-                          <div style={{ textAlign: 'center', paddingTop: 20 }}>
-                              {loading
-                                ? (<CircularProgress style={{marginBottom: 15}} color="inherit" />)
-                                : null}
-                              <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{!loading ? `Please sign in to create your ${accountType} account` : 'Creating your account...'}</h4>
-                              <div className={classes.divider} >
-                                  <div className={classes.dividerLine} />
-                              </div>
-                          </div>
-                          {!loading ? CreateAccountContainer : null}
-                      </div>
+          <div className={classes.gridItemBoxInner}>
+              <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
+                  <a onClick={e => this.handleBack(e)}>{this.renderAccountTypeLogo(accountType)}</a>
+              </div>
+              <div style={{ textAlign: 'center', paddingTop: 20 }}>
+                  {loading
+                    ? (<CircularProgress style={{marginBottom: 15}} color="inherit" />)
+                    : null}
+                  <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{!loading ? `Please sign in to create your ${accountType} account` : 'Creating your account...'}</h4>
+                  <div className={classes.divider} >
+                      <div className={classes.dividerLine} />
                   </div>
               </div>
+              {!loading ? CreateAccountContainer : null}
           </div>
         );
 
         const GetStartedContainer = (
-            <div className={classes.innerContent}>
-                <div className={classes.gridItem}>
-                    <div className={classes.gridItemBox}>
-                        <div className={classes.gridItemBoxInner}>
-                            <div>
-                                <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Let us help you get started?'}</h4>
-                                <div className={classes.divider} >
-                                    <div className={classes.dividerLine} />
-                                </div>
-                            </div>
-                            <div style={{display: 'flex', paddingTop: 60, justifyContent: 'center'}}>
-                                <Paper style={{margin: 10, width: 300}}>
-                                    <div style={{ margin: 'auto', textAlign: 'center', padding: 20 }}>
-                                        <img alt="retailer_signup" height="100px" width="100px" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn0.iconfinder.com%2Fdata%2Ficons%2Fhealthcare-medicine%2F512%2Fhospital_building-512.png&f=1&nofb=1" />
-                                        <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>I'm a Retailer</p>
-                                        <span style={{ fontSize: 13, color: '#b1b1b1de', textAlign: 'center' }}>I need supplies NOW!</span>
-                                        <Button
-                                            disableRipple
-                                            disableFocusRipple
-                                            variant="outlined"
-                                            style={{marginTop: 10}}
-                                            className={classes.accountTypeButton}
-                                            onClick={e => this.toggleAccountType(e, 'retailer')}
-                                        >
-                                            {'Start Receiving PPE'}
-                                        </Button>
-                                    </div>
-                                </Paper>
-                                <Paper style={{margin: 10, width: 300}}>
-                                    <div style={{ margin: 'auto', textAlign: 'center', padding: 20 }}>
-                                        <img alt="manufacturer_signup" height="100px" width="100px" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fcompany-business-assets%2F281%2Fcompany-asset-004-512.png&f=1&nofb=1" />
-                                        <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>I'm a Manufacturer</p>
-                                        <span style={{ fontSize: 13, color: '#b1b1b1de', textAlign: 'center' }}>I have products or supplies!</span>
-                                        <Button
-                                            disableRipple
-                                            disableFocusRipple
-                                            variant="outlined"
-                                            style={{marginTop: 10}}
-                                            className={classes.accountTypeButton}
-                                            onClick={e => this.toggleAccountType(e, 'manufacturer')}
-                                        >
-                                            {'Start Supplying PPE'}
-                                        </Button>
-                                    </div>
-                                </Paper>
-                                <Paper style={{margin: 10, width: 300}}>
-                                    <div style={{ margin: 'auto', textAlign: 'center', padding: 20 }}>
-                                        <img alt="financier_signup" height="100px" width="100px" src="https://cdn4.iconfinder.com/data/icons/financial-soft/512/money_finance_cash_dollar_payment_bank_building_financial_center-512.png" />
-                                        <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>I'm a Financier</p>
-                                        <span style={{ fontSize: 13, color: '#b1b1b1de', textAlign: 'center' }}>I have have too much money..</span>
-                                        <Button
-                                            disableRipple
-                                            disableFocusRipple
-                                            variant="outlined"
-                                            style={{marginTop: 10}}
-                                            className={classes.accountTypeButton}
-                                            onClick={e => this.toggleAccountType(e, 'financier')}
-                                        >
-                                            {'Start Giving Now'}
-                                        </Button>
-                                    </div>
-                                </Paper>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <div className={classes.gridItemBoxInner}>
+              <div>
+                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Let us help you get started?'}</h4>
+                  <div className={classes.divider} >
+                      <div className={classes.dividerLine} />
+                  </div>
+              </div>
+              <div style={{display: 'flex', paddingTop: 60, justifyContent: 'center', flexDirection: isMobileAndTablet() ? 'column' : 'row'}}>
+                  <Paper style={{margin: 10, width: 300}}>
+                      <div style={{ margin: 'auto', textAlign: 'center', padding: 20 }}>
+                          <img alt="retailer_signup" height="100px" width="100px" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn0.iconfinder.com%2Fdata%2Ficons%2Fhealthcare-medicine%2F512%2Fhospital_building-512.png&f=1&nofb=1" />
+                          <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>I'm a Retailer</p>
+                          <span style={{ fontSize: 13, color: '#b1b1b1de', textAlign: 'center' }}>I need supplies NOW!</span>
+                          <Button
+                              disableRipple
+                              disableFocusRipple
+                              variant="outlined"
+                              style={{marginTop: 10}}
+                              className={classes.accountTypeButton}
+                              onClick={e => this.toggleAccountType(e, 'retailer')}
+                          >
+                              {'Start Receiving PPE'}
+                          </Button>
+                      </div>
+                  </Paper>
+                  <Paper style={{margin: 10, width: 300}}>
+                      <div style={{ margin: 'auto', textAlign: 'center', padding: 20 }}>
+                          <img alt="manufacturer_signup" height="100px" width="100px" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fcompany-business-assets%2F281%2Fcompany-asset-004-512.png&f=1&nofb=1" />
+                          <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>I'm a Manufacturer</p>
+                          <span style={{ fontSize: 13, color: '#b1b1b1de', textAlign: 'center' }}>I have products or supplies!</span>
+                          <Button
+                              disableRipple
+                              disableFocusRipple
+                              variant="outlined"
+                              style={{marginTop: 10}}
+                              className={classes.accountTypeButton}
+                              onClick={e => this.toggleAccountType(e, 'manufacturer')}
+                          >
+                              {'Start Supplying PPE'}
+                          </Button>
+                      </div>
+                  </Paper>
+                  <Paper style={{margin: 10, width: 300}}>
+                      <div style={{ margin: 'auto', textAlign: 'center', padding: 20 }}>
+                          <img alt="financier_signup" height="100px" width="100px" src="https://cdn4.iconfinder.com/data/icons/financial-soft/512/money_finance_cash_dollar_payment_bank_building_financial_center-512.png" />
+                          <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>I'm a Financier</p>
+                          <span style={{ fontSize: 13, color: '#b1b1b1de', textAlign: 'center' }}>I have have too much money..</span>
+                          <Button
+                              disableRipple
+                              disableFocusRipple
+                              variant="outlined"
+                              style={{marginTop: 10}}
+                              className={classes.accountTypeButton}
+                              onClick={e => this.toggleAccountType(e, 'financier')}
+                          >
+                              {'Start Giving Now'}
+                          </Button>
+                      </div>
+                  </Paper>
+              </div>
+          </div>
         );
 
         const ContactInfoContainer = (
-          <div className={classes.innerContent}>
-              <div className={classes.gridItem}>
-                  <div className={classes.gridItemBox}>
-                      <div className={classes.gridItemBoxInner}>
-                          <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
-                              <a onClick={e => this.handleBack(e)}>{this.renderAccountTypeLogo(accountType)}</a>
-                          </div>
-                          <div style={{ textAlign: 'center', paddingTop: 20 }}>
-                              <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{'Please update your contact information.'}</h4>
-                              <div className={classes.divider} >
-                                  <div className={classes.dividerLine} />
-                              </div>
-                          </div>
-                          <div style={{paddingTop: 20, width: '50%', margin: 'auto'}}>
-                          <TextField
-                              placeholder="First Name"
-                              label="First Name"
-                              variant="outlined"
-                              margin="dense"
-                              type="text"
-                              // helperText={firstName_error_text}
-                              value={firstName || ''}
-                              style={{paddingRight: 20, width: '50%'}}
-                              onChange={e => this.handleContactChange(e, 'firstName')}
-                              // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                          />
-                          <TextField
-                              placeholder="Last Name"
-                              label="Last Name"
-                              variant="outlined"
-                              margin="dense"
-                              type="text"
-                              // helperText={lastName_error_text}
-                              value={lastName || ''}
-                              style={{width: '50%'}}
-                              onChange={e => this.handleContactChange(e, 'lastName')}
-                              // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                          />
-                          <div style={{paddingBottom: 5}}>
-                              <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'left', paddingTop: 10, paddingBottom: 10, margin: 0 }}>Location Address</p>
-                              <Divider />
-                          </div>
-                          <div>
-                              <AutoCompletePlaces name={location.name} onFinishedSelecting={this.handleLocationSelected}/>
-                              <TextField
-                                  placeholder="Street Address"
-                                  label="Street Address"
-                                  variant="outlined"
-                                  margin="dense"
-                                  // helperText={name_error_text}
-                                  value={location.address.street1 || ''}
-                                  style={{paddingRight: 20, width: '67%'}}
-                                  onChange={e => this.handleLocationChange(e, 'street1')}
-                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              />
-                              <TextField
-                                  placeholder="Address 2"
-                                  label="Address 2"
-                                  variant="outlined"
-                                  margin="dense"
-                                  // helperText={name_error_text}
-                                  value={location.address.street2 || ''}
-                                  style={{width: '33%'}}
-                                  onChange={e => this.handleLocationChange(e, 'street2')}
-                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              />
-                          </div>
-                          <div style={{paddingTop: 10}}>
-                              <TextField
-                                  placeholder="Locality"
-                                  label="Locality"
-                                  variant="outlined"
-                                  margin="dense"
-                                  type="text"
-                                  // helperText={name_error_text}
-                                  value={location.address.locality || ''}
-                                  style={{paddingRight: 20, width: '33%'}}
-                                  onChange={e => this.handleLocationChange(e, 'locality')}
-                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              />
-                              <TextField
-                                  placeholder="Region"
-                                  label="Region"
-                                  variant="outlined"
-                                  margin="dense"
-                                  type="text"
-                                  // helperText={name_error_text}
-                                  value={location.address.region || ''}
-                                  style={{paddingRight: 20, width: '33%'}}
-                                  onChange={e => this.handleLocationChange(e, 'region')}
-                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              />
-                              <TextField
-                                  placeholder="Zip Code"
-                                  label="Zip Code"
-                                  variant="outlined"
-                                  margin="dense"
-                                  type="number"
-                                  // helperText={name_error_text}
-                                  value={location.address.postal || ''}
-                                  style={{float: 'right', width: '33%'}}
-                                  onChange={e => this.handleLocationChange(e, 'postal')}
-                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              />
-                          </div>
-                          </div>
-                          <div style={{paddingTop: 25, textAlign: 'center'}}>
-                              <Button
-                                  disableRipple
-                                  disableFocusRipple
-                                  // disabled={disabled}
-                                  onClick={e => this.handleNext(e)}
-                                  className={classes.registerButton}
-                                  variant="outlined"
-                              >
-                                  {'Continue'}
-                              </Button>
-                          </div>
-                      </div>
+          <div className={classes.gridItemBoxInner}>
+              <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
+                  <a onClick={e => this.handleBack(e)}>{this.renderAccountTypeLogo(accountType)}</a>
+              </div>
+              <div style={{ textAlign: 'center', paddingTop: 20 }}>
+                  <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{'Please update your contact information.'}</h4>
+                  <div className={classes.divider} >
+                      <div className={classes.dividerLine} />
                   </div>
+              </div>
+              <div style={{paddingTop: 20, width: isMobileAndTablet() ? '100%' : '50%', margin: 'auto'}}>
+                  <TextField
+                      placeholder="First Name"
+                      label="First Name"
+                      variant="outlined"
+                      margin="dense"
+                      type="text"
+                      // helperText={firstName_error_text}
+                      value={firstName || ''}
+                      style={{paddingRight: 20, width: '50%'}}
+                      onChange={e => this.handleContactChange(e, 'firstName')}
+                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                  />
+                  <TextField
+                      placeholder="Last Name"
+                      label="Last Name"
+                      variant="outlined"
+                      margin="dense"
+                      type="text"
+                      // helperText={lastName_error_text}
+                      value={lastName || ''}
+                      style={{width: '50%'}}
+                      onChange={e => this.handleContactChange(e, 'lastName')}
+                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                  />
+                  <div style={{paddingBottom: 5}}>
+                      <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'left', paddingTop: 10, paddingBottom: 10, margin: 0 }}>Location Address</p>
+                      <Divider />
+                  </div>
+                  <div>
+                      <AutoCompletePlaces name={location.name} onFinishedSelecting={this.handleLocationSelected}/>
+                      <TextField
+                          placeholder="Street Address"
+                          label="Street Address"
+                          variant="outlined"
+                          margin="dense"
+                          // helperText={name_error_text}
+                          value={location.address.street1 || ''}
+                          style={{paddingRight: 20, width: '67%'}}
+                          onChange={e => this.handleLocationChange(e, 'street1')}
+                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                      />
+                      <TextField
+                          placeholder="Address 2"
+                          label="Address 2"
+                          variant="outlined"
+                          margin="dense"
+                          // helperText={name_error_text}
+                          value={location.address.street2 || ''}
+                          style={{width: '33%'}}
+                          onChange={e => this.handleLocationChange(e, 'street2')}
+                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                      />
+                  </div>
+                  <div style={{paddingTop: 10}}>
+                      <TextField
+                          placeholder="Locality"
+                          label="Locality"
+                          variant="outlined"
+                          margin="dense"
+                          type="text"
+                          // helperText={name_error_text}
+                          value={location.address.locality || ''}
+                          style={{paddingRight: 20, width: '33%'}}
+                          onChange={e => this.handleLocationChange(e, 'locality')}
+                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                      />
+                      <TextField
+                          placeholder="Region"
+                          label="Region"
+                          variant="outlined"
+                          margin="dense"
+                          type="text"
+                          // helperText={name_error_text}
+                          value={location.address.region || ''}
+                          style={{paddingRight: 20, width: '33%'}}
+                          onChange={e => this.handleLocationChange(e, 'region')}
+                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                      />
+                      <TextField
+                          placeholder="Zip Code"
+                          label="Zip Code"
+                          variant="outlined"
+                          margin="dense"
+                          type="number"
+                          // helperText={name_error_text}
+                          value={location.address.postal || ''}
+                          style={{float: 'right', width: '33%'}}
+                          onChange={e => this.handleLocationChange(e, 'postal')}
+                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                      />
+                  </div>
+              </div>
+              <div style={{paddingTop: 25, textAlign: 'center'}}>
+                  <Button
+                      disableRipple
+                      disableFocusRipple
+                      // disabled={disabled}
+                      onClick={e => this.handleNext(e)}
+                      className={classes.registerButton}
+                      variant="outlined"
+                  >
+                      {'Continue'}
+                  </Button>
               </div>
           </div>
         );
 
         return (
-            <div className={classes.root}>
-                <div onKeyPress={e => this._handleKeyPress(e)}>
-                    <div>
-                        {stepIndex === 0 && GetStartedContainer}
-                        {stepIndex === 1 && ContactInfoContainer}
-                        {stepIndex === 2 && SignupContainer}
-                    </div>
-                </div>
+            <div className={classes.appFrame}>
+                <Grid container alignItems="center" justify="center" className={classes.root} spacing={2}>
+                    <Grid item xs={isMobileAndTablet() ? 12 : 8}>
+                        <Paper className={classes.content}>
+                            {stepIndex === 0 && GetStartedContainer}
+                            {stepIndex === 1 && ContactInfoContainer}
+                            {stepIndex === 2 && SignupContainer}
+                        </Paper>
+                    </Grid>
+                </Grid>
             </div>
         );
     }

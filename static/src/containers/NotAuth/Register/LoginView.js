@@ -5,9 +5,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -16,6 +17,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { loginEmployee, forgotPassword } from '../../../services/app/actions';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 import { validateEmail, dispatchNewRoute, getRegistrationSearch } from '../../../utils/misc';
 
 function mapStateToProps(state) {
@@ -38,106 +40,24 @@ function mapDispatchToProps(dispatch) {
 
 const styles = theme => ({
     root: {
-        flex: 1,
+        flexGrow: 1,
         background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+    },
+    appFrame: {
+        zIndex: 1,
         height: '100vh',
-    },
-    loginStyle: {
-        margin: 'auto',
-        paddingTop: '6rem',
-        width: 400,
-    },
-    loginBoxStyle: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    loginHeader: {
-      fontSize: 45,
-      fontFamily: 'monospace',
-      fontWeight: 600,
-      lineHeight: '50px',
-    },
-    loginActions: {
-        margin: 0,
-    },
-    loginBoxInner: {
-        marginTop: '2rem',
-    },
-    inputLabel: {
-        fontSize: 13,
-        marginBottom: 5,
-        display: 'inline-block',
-    },
-    text: {
+        overflow: 'hidden',
         position: 'relative',
-        display: 'block',
-        marginBottom: '1.5rem',
-        color: theme.palette.primary.secondary,
-    },
-    loginButtom: {
-        color: '#FFFFFF',
-        backgroundColor: theme.palette.primary.main,
-        width: '100%',
-        height: 45,
-    },
-    loginDivider: {
         display: 'flex',
-        color: '#5c5c5c',
-        margin: '10 0',
-        fontSize: 15,
+        width: '100%',
     },
-    loginDividerB: {
-        marginRight: 10,
-        content: "",
-        borderTop: '1px solid #d6d6d6',
-        flex: 1,
-        transform: 'translateY(50%)',
-    },
-    loginDividerA: {
-        marginLeft: 10,
-        content: "",
-        borderTop: '1px solid #d6d6d6',
-        flex: 1,
-        transform: 'translateY(50%)',
-    },
-    loginFooter: {
-      fontSize: 12,
-      margin: '10 0',
-      textAlign: 'center',
-    },
-    forgotPasswordAction: {
-        float: 'left',
-        margin: theme.spacing(2)
-    },
-    forgotPasswordLabel: {
-        cursor: 'pointer',
-        fontSize: 14,
-        color: '#000',
-        fontWeight: 500,
-    },
-    loader: {
-        color: theme.palette.primary.main,
-        backgroundColor: theme.palette.primary.secondary,
-    },
-
-
-
-    innerContent: {
-        margin: 'auto',
-        display: 'flex-inline',
-        width: '90%',
-    },
-    gridItem: {
-      marginLeft: '3%',
-      marginRight: '3%',
-    },
-    gridItemBox: {
-      backgroundColor: theme.palette.primary.background,
-      borderRadius: 8,
-      boxShadow: '0 0.5rem 4rem 0.5rem rgba(0,0,0,0.08)',
+    content: {
+        padding: theme.spacing(2),
+        backgroundColor: theme.palette.primary.background,
+        borderRadius: 8,
     },
     gridItemBoxInner: {
-      padding: 80,
+        padding: isMobileAndTablet() ? 15 : 30,
     },
     divider: {
         display: 'flex',
@@ -431,59 +351,28 @@ class LoginView extends Component {
         );
 
         return (
-            <div className={classes.root}>
-                <div style={{paddingTop: 66}} onKeyPress={e => this._handleKeyPress(e)}>
-                    <div className={classes.content}>
-                        <div className={classes.innerContent}>
-                            <div className={classes.gridItem}>
-                                <div className={classes.gridItemBox}>
-                                    <div className={classes.gridItemBoxInner}>
-                                        <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
-                                              <img alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-named.png" />
-                                        </div>
-                                        <div style={{ textAlign: 'center', paddingTop: 20 }}>
-                                            {loading
-                                              ? (<CircularProgress style={{marginBottom: 15}} color="inherit" />)
-                                              : null}
-                                            <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{loading ? 'Logging into your account...' : 'Please login in to your account'}</h4>
-                                            <div className={classes.divider} >
-                                                <div className={classes.dividerLine} />
-                                            </div>
-                                        </div>
-                                        {!loading ? LoginAccountContainer : null}
+            <div className={classes.appFrame}>
+                <Grid container alignItems="center" justify="center" className={classes.root} spacing={2}>
+                    <Grid item xs={isMobileAndTablet() ? 12 : 8}>
+                        <Paper className={classes.content}>
+                            <div className={classes.gridItemBoxInner}>
+                                <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
+                                      <img alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-named.png" />
+                                </div>
+                                <div style={{ textAlign: 'center', paddingTop: 20 }}>
+                                    {loading
+                                      ? (<CircularProgress style={{marginBottom: 15}} color="inherit" />)
+                                      : null}
+                                    <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{loading ? 'Logging into your account...' : 'Please login in to your account'}</h4>
+                                    <div className={classes.divider} >
+                                        <div className={classes.dividerLine} />
                                     </div>
                                 </div>
+                                {!loading ? LoginAccountContainer : null}
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <Dialog
-                    open={showDialog}
-                    onClose={e => this.toggleForgotPassword(false)}
-                    aria-labelledby="form-dialog-title"
-                >
-                    <DialogTitle id="form-dialog-title">Reset Password</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                                Please enter your email address to reset your password.
-                        </DialogContentText>
-                        <label className={classes.inputLabel}>Email</label>
-                        <div className={classes.text}>
-                            <TextField
-                                type="email"
-                                variant="outlined"
-                                fullWidth={true}
-                                helpertext={this.state.email_error_text}
-                                onChange={e => this.changeForgotPasswordValue(e, 'email')}
-                            />
-                        </div>
-                        <DialogActions>
-                            <Button onClick={this.forgotPasswordPressed} color="primary" disabled={this.state.forgotDisabled}>
-                                  Send Reset Link
-                            </Button>
-                        </DialogActions>
-                    </DialogContent>
-                </Dialog>
+                        </Paper>
+                    </Grid>
+                </Grid>
             </div>
         );
     }
@@ -503,3 +392,31 @@ LoginView.propTypes = {
 };
 
 export default withStyles(styles)(LoginView);
+
+// <Dialog
+//     open={showDialog}
+//     onClose={e => this.toggleForgotPassword(false)}
+//     aria-labelledby="form-dialog-title"
+// >
+//     <DialogTitle id="form-dialog-title">Reset Password</DialogTitle>
+//     <DialogContent>
+//         <DialogContentText>
+//                 Please enter your email address to reset your password.
+//         </DialogContentText>
+//         <label className={classes.inputLabel}>Email</label>
+//         <div className={classes.text}>
+//             <TextField
+//                 type="email"
+//                 variant="outlined"
+//                 fullWidth={true}
+//                 helpertext={this.state.email_error_text}
+//                 onChange={e => this.changeForgotPasswordValue(e, 'email')}
+//             />
+//         </div>
+//         <DialogActions>
+//             <Button onClick={this.forgotPasswordPressed} color="primary" disabled={this.state.forgotDisabled}>
+//                   Send Reset Link
+//             </Button>
+//         </DialogActions>
+//     </DialogContent>
+// </Dialog>

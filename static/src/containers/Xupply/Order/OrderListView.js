@@ -141,29 +141,11 @@ class OrderListView extends React.Component {
         const {
             rows,
         } = this.state;
-
-        const GeneralContainer = (
-            <div className={classes.outerCell}>
-            <Button
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              className={classes.firstButton}
-              classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/orders/search`)}
-            >
-                {'Search Open Requests'}
-            </Button>
-            </div>
-        );
         return (
             <div className={classes.root}>
                 <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
+                    <div className={classes.headerCell}></div>
                     <OrderResultsTable
-                        type={'order'}
                         rows={rows}
                         handleLink={this.dispatchNewOrder}
                     />

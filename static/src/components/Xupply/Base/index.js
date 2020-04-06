@@ -23,27 +23,24 @@ import { version } from '../../../../package.json';
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        height: '100%',
-        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
     },
     appFrame: {
         zIndex: 1,
+        height: '100vh',
         overflow: 'hidden',
         position: 'relative',
         display: 'flex',
         width: '100%',
     },
     appBar: {
-        // zIndex: theme.zIndex.drawer + 1,
-        paddingRight: 64,
-        paddingLeft: 64,
+        zIndex: theme.zIndex.drawer + 1,
         background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
     },
     toolbar: theme.mixins.toolbar,
     content: {
-        height: '100%',
-        flexGrow: 1,
+        overflow: 'scroll',
         background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+        padding: isMobileAndTablet() ? 0 : theme.spacing(3),
     },
     sectionDesktop: {
         display: 'none',

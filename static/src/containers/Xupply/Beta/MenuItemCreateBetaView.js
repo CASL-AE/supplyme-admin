@@ -30,16 +30,13 @@ import { fetchPublicMenuItems } from '../../../services/menuItem/actions';
 
 const styles = theme => ({
     root: {
-        flex: 1,
+        flex: '1 1 100%',
+        display: 'flex',
         height: '100%',
-        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+        flexDirection: 'column',
     },
     rightContent: {
         margin: 'auto',
-    },
-    gridItem: {
-      marginLeft: '3%',
-      marginRight: '3%',
     },
     gridItemBox: {
       backgroundColor: '#fff',
@@ -317,7 +314,6 @@ class MenuItemCreateBetaView extends Component {
 
         const RequestContainer = (
           <div className={classes.rightContent}>
-              <div className={classes.gridItem}>
                   <div className={classes.gridItemBox}>
                       <div className={classes.gridItemBoxInner}>
                           <div style={{padding: 60}}>
@@ -368,7 +364,6 @@ class MenuItemCreateBetaView extends Component {
                           </div>
                       </div>
                   </div>
-              </div>
           </div>
         );
 
