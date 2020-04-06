@@ -19,7 +19,9 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import Checkbox from '@material-ui/core/Checkbox';
 
+import { formatNumbersWithCommas } from '../../../utils/misc';
 import { toNewRequest } from '../../../services/request/model';
 
 import WalletCreateDialog from './WalletCreateDialog';
@@ -94,6 +96,12 @@ const styles = theme => ({
         borderTop: '1px solid #d6d6d6',
         flex: 1,
         transform: 'translateY(50%)',
+    },
+    checkbox: {
+        margin: 0,
+        padding: 0,
+        paddingRight: 10,
+        marginLeft: 10,
     },
 });
 
@@ -217,8 +225,23 @@ class WalletCheckoutDialog extends Component {
         }
     }
 
+    renderLineItem = (i) => {
+        const item = i[1];
+        return (
+          <section style={{margin: 0}}>
+              <Divider style={{margin: 10}} />
+              <div style={{padding: 10, display: 'flex-inline'}}>
+                  <p style={{margin: 0, padding: 0}} >Face Shield <span style={{float: 'right'}}>{`$ ${formatNumbersWithCommas(item.quantity * item.pricePerUnit)}`} USD</span></p>
+                  <span>Quantity <span style={{fontSize: 12, color: 'gray', float: 'right'}}>{item.quantity}</span></span>
+                  <br />
+                  <span>Price Per Unit<span style={{fontSize: 12, color: 'gray', float: 'right'}}>{`$ ${formatNumbersWithCommas(item.pricePerUnit)}`} USD</span></span>
+              </div>
+          </section>
+        );
+    }
+
     render() {
-        const { classes, handleClose, merchantHash } = this.props;
+        const { classes, handleClose, merchantHash, handleSubmit } = this.props;
         const { activeStep, open, request, needFinancing } = this.state;
         const steps = getSteps();
         console.warn(merchantHash);
@@ -235,44 +258,29 @@ class WalletCheckoutDialog extends Component {
                   aria-labelledby="form-dialog-title"
               >
                     <DialogContent style={{padding: 15}}>
-                      <div style={{width: 500, display: 'inline-flex', padding: 10}}>
+                      <div style={{width: 500, padding: 10}}>
                           <img alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-named.png" />
                           <CheckoutTooltip
                             arrow
                             title={
                               <React.Fragment>
+                                  {Object.entries(request.stockPerItem).map(this.renderLineItem, this)}
+                                  <Divider style={{margin: 10}} />
                                   <div style={{padding: 10, display: 'flex-inline'}}>
-                                      <p style={{margin: 0, padding: 0}} >N95 <span style={{float: 'right'}}>$ 15.00 USD</span></p>
-                                      <span>Quantity <span style={{fontSize: 12, color: 'gray', float: 'right'}}>123</span></span>
-                                      <br />
-                                      <span>Price Per Unit<span style={{fontSize: 12, color: 'gray', float: 'right'}}>$ 3.00 USD</span></span>
+                                      <p style={{margin: 0, padding: 0}} >Tax <span style={{float: 'right'}}>{`$ ${formatNumbersWithCommas(request.totals.tax)}`} USD</span></p>
+                                      <p style={{margin: 0, padding: 0, paddingTop: 5}} >Merchant <span style={{float: 'right'}}>{`$ ${formatNumbersWithCommas(request.totals.serviceCharges)}`} USD</span></p>
                                   </div>
                                   <Divider style={{margin: 10}} />
                                   <div style={{padding: 10, display: 'flex-inline'}}>
-                                      <p style={{margin: 0, padding: 0}} >Face Shield <span style={{float: 'right'}}>$ 15.00 USD</span></p>
-                                      <span>Quantity <span style={{fontSize: 12, color: 'gray', float: 'right'}}>123</span></span>
-                                      <br />
-                                      <span>Price Per Unit<span style={{fontSize: 12, color: 'gray', float: 'right'}}>$ 3.00 USD</span></span>
-                                  </div>
-                                  <Divider style={{margin: 10}} />
-                                  <div style={{padding: 10, display: 'flex-inline'}}>
-                                      <p style={{margin: 0, padding: 0}} >Tax <span style={{float: 'right'}}>$ 15.00 USD</span></p>
-                                      <p style={{margin: 0, padding: 0, paddingTop: 5}} >Shipping <span style={{float: 'right'}}>$ 15.00 USD</span></p>
-                                  </div>
-                                  <Divider style={{margin: 10}} />
-                                  <div style={{padding: 10, display: 'flex-inline'}}>
-                                      <p style={{margin: 0, padding: 0, color: 'black', fontWeight: 600}} >Subtotal <span style={{float: 'right', color: 'black', fontWeight: 600}}>$ 15.00 USD</span></p>
+                                      <p style={{margin: 0, padding: 0, color: 'black', fontWeight: 600}} >Subtotal <span style={{float: 'right', color: 'black', fontWeight: 600}}>{`$ ${formatNumbersWithCommas(request.totals.subTotal)}`} USD</span></p>
                                   </div>
                               </React.Fragment>
                             }
                           >
-
-                              <div style={{textAlign: 'right', position: 'absolute', right: 0, margin: 0, paddingRight: 40}}>
-                                  <div style={{ fontSize: 16, fontWeight: 600, color: '#000' }}>
-                                      <ShoppingCartIcon />
-                                      <span style={{ marginLeft: 8 }}>{request.budget}</span>
-                                  </div>
-                              </div>
+                              <section style={{float: 'right', margin: 0}}>
+                                  <ShoppingCartIcon />
+                                  <span style={{ fontSize: 16, fontWeight: 600, color: '#000' }}>{`$ ${formatNumbersWithCommas(request.totals.due)}`}</span>
+                              </section>
                           </CheckoutTooltip>
                       </div>
                       <Divider />
@@ -289,26 +297,66 @@ class WalletCheckoutDialog extends Component {
                           </div>
                       </div>
                       <Divider />
-                      <div style={{width: 500, display: 'inline-flex', padding: 10}}>
-                          <div style={{ padding: 15, textAlign: 'left', margin: 'auto', width: '50%' }}>
-                              <h5 style={{color: '#a7a7a7', fontWeight: 600}}>Pay With</h5>
-                              <p style={{marginBottom: 0, fontWeight: 600, paddingTop: 10, color: '#000'}}>XRP Wallet</p>
-                              <span style={{color: '#828282'}}>rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg</span>
+                      {
+                        needFinancing
+                        ? (
+                          <div style={{width: 500, display: 'inline-flex', padding: 10}}>
+                              <div style={{ padding: 15, textAlign: 'left', margin: 0, width: '50%' }}>
+                                  <h5 style={{color: '#a7a7a7', fontWeight: 600}}>Seeking Financing</h5>
+                                  <p style={{marginBottom: 0, fontWeight: 600, paddingTop: 10, color: '#000'}}>Through Xupply</p>
+                              </div>
+                              <div style={{ padding: 15, textAlign: 'right', margin: 'auto', width: '50%' }}>
+                                    <p style={{cursor: 'pointer', color: 'blue'}}>{'Manage'}</p>
+                                    <span style={{fontSize: 14, fontWeight: 400}}>{`$ ${formatNumbersWithCommas(request.totals.due)}`}</span>
+                                    <br />
+                                    <span style={{fontSize: 12, color: '#393999'}}>{'USD'}</span>
+                              </div>
                           </div>
-                          <div style={{ padding: 15, textAlign: 'right', margin: 'auto', width: '50%' }}>
-                                <p style={{color: 'blue'}}>{'Manage'}</p>
-                                <span style={{fontSize: 14, fontWeight: 400}}>{'124.39'}</span>
-                                <br />
-                                <span style={{fontSize: 12, color: '#393999'}}>{'USD'}</span>
+                        ) : (
+                          <div style={{width: 500, display: 'inline-flex', padding: 10}}>
+                              <div style={{ padding: 15, textAlign: 'left', margin: 0, width: '50%' }}>
+                                  <h5 style={{color: '#a7a7a7', fontWeight: 600}}>Pay With</h5>
+                                  <p style={{marginBottom: 0, fontWeight: 600, paddingTop: 10, color: '#000'}}>XRP Account</p>
+                                  <span style={{color: '#828282'}}>rige848ht8340ht2830r3802</span>
+                              </div>
+                              <div style={{ padding: 15, textAlign: 'right', margin: 'auto', width: '50%' }}>
+                                    <p style={{cursor: 'pointer', color: 'blue'}}>{'Manage'}</p>
+                                    <span style={{fontSize: 14, fontWeight: 400}}>{'124.39'}</span>
+                                    <br />
+                                    <span style={{fontSize: 12, color: '#393999'}}>{'USD'}</span>
+                              </div>
                           </div>
-                      </div>
-                      <p style={{paddingLeft: 25, paddingRight: 25, color: 'blue'}}>{'+ Add new payment'}</p>
-                      <p style={{ fontSize: 14, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>{'View Xupply Policies and your payment method rights.'}</p>
+                        )
+                      }
+                      {
+                        !needFinancing
+                        ? (
+                          <p style={{paddingLeft: 25, paddingRight: 25, color: 'blue'}}>{'+ Add new payment'}</p>
+                        ) : null
+                      }
+                      <p style={{ fontSize: 12, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>
+                          <Checkbox
+                            // checked={filter.isDIY}
+                            // onChange={e => this.handleFilter(e, 'isDIY')}
+                            color="primary"
+                            className={classes.checkbox}
+                          />
+                          {'I understand and acknowledge the Liability & Open-Sourced Policy.'}
+                      </p>
+                      <p style={{ fontSize: 12, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>
+                          <Checkbox
+                            // checked={filter.isDIY}
+                            // onChange={e => this.handleFilter(e, 'isDIY')}
+                            color="primary"
+                            className={classes.checkbox}
+                          />
+                          {'I understand and acknowledge the Terms & Conditions. '}
+                      </p>
                       <div style={{paddingLeft: 25, paddingRight: 25, paddingBottom: 25}}>
                           <Button
                               disableRipple
                               disableFocusRipple
-                              // onClick={e => this.isDisabled(e)}
+                              onClick={e => handleSubmit(e)}
                               className={classes.continueButton}
                               variant="outlined"
                           >
@@ -348,6 +396,7 @@ WalletCheckoutDialog.propTypes = {
     merchantHash: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
 };
 

@@ -233,9 +233,8 @@ export function roundUp(value, precision) {
 }
 
 export function formatNumbersWithCommas(value) {
-    value = roundUp(value, 2);
-    if (value) {
-        value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    if (!roundUp(value, 2)) {
+        return value;
     }
-    return value;
+    return roundUp(value, 2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
