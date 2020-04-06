@@ -321,7 +321,7 @@ class MenuItemCreateBetaView extends Component {
                   <div className={classes.gridItemBox}>
                       <div className={classes.gridItemBoxInner}>
                           <div style={{padding: 60}}>
-                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Order'}</h4>
+                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Menu Items'}</h4>
                               <div className={classes.divider} >
                                   <div className={classes.dividerLine} />
                               </div>
