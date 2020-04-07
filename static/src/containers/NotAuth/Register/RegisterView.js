@@ -13,6 +13,11 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import AutoCompletePlaces from '../../../components/Xupply/AutoCompletes/AutoCompletePlaces';
@@ -149,8 +154,8 @@ class RegisterView extends Component {
             activationCode: '',
 
             // Contact Info
-            firstName: '',
-            lastName: '',
+            firstName: 'Denis',
+            lastName: 'Angell',
             firstName_error_text: null,
             lastName_error_text: null,
             location: toNewLocation(),
@@ -158,6 +163,9 @@ class RegisterView extends Component {
             locality_error_text: null,
             region_error_text: null,
             postalCode_error_text: null,
+            locationDisabled: true,
+            sugestedGeocode: {},
+            invalidGeocode: false,
         };
     }
 
@@ -193,6 +201,226 @@ class RegisterView extends Component {
         if (value === null) {
             next_state.stepIndex = 0;
         }
+        this.setState(next_state, () => {});
+    }
+
+    handleContactChange(e, name) {
+        const value = e.target.value;
+        const next_state = this.state;
+        next_state[name] = value;
+        this.setState(next_state, () => {
+              this.isLocationDisabled();
+        });
+    }
+
+    handleLocationChange(e, name) {
+        const value = e.target.value;
+        const next_state = this.state;
+        next_state.location.address[name] = value;
+        this.setState(next_state, () => {
+              this.isLocationDisabled();
+        });
+    }
+
+    handleLocationSelected = (location) => {
+        const { place_id, description } = location;
+        const { main_text } = location.structured_formatting;
+        const { idToken, accountID } = this.props;
+        const next_state = this.state;
+        next_state.location.name = description;
+        next_state.location.placeID;
+        this.setState(next_state, () => {});
+    }
+
+    isLocationDisabled = () => {
+        let firstName_is_valid = false;
+        let lastName_is_valid = false;
+        let placeID_is_valid = false;
+        let street1_is_valid = false;
+        let locality_is_valid = false;
+        let region_is_valid = false;
+        let postal_is_valid = false;
+
+        var locationDisabled = true;
+
+        if (this.state.firstName === '') {
+            this.setState({
+                firstName_error_text: null,
+            });
+        } else if (validateVarChar(this.state.firstName)) {
+            firstName_is_valid = true;
+            this.setState({
+                firstName_error_text: null,
+            });
+        } else {
+            this.setState({
+                firstName_error_text: 'Please fill out this field.',
+            });
+        }
+
+        if (this.state.lastName === '') {
+            this.setState({
+                lastName_error_text: null,
+            });
+        } else if (validateVarChar(this.state.lastName)) {
+            lastName_is_valid = true;
+            this.setState({
+                lastName_error_text: null,
+            });
+        } else {
+            this.setState({
+                lastName_error_text: 'Please fill out this field.',
+            });
+        }
+
+        if (this.state.location.address.placeID === null) {
+            this.setState({
+                placeID_error_text: null,
+            });
+        } else if (validateVarChar(this.state.location.address.placeID)) {
+            placeID_is_valid = true;
+            this.setState({
+                placeID_error_text: null,
+            });
+        } else {
+            this.setState({
+                placeID_error_text: 'Please fill out this field.',
+            });
+        }
+
+        if (this.state.location.address.street1 === null) {
+            this.setState({
+                street1_error_text: null,
+            });
+        } else if (validateVarChar(this.state.location.address.street1)) {
+            street1_is_valid = true;
+            this.setState({
+                street1_error_text: null,
+            });
+        } else {
+            this.setState({
+                street1_error_text: 'Please fill out this field.',
+            });
+        }
+
+        if (this.state.location.address.locality === null) {
+            this.setState({
+                locality_error_text: null,
+            });
+        } else if (validateVarChar(this.state.location.address.locality)) {
+            locality_is_valid = true;
+            this.setState({
+                locality_error_text: null,
+            });
+        } else {
+            this.setState({
+                locality_error_text: 'Please fill out this field.',
+            });
+        }
+
+        if (this.state.location.address.region === null) {
+            this.setState({
+                region_error_text: null,
+            });
+        } else if (validateVarChar(this.state.location.address.region)) {
+            region_is_valid = true;
+            this.setState({
+                region_error_text: null,
+            });
+        } else {
+            this.setState({
+                region_error_text: 'Please fill out this field.',
+            });
+        }
+
+        if (this.state.location.address.region === null) {
+            this.setState({
+                region_error_text: null,
+            });
+        } else if (validateVarChar(this.state.location.address.region)) {
+            region_is_valid = true;
+            this.setState({
+                region_error_text: null,
+            });
+        } else {
+            this.setState({
+                region_error_text: 'Please fill out this field.',
+            });
+        }
+
+        if (this.state.location.address.postal === null) {
+            this.setState({
+                postal_error_text: null,
+            });
+        } else if (validateVarChar(this.state.location.address.postal)) {
+            postal_is_valid = true;
+            this.setState({
+                postal_error_text: null,
+            });
+        } else {
+            this.setState({
+                postal_error_text: 'Please fill out this field.',
+            });
+        }
+
+        console.log(firstName_is_valid)
+        console.log(lastName_is_valid)
+        console.log(placeID_is_valid)
+        console.log(street1_is_valid)
+        console.log(locality_is_valid)
+        console.log(region_is_valid)
+        console.log(postal_is_valid)
+
+        if (
+          firstName_is_valid &&
+          lastName_is_valid &&
+          placeID_is_valid
+        ) {
+            locationDisabled = false;
+        } else if (
+          firstName_is_valid &&
+          lastName_is_valid &&
+          street1_is_valid &&
+          locality_is_valid &&
+          region_is_valid &&
+          postal_is_valid
+        ) {
+            locationDisabled = false;
+        }
+        this.setState({locationDisabled: locationDisabled})
+    }
+
+    handleLocationFinished = () => {
+        const next_state = this.state;
+        const { address } = this.state.location;
+        const description = address.placeID ? next_state.location.name : `${address.street1} ${address.locality}, ${address.region} ${address.postal}`;
+        geocodeGooglePlace(null, null, description).then((result) => {
+            if (
+              address.street1 !== result.street1 ||
+              address.locality !== result.locality ||
+              address.region !== result.region ||
+              address.postal !== result.postal
+            ) {
+              this.setState({invalidGeocode: true, sugestedGeocode: result});
+              return;
+            }
+            next_state.location.address = result;
+            next_state.stepIndex = next_state.stepIndex + 1;
+            this.setState(next_state, () => {});
+        })
+    };
+
+    setSuggestedGeocode = () => {
+        const next_state = this.state;
+        next_state.location.address = next_state.sugestedGeocode;
+        next_state.invalidGeocode = false;
+        next_state.stepIndex = next_state.stepIndex + 1;
+        this.setState(next_state, () => {});
+    }
+
+    rejectSuggestedGeocode = () => {
+        const next_state = this.state;
+        next_state.invalidGeocode = false;
         this.setState(next_state, () => {});
     }
 
@@ -366,20 +594,6 @@ class RegisterView extends Component {
         this.setState({stepIndex: stepIndex - 1})
     };
 
-    handleContactChange(e, name) {
-        const value = e.target.value;
-        const next_state = this.state;
-        next_state[name] = value;
-        this.setState(next_state, () => {});
-    }
-
-    handleLocationChange(e, name) {
-        const value = e.target.value;
-        const next_state = this.state;
-        next_state.location.address[name] = value;
-        this.setState(next_state, () => {});
-    }
-
     isContinueDisabled = () => {
         let email_is_valid = false;
         let password_is_valid = false;
@@ -433,19 +647,6 @@ class RegisterView extends Component {
         }
     }
 
-    handleLocationSelected = (location) => {
-        const { place_id, description } = location;
-        const { main_text } = location.structured_formatting;
-        const { idToken, accountID } = this.props;
-        const next_state = this.state;
-        next_state.location.name = description;
-        geocodeGooglePlace(idToken, accountID, description).then((result) => {
-            result.placeID = place_id
-            next_state.location.address = result;
-            this.setState(next_state, () => {});
-        });
-    }
-
     render() {
         const { classes } = this.props;
         const {
@@ -462,13 +663,15 @@ class RegisterView extends Component {
           lastName_error_text,
           location,
           street1_error_text,
-          street2_error_text,
           locality_error_text,
           region_error_text,
           postal_error_text,
           loading,
           showEmail,
           disabled,
+          locationDisabled,
+          sugestedGeocode,
+          invalidGeocode,
         } = this.state;
 
         const accountTypes = renderAccountType();
@@ -643,11 +846,11 @@ class RegisterView extends Component {
                       variant="outlined"
                       margin="dense"
                       type="text"
-                      // helperText={firstName_error_text}
+                      helperText={firstName_error_text}
                       value={firstName || ''}
                       style={{paddingRight: 20, width: '50%'}}
                       onChange={e => this.handleContactChange(e, 'firstName')}
-                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                      FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
                   <TextField
                       placeholder="Last Name"
@@ -655,11 +858,11 @@ class RegisterView extends Component {
                       variant="outlined"
                       margin="dense"
                       type="text"
-                      // helperText={lastName_error_text}
+                      helperText={lastName_error_text}
                       value={lastName || ''}
                       style={{width: '50%'}}
                       onChange={e => this.handleContactChange(e, 'lastName')}
-                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                      FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
                   <div style={{paddingBottom: 5}}>
                       <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'left', paddingTop: 10, paddingBottom: 10, margin: 0 }}>Location Address</p>
@@ -672,22 +875,20 @@ class RegisterView extends Component {
                           label="Street Address"
                           variant="outlined"
                           margin="dense"
-                          // helperText={name_error_text}
+                          helperText={street1_error_text}
                           value={location.address.street1 || ''}
                           style={{paddingRight: 20, width: '67%'}}
                           onChange={e => this.handleLocationChange(e, 'street1')}
-                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
                       />
                       <TextField
                           placeholder="Address 2"
                           label="Address 2"
                           variant="outlined"
                           margin="dense"
-                          // helperText={name_error_text}
                           value={location.address.street2 || ''}
                           style={{width: '33%'}}
                           onChange={e => this.handleLocationChange(e, 'street2')}
-                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                       />
                   </div>
                   <div style={{paddingTop: 10}}>
@@ -697,11 +898,11 @@ class RegisterView extends Component {
                           variant="outlined"
                           margin="dense"
                           type="text"
-                          // helperText={name_error_text}
+                          helperText={locality_error_text}
                           value={location.address.locality || ''}
                           style={{paddingRight: 20, width: '33%'}}
                           onChange={e => this.handleLocationChange(e, 'locality')}
-                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
                       />
                       <TextField
                           placeholder="Region"
@@ -709,11 +910,11 @@ class RegisterView extends Component {
                           variant="outlined"
                           margin="dense"
                           type="text"
-                          // helperText={name_error_text}
+                          helperText={region_error_text}
                           value={location.address.region || ''}
                           style={{paddingRight: 20, width: '33%'}}
                           onChange={e => this.handleLocationChange(e, 'region')}
-                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
                       />
                       <TextField
                           placeholder="Zip Code"
@@ -721,11 +922,11 @@ class RegisterView extends Component {
                           variant="outlined"
                           margin="dense"
                           type="number"
-                          // helperText={name_error_text}
+                          helperText={postal_error_text}
                           value={location.address.postal || ''}
                           style={{float: 'right', width: '33%'}}
                           onChange={e => this.handleLocationChange(e, 'postal')}
-                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
                       />
                   </div>
               </div>
@@ -733,8 +934,8 @@ class RegisterView extends Component {
                   <Button
                       disableRipple
                       disableFocusRipple
-                      // disabled={disabled}
-                      onClick={e => this.handleNext(e)}
+                      disabled={locationDisabled}
+                      onClick={e => this.handleLocationFinished(e)}
                       className={classes.registerButton}
                       variant="outlined"
                   >
@@ -755,6 +956,27 @@ class RegisterView extends Component {
                         </Paper>
                     </Grid>
                 </Grid>
+                <Dialog
+                    open={invalidGeocode}
+                    // onClose={e => this.toggleSuggestedGeo(false)}
+                    aria-labelledby="form-dialog-title"
+                >
+                    <DialogTitle id="form-dialog-title">Geocoded Address</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                                The address you entered was could not be geocoded. This is required for the application to operate. Is the address below the correct address?
+                        </DialogContentText>
+                        <label className={classes.inputLabel}>{`${sugestedGeocode.street1} ${sugestedGeocode.locality}, ${sugestedGeocode.region} ${sugestedGeocode.postal}`}</label>
+                        <DialogActions>
+                            <Button onClick={this.rejectSuggestedGeocode} color="primary">
+                                  NO
+                            </Button>
+                            <Button onClick={this.setSuggestedGeocode} color="primary">
+                                  YES
+                            </Button>
+                        </DialogActions>
+                    </DialogContent>
+                </Dialog>
             </div>
         );
     }
