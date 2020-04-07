@@ -8,64 +8,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableFooter from "@material-ui/core/TableFooter";
 import Paper from "@material-ui/core/Paper";
-import Tooltip from "@material-ui/core/Tooltip";
 import Pagination from "./Pagination";
-
-const styles = (theme) => ({
-    root: {
-        width: "100%",
-        marginTop: 40,
-        boxShadow: "none",
-        borderRadius: 8,
-        padding: 30,
-    },
-    table: {},
-    tableHeaders: {
-        fontSize: 12,
-        fontWeight: 500,
-        borderBottom: "1px solid #d6d6d6",
-        borderLeft: 0,
-        verticalAlign: "bottom",
-        color: theme.palette.primary.black,
-    },
-    linkText: {
-        color: "#82a4bc !important",
-        fontWeight: "600px !important",
-        cursor: "pointer",
-        textAlign: "left",
-        fontSize: "14px !important",
-    },
-    cancelIcon: {
-        color: "#e02626",
-        margin: 0,
-        padding: 0,
-    },
-    checkIcon: {
-        color: "#37e026",
-        margin: 0,
-        padding: 0,
-    },
-});
-
-const ImageTooltip = withStyles((theme) => ({
-    tooltip: {
-        backgroundColor: "#f5f5f9",
-        color: "rgba(0, 0, 0, 0.87)",
-        maxWidth: 220,
-        fontSize: theme.typography.pxToRem(12),
-        border: "1px solid #dadde9",
-    },
-}))(Tooltip);
-
-const LocationTooltip = withStyles((theme) => ({
-    tooltip: {
-        backgroundColor: "#f5f5f9",
-        color: "rgba(0, 0, 0, 0.87)",
-        maxWidth: 220,
-        fontSize: theme.typography.pxToRem(12),
-        border: "1px solid #dadde9",
-    },
-}))(Tooltip);
+import { styles } from "./PublicMenuItemResultsTable";
 
 function MenuItemResultsTable(props) {
     const { classes, setHitsPerPage, hitsPerPage } = props;
