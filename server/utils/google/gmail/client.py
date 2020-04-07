@@ -37,7 +37,7 @@ class XupplyGoogleClient(object):
         self.sender = 'support@caslnpo.org'
         self.userEmail = userEmail
         self.service = self.get_service()
-        self.analytics_id = 'UA-107201661-1'
+        self.analytics_id = None
 
     # Get Server Credentials
     # TODO: None
@@ -48,15 +48,15 @@ class XupplyGoogleClient(object):
             if APP_ENV == 'server.config.DevelopmentConfig':
                 from server.config import Config, DevelopmentConfig
                 credentials = DevelopmentConfig.GMAIL_CRED.create_delegated('support@caslnpo.org')
-                self.analytics_id = 'UA-107201661-1'
+                self.analytics_id = 'G-G1WT34ZE8V'
             elif APP_ENV == 'server.config.ProductionConfig':
                 from server.config import Config, ProductionConfig
                 credentials = ProductionConfig.GMAIL_CRED.create_delegated('support@caslnpo.org')
-                self.analytics_id = 'UA-107201661-2'
+                self.analytics_id = 'G-LZ0K6L1BFX'
             elif APP_ENV == 'server.config.StageConfig':
                 from server.config import Config, StageConfig
                 credentials = StageConfig.GMAIL_CRED.create_delegated('support@caslnpo.org')
-                self.analytics_id = 'UA-107201661-2'
+                self.analytics_id = 'G-LZ0K6L1BFX'
             return credentials
         except Exception as e:
             logger.error('Error Getting Google Gmail Api Credentials; Error: {}'.format(e))
@@ -262,11 +262,11 @@ class XupplyGoogleClient(object):
             <!-- BODY -->
             <!-- Set message background color (twice) and text color (twice) -->
             <body topmargin="0" rightmargin="0" bottommargin="0" leftmargin="0" marginwidth="0" marginheight="0" width="100%" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; width: 100%; height: 100%; -webkit-font-smoothing: antialiased; text-size-adjust: 100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; line-height: 100%;
-            color: #000000; background-image: url('https://virtualtabs.org/images/hero-bg.jpg');"
+            color: #000000; background-image: url('https://caslnpo.org/img/hero-bg.png');"
             text="#000000">
             <!-- SECTION / BACKGROUND -->
             <!-- Set message background color one again -->
-            <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-image: url('https://virtualtabs.org/images/hero-bg.jpg'); border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; width: 100%;" class="background"><tr><td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0;">
+            <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="background-image: url('https://caslnpo.org/img/hero-bg.png'); border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; width: 100%;" class="background"><tr><td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0;">
             <!-- WRAPPER -->
             <!-- Set wrapper width (twice) -->
             <table border="0" cellpadding="0" cellspacing="0" align="center"
@@ -298,8 +298,8 @@ class XupplyGoogleClient(object):
             <tr>
               <td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0;
                 padding-top: 20px;" class="hero"><a target="_blank" style="text-decoration: none;"
-                href="https://virtualtabs.org/"><img border="0" vspace="0" hspace="0"
-                src="https://app.virtualtabs.org/src/containers/App/styles/img/logo.png"
+                href="https://https://caslnpo.org/"><img border="0" vspace="0" hspace="0"
+                src="https://caslnpo.org/img/logo.png"
                 alt="Please enable images to view this content" title="Hero Image"
                 width="100" style="
                 width: 100%;
@@ -375,7 +375,7 @@ class XupplyGoogleClient(object):
                 padding-bottom: 25px;
                 color: #000000;
                 font-family: sans-serif;" class="paragraph">
-                  Have a&nbsp;question? <a href="mailto:support@virtualtabs.org" target="_blank" style="color: #127DB3; font-family: sans-serif; font-size: 17px; font-weight: 400; line-height: 160%;">support@virtualtabs.org</a>
+                  Have a&nbsp;question? <a href="mailto:support@https://caslnpo.org" target="_blank" style="color: #127DB3; font-family: sans-serif; font-size: 17px; font-weight: 400; line-height: 160%;">support@https://caslnpo.org</a>
               </td>
             </tr>
             <!-- End of WRAPPER -->
@@ -440,7 +440,6 @@ class XupplyGoogleClient(object):
             </html>
             '''.format(
                 analytics_id=self.analytics_id,
-                campaign_id=campaign_id,
                 subject=subject,
                 header=header,
                 body=body,

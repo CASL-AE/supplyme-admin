@@ -7,7 +7,6 @@ import { toNewAccount } from '../account/model';
 import { getAccount } from '../../services/account/actions';
 import { toNewEmployee } from '../employee/model';
 import { getLocationFromSnapshot } from '../location/model';
-import { apiSendEmailRegisteredAccount } from '../../utils/http_functions';
 
 // Register Account
 // TODO: None
@@ -17,11 +16,12 @@ export const registerAccountRequest = () => ({
 });
 
 
-export const registerAccountSuccess = (employeeID, accountID, employee, idToken) => ({
+export const registerAccountSuccess = (employeeID, accountID, accountType, employee, idToken) => ({
     type: 'REGISTER_ACCOUNT_SUCCESS',
     payload: {
         employeeID,
         accountID,
+        accountType,
         employee,
         idToken,
     },
@@ -53,6 +53,9 @@ export const registerAccount = (accountType, email, firstName, lastName, locatio
         return db().runTransaction((transaction) => {
             return auth().currentUser.getIdToken().then((idToken) => {
 
+              const newUserRef = db().collection('MasterUserList').doc(user.user.uid);
+              const newEmployeeRef = accountRef.collection('Employees').doc(user.user.uid);
+
               const createdDate = new Date();
 
               const accountInfo = toNewAccount()
@@ -66,14 +69,6 @@ export const registerAccount = (accountType, email, firstName, lastName, locatio
               locationInfo.createdDate = createdDate;
               locationInfo.locationID = locationRef.id;
 
-              const newUserRef = db().collection('MasterUserList').doc(user.user.uid);
-              transaction.set(newUserRef, { accountID: accountRef.id, accountType: accountType });
-
-              transaction.set(accountRef, accountInfo );
-              transaction.set(employeeActivationCodeRef, { valid: false });
-              transaction.set(locationRef, getLocationFromSnapshot(locationInfo));
-
-              const newEmployeeRef = accountRef.collection('Employees').doc(user.user.uid);
               const employeeInfo = toNewEmployee();
               employeeInfo.firstName = firstName;
               employeeInfo.phoneNumber = null;
@@ -89,13 +84,22 @@ export const registerAccount = (accountType, email, firstName, lastName, locatio
               employeeInfo.termsTime = createdDate;
               employeeInfo.privacy = true;
               employeeInfo.privacyTime = createdDate;
+
+              transaction.set(newUserRef, { accountID: accountRef.id, accountType: accountType });
+              transaction.set(accountRef, accountInfo );
+              transaction.set(employeeActivationCodeRef, { valid: false });
+              transaction.set(locationRef, getLocationFromSnapshot(locationInfo));
               transaction.set(newEmployeeRef, employeeInfo);
+
+
               return {
                   employeeID: user.user.uid,
                   accountID: accountRef.id,
                   employeeInfo,
                   idToken,
               };
+
+
             }).catch((error) => {
               console.log(error)
               errorAlert(error.message);
@@ -114,6 +118,7 @@ export const registerAccount = (accountType, email, firstName, lastName, locatio
             dispatch(registerAccountSuccess(
               result.employeeID,
               result.accountID,
+              result.accountType,
               result.employeeInfo,
               result.idToken,
             ));

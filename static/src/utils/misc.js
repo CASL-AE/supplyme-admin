@@ -117,7 +117,6 @@ export function getRegistrationSearch(search) {
     }
 }
 
-
 // Validation
 export function validateVarChar(string) {
     if (typeof string === 'string' || string instanceof String && string !== null && string !== ''){

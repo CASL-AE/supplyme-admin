@@ -3,7 +3,11 @@ import history from '../../history';
 import { auth, db } from '../../store/firebase';
 import { parseJSON } from '../../utils/misc';
 import { toNewEmployee } from '../employee/model';
-import { xupplyAnalytic } from '../utils/analytics';
+import { errorAlert } from '../../utils/alerts';
+import { xupplyAnalytic } from '../../utils/analytics';
+import { getLocationFromSnapshot } from '../location/model';
+import { getEmployeeFromSnapshot } from '../employee/model';
+import { getAccount } from '../../services/account/actions';
 
 // Register Employee
 //
@@ -51,82 +55,87 @@ export const validateEmployeeActivationCode = (code) => {
     })
 }
 
-export const registerEmployee = (employeeCode, password, redirectRoute) => (dispatch) => {
-    console.log(employeeCode)
+export const registerEmployee = (activationCode, email, firstName, lastName, location, password, redirectRoute) => (dispatch) => {
+    console.log(activationCode)
+    console.log(email)
+    console.log(firstName)
+    console.log(lastName)
+    console.log(location)
     console.log(password)
     console.log(redirectRoute)
     dispatch(registerEmployeeRequest());
-    return validateEmployeeActivationCode(employeeCode.activationCode).then((newEmployeeCode) => {
-      if (!employeeCode) {
-        return;
+    return validateEmployeeActivationCode(activationCode).then((newEmployeeCode) => {
+      if (!newEmployeeCode.activationCode) {
+        throw 'Invalid Activation Code';
       }
-      const employeeActivationCodeRef = db().collection('EmployeeActivationCodes').doc(newEmployeeCode.activationCode);
-      return db().runTransaction((transaction) => {
-          return auth().createUserWithEmailAndPassword(employeeCode.email, password).then((user) => {
-              try {
-                  auth().currentUser.getIdToken().then((idToken) => {
 
-                    const createdTime = new Date();
+      return auth().createUserWithEmailAndPassword(email, password).then((user) => {
+          return db().runTransaction((transaction) => {
+              return auth().currentUser.getIdToken().then((idToken) => {
+                  const createdDate = new Date();
 
-                    const newUserRef = db().collection('MasterUserList').doc(user.user.uid);
-                    const accountRef = db().collection('Accounts').doc(newEmployeeCode.accountID);
-                    transaction.set(newUserRef, { accountID: accountRef.id });
-                    transaction.set(employeeActivationCodeRef, { valid: false });
+                  const employeeActivationCodeRef = db().collection('EmployeeActivationCodes').doc(newEmployeeCode.activationCode);
 
-                    const newEmployeeRef = dispensaryRef.collection('Employees').doc(user.user.uid);
-                    const employeeInfo = toNewEmployee();
-                    const newName = accountCode.ownerName.split(' ')
-                    employeeInfo.firstName = newName[0]
-                    employeeInfo.lastName = newName[1]
-                    employeeInfo.name = employeeCode.ownerName;
-                    employeeInfo.phoneNumber = employeeCode.phoneNumber;
-                    employeeInfo.email = employeeCode.email;
-                    employeeInfo.activationCode = newEmployeeCode.activationCode;
-                    employeeInfo.permissionLevel = newEmployeeCode.permissionLevel;
-                    employeeInfo.createdTime = createdTime;
-                    employeeInfo.updatedTime = createdTime;
-                    employeeInfo.employeeID = user.user.uid;
-                    employeeInfo.active = true
-                    employeeInfo.terms = true
-                    employeeInfo.privacy = true
-                    transaction.set(newEmployeeRef, employeeInfo);
-                    const oldTempEmployeeRef = accountRef.collection("Employees").doc(newEmployeeCode.activationCode)
-                    transaction.delete(oldTempEmployeeRef)
+                  const newUserRef = db().collection('MasterUserList').doc(user.user.uid);
+                  const accountRef = db().collection('Accounts').doc(newEmployeeCode.accountID);
+                  const newEmployeeRef = accountRef.collection('Employees').doc(user.user.uid);
+                  const oldTempEmployeeRef = accountRef.collection("Employees").doc(newEmployeeCode.activationCode)
 
-                    return {
-                        employeeID: user.user.uid,
-                        accountID: accountRef.id,
-                        accountType: 'account',
-                        employeeInfo,
-                        idToken
-                    }
-                  })
-                  .catch((error) => {
-                    console.log(error)
-                    errorAlert(error.message);
-                    xupplyAnalytic('register_employee_failure', null);
-                    return null
-                    dispatch(registerEmployeeFailure({
-                        response: {
-                            status: 999,
-                            statusText: error.message,
-                        },
-                    }));
-                  })
-              } catch (error) {
-                  console.log(error)
-                  errorAlert(error.message);
-                  xupplyAnalytic('register_employee_failure', null);
-                  dispatch(registerEmployeeFailure({
-                      response: {
-                          status: 999,
-                          statusText: error.message,
-                      },
-                  }));
-              }
-          })
-          .catch((error) => {
-              console.log(error)
+                  const employeeInfo = toNewEmployee();
+                  const newName = newEmployeeCode.ownerName.split(' ')
+                  employeeInfo.firstName = newName[0];
+                  employeeInfo.lastName = newName[1];
+                  employeeInfo.phoneNumber = newEmployeeCode.phoneNumber;
+                  employeeInfo.email = email;
+                  employeeInfo.activationCode = activationCode;
+                  employeeInfo.permissionLevel = newEmployeeCode.permissionLevel;
+                  employeeInfo.createdTime = createdDate;
+                  employeeInfo.updatedTime = createdDate;
+                  employeeInfo.employeeID = user.user.uid;
+                  employeeInfo.active = true;
+                  employeeInfo.terms = true;
+                  employeeInfo.privacy = true;
+
+                  transaction.set(newUserRef, { accountID: accountRef.id, accountType: newEmployeeCode.accountType });
+                  transaction.set(employeeActivationCodeRef, { valid: false });
+                  transaction.set(newEmployeeRef, getEmployeeFromSnapshot(employeeInfo));
+                  transaction.delete(oldTempEmployeeRef);
+
+                  return {
+                      employeeID: user.user.uid,
+                      accountID: accountRef.id,
+                      accountType: newEmployeeCode.accountType,
+                      employeeInfo,
+                      idToken
+                  };
+              })
+              .catch((error) => {
+                console.log(error)
+                errorAlert(error.message);
+                xupplyAnalytic('register_employee_failure', null);
+                return null
+                dispatch(registerEmployeeFailure({
+                    response: {
+                        status: 999,
+                        statusText: error.message,
+                    },
+                }));
+              })
+          }).then((result) => {
+              console.log("Transaction successfully committed!");
+              console.log(result)
+              dispatch(registerEmployeeSuccess(
+                  result.employeeID,
+                  result.accountID,
+                  result.accountType,
+                  result.employeeInfo,
+                  result.idToken,
+              ));
+              dispatch(getAccount(result.accountID));
+              xupplyAnalytic('register_employee_success', null);
+              history.push(redirectRoute);
+          }).catch((error) => {
+              console.log("Transaction failed: ", error);
               errorAlert(error.message);
               xupplyAnalytic('register_employee_failure', null);
               dispatch(registerEmployeeFailure({
@@ -136,27 +145,11 @@ export const registerEmployee = (employeeCode, password, redirectRoute) => (disp
                   },
               }));
           });
-      }).then((result) => {
-          console.log("Transaction successfully committed!");
-          console.log(result)
-          if (result === null) {
-              return;
-          }
-          dispatch(registerEmployeeSuccess(
-              result.employeeID,
-              result.accountID,
-              result.accountType,
-              result.employeeInfo,
-              result.idToken,
-          ));
-          dispatch(getAccount(result.accountID));
-          xupplyAnalytic('register_employee_success', null);
-          history.push(redirectRoute);
       }).catch((error) => {
-          console.log("Transaction failed: ", error);
+          console.log(error)
           errorAlert(error.message);
           xupplyAnalytic('register_employee_failure', null);
-          dispatch(registerEmployeeFailure({
+          return dispatch(registerEmployeeFailure({
               response: {
                   status: 999,
                   statusText: error.message,

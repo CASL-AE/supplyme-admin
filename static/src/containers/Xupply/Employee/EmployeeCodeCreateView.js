@@ -105,6 +105,7 @@ function mapStateToProps(state) {
         router: state.router,
         idToken: state.app.idToken,
         accountID: state.app.accountID,
+        accountType: state.app.accountType,
         accountName: state.accountData.account.name,
         employeeID: state.app.employeeID,
         employeeCode: state.employeeData.employeeCode,
@@ -134,10 +135,11 @@ class EmployeeCodeCreateView extends React.Component {
 
     componentDidMount() {
         console.log('Employee Code Create Mounted')
-        const { accountID, accountName } = this.props;
+        const { accountID, accountName, accountType } = this.props;
         const employeeCode = this.state.employeeCode;
         employeeCode.accountID = accountID;
         employeeCode.accountName = accountName;
+        employeeCode.accountType = accountType;
         this.setState({
             employeeCode,
         });
@@ -333,12 +335,14 @@ class EmployeeCodeCreateView extends React.Component {
 EmployeeCodeCreateView.defaultProps = {
     idToken: '',
     accountID: '',
+    accountType: '',
     employeeID: '',
     saveNewEmployee: f => f,
 };
 EmployeeCodeCreateView.propTypes = {
     idToken: PropTypes.string,
     accountID: PropTypes.string,
+    accountType: PropTypes.string,
     employeeID: PropTypes.string,
     saveNewEmployee: PropTypes.func,
     classes: PropTypes.object.isRequired,

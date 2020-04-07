@@ -18,6 +18,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import AutoCompletePlaces from '../../../components/Xupply/AutoCompletes/AutoCompletePlaces';
 
 import { registerAccount } from '../../../services/accountRegistration/actions';
+import { registerEmployee } from '../../../services/employeeRegistration/actions';
 import { toNewLocation } from '../../../services/location/model';
 import { geocodeGooglePlace } from '../../../services/google/actions';
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
@@ -120,6 +121,7 @@ function mapDispatchToProps(dispatch) {
     return {
         actions: {
             registerAccount: bindActionCreators(registerAccount, dispatch),
+            registerEmployee: bindActionCreators(registerEmployee, dispatch),
         },
     };
 }
@@ -143,6 +145,9 @@ class RegisterView extends Component {
             showEmail: false,
             disabled: true,
 
+            // Employee
+            activationCode: '',
+
             // Contact Info
             firstName: '',
             lastName: '',
@@ -156,7 +161,13 @@ class RegisterView extends Component {
         };
     }
 
-    componentDidMount() {}
+    componentDidMount() {
+        const { actions, search } = this.props;
+        const keys = getRegistrationSearch(search)
+        if (keys.type === 'employee' && keys.code !== null) {
+            this.setState({stepIndex: 2, activationCode: keys.code});
+        }
+    }
 
     componentWillReceiveProps(nextProps) {}
 
@@ -248,7 +259,7 @@ class RegisterView extends Component {
     }
 
     createNewAccount() {
-        const { actions, idToken, accountID }= this.props;
+        const { actions }= this.props;
         const {
           accountType,
           email,
@@ -261,10 +272,39 @@ class RegisterView extends Component {
 
         this.setState({
             loading: true,
+            disabled: true,
         });
 
         actions.registerAccount(
             accountType,
+            email,
+            firstName,
+            lastName,
+            location,
+            password,
+            redirectRoute,
+        );
+    }
+
+    createNewEmployee = (e) => {
+        const { actions }= this.props;
+        const {
+          activationCode,
+          email,
+          firstName,
+          lastName,
+          location,
+          password,
+          redirectRoute
+        } = this.state;
+
+        this.setState({
+            loading: true,
+            disabled: true,
+        });
+
+        actions.registerEmployee(
+            activationCode,
             email,
             firstName,
             lastName,
@@ -336,7 +376,7 @@ class RegisterView extends Component {
     handleLocationChange(e, name) {
         const value = e.target.value;
         const next_state = this.state;
-        next_state.location[name] = value;
+        next_state.location.address[name] = value;
         this.setState(next_state, () => {});
     }
 
@@ -414,6 +454,7 @@ class RegisterView extends Component {
           email_error_text,
           password,
           password_error_text,
+          activationCode,
           accountType,
           firstName,
           firstName_error_text,
@@ -474,11 +515,11 @@ class RegisterView extends Component {
                         disableRipple
                         disableFocusRipple
                         disabled={disabled}
-                        onClick={e => this.createNewAccount(e)}
+                        onClick={activationCode ? e => this.createNewEmployee(e) : e => this.createNewAccount(e)}
                         className={classes.registerButton}
                         variant="outlined"
                     >
-                        {'Register Account'}
+                        {activationCode ? 'Register Employee' : 'Register Account'}
                     </Button>
                 </div>
               ) : (
@@ -504,7 +545,14 @@ class RegisterView extends Component {
                   {loading
                     ? (<CircularProgress style={{marginBottom: 15}} color="inherit" />)
                     : null}
-                  <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{!loading ? `Please sign in to create your ${accountType} account` : 'Creating your account...'}</h4>
+                  {
+                    activationCode
+                    ? (
+                        <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{!loading ? `Please sign in to create your ${accountType} employee` : 'Creating your employee...'}</h4>
+                    ) : (
+                        <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{!loading ? `Please sign in to create your ${accountType} account` : 'Creating your account...'}</h4>
+                    )
+                  }
                   <div className={classes.divider} >
                       <div className={classes.dividerLine} />
                   </div>
@@ -715,11 +763,13 @@ class RegisterView extends Component {
 RegisterView.defaultProps = {
     search: '',
     registerAccount: f => f,
+    registerEmployee: f => f,
 };
 
 RegisterView.propTypes = {
     search: PropTypes.string,
     registerAccount: PropTypes.func,
+    registerEmployee: PropTypes.func,
     classes: PropTypes.object.isRequired,
 };
 
