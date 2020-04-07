@@ -158,7 +158,12 @@ class OrderListView extends React.Component {
           <Grid container className={classes.root} spacing={2}>
             {rows.map(this.renderOrderCard, this)}
           </Grid>
-        ) : <EmptyResults isType='order'/>
+        ) : (
+            <EmptyResults
+                title={`You haven't created any orders...`}
+                message={`You will see active orders appear here. Create one to get started...`}
+            />
+        )
     }
 }
 

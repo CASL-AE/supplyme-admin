@@ -166,7 +166,12 @@ class RequestListView extends React.Component {
           <Grid container className={classes.root} spacing={2}>
             {rows.map(this.renderRequestCard, this)}
           </Grid>
-        ) : <EmptyResults isType='request'/>
+        ) : (
+            <EmptyResults
+                title={`You haven't created any requests...`}
+                message={`You will see active requests appear here. Create one to get started...`}
+            />
+        )
     }
 }
 

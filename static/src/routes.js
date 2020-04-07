@@ -73,6 +73,7 @@ export default (
             <Route exact path="/accounts/:id/locations/:id" component={requireAuthentication(LocationDetailView)} />
             <Route exact path="/accounts/:id/locations/:id/edit" component={requireAuthentication(LocationCreateView)} />
             <Route exact path="/accounts/:id/requests" component={requireAuthentication(RequestListView)} />
+            <Route exact path="/accounts/:id/requests/search" component={requireAuthentication(PublicRequestListView)} />
             <Route exact path="/accounts/:id/requests/create" component={requireAuthentication(RequestCreateView)} />
             <Route exact path="/accounts/:id/requests/create/beta" component={requireAuthentication(RequestCreateBetaView)} />
             <Route exact path="/accounts/:id/requests/:id" component={requireAuthentication(RequestDetailView)} />
@@ -82,7 +83,6 @@ export default (
             <Route exact path="/accounts/:id/menuItems/:id" component={requireAuthentication(MenuItemDetailView)} />
             <Route exact path="/accounts/:id/menuItems/:id/edit" component={requireAuthentication(MenuItemCreateView)} />
             <Route exact path="/accounts/:id/orders" component={requireAuthentication(OrderListView)} />
-            <Route exact path="/accounts/:id/orders/search" component={requireAuthentication(PublicRequestListView)} />
             <Route exact path="/accounts/:id/orders/create" component={requireAuthentication(OrderCreateView)} />
             <Route exact path="/accounts/:id/orders/:id" component={requireAuthentication(OrderDetailView)} />
             <Route exact path="/accounts/:id/opportunities" component={requireAuthentication(OpportunityListView)} />

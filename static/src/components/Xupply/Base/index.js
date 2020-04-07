@@ -285,10 +285,10 @@ class Base extends Component {
             return `${baseDomain}/requests`;
         case 'create_request':
             return `${baseDomain}/requests/create/beta`;
+        case 'search_requests':
+            return `${baseDomain}/requests/search`;
         case 'orders':
             return `${baseDomain}/orders`;
-        case 'create_order':
-            return `${baseDomain}/orders/create`;
         case 'menuItems':
             return `${baseDomain}/menuItems`;
         case 'create_menuItem':
@@ -474,7 +474,7 @@ class Base extends Component {
                       </List>
                       <Divider style={{backgroundColor: '#eeeeee54'}} />
                       <List>
-                        {['orders', 'create_order'].map((text, index) => (
+                        {['orders', 'search_requests'].map((text, index) => (
                           <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
                             <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
                             <ListItemText primary={text} />

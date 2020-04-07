@@ -15,11 +15,13 @@ const EmptyResults = ({isType}) => (
 );
 
 EmptyResults.defaultProps = {
-    isType: '',
+    title: '',
+    message: '',
 };
 
 EmptyResults.propTypes = {
-    isType: PropTypes.string,
+    title: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired,
 };
 
 export default EmptyResults;

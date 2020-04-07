@@ -163,10 +163,15 @@ class MenuItemListView extends React.Component {
 
         return rows.length > 0
         ? (
-          <Grid container className={classes.root} spacing={2}>
-            {rows.map(this.renderMenuItemCard, this)}
-          </Grid>
-        ) : <EmptyResults isType='request'/>
+            <Grid container className={classes.root} spacing={2}>
+              {rows.map(this.renderMenuItemCard, this)}
+            </Grid>
+        ) : (
+            <EmptyResults
+                title={`You haven't created any menu items...`}
+                message={`You will see active menu items appear here. Create one to get started...`}
+            />
+        )
     }
 }
 
