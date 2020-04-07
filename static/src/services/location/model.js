@@ -50,7 +50,7 @@ export function locationRowObject(location) {
         deleted: location.deleted,
         locationType: location.locationType,
         licenseID: location.licenseID,
-        address: `${location.address.locality} ${location.address.region}, ${location.address.country}`,
+        location: location.address.location,
         name: location.name,
         contactName: location.contactInfo.name,
         placeID: location.address.placeID,

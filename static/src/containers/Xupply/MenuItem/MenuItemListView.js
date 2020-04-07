@@ -11,6 +11,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import MenuItemResultsTable from '../../../components/Xupply/MenuItem/MenuItemResultsTable';
 import MenuItemCard from '../../../components/Xupply/MenuItem/MenuItemCard';
@@ -19,6 +21,7 @@ import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchMenuItems } from '../../../services/menuItem/actions';
 import { menuItemRowObject } from '../../../services/menuItem/model';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
     root: {
@@ -47,6 +50,11 @@ const styles = (theme) => ({
     },
     buttonLabel: {
         padding: 3,
+    },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
     },
 });
 
@@ -163,14 +171,36 @@ class MenuItemListView extends React.Component {
 
         return rows.length > 0
         ? (
+            <section>
+            <div className={classes.headerCell}>
+                <Fab
+                    aria-label={'Add'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
+                >
+                  <AddIcon />
+                </Fab>
+            </div>
             <Grid container className={classes.root} spacing={2}>
               {rows.map(this.renderMenuItemCard, this)}
             </Grid>
+            </section>
         ) : (
-            <EmptyResults
-                title={`You haven't created any menu items...`}
-                message={`You will see active menu items appear here. Create one to get started...`}
-            />
+          <div className={classes.headerCell}>
+                <Fab
+                    aria-label={'Add'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
+                >
+                  <AddIcon />
+                </Fab>
+                <EmptyResults
+                    title={`You haven't created any menu items...`}
+                    message={`You will see active menu items appear here. Create one to get started...`}
+                />
+            </div>
         )
     }
 }

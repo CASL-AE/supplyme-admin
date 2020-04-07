@@ -11,6 +11,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import RequestResultsTable from '../../../components/Xupply/Request/RequestResultsTable';
 import RequestCard from '../../../components/Xupply/Request/RequestCard';
@@ -51,6 +53,11 @@ const styles = (theme) => ({
     paper: {
       padding: theme.spacing(2),
       textAlign: 'center',
+    },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
     },
 });
 
@@ -163,14 +170,36 @@ class RequestListView extends React.Component {
 
         return rows.length > 0
         ? (
-          <Grid container className={classes.root} spacing={2}>
-            {rows.map(this.renderRequestCard, this)}
-          </Grid>
+          <section>
+              <div className={classes.headerCell}>
+                  <Fab
+                      aria-label={'Add'}
+                      className={isMobileAndTablet() ? classes.fab : null}
+                      color={'primary'}
+                      onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
+                  >
+                    <AddIcon />
+                  </Fab>
+              </div>
+              <Grid container className={classes.root} spacing={2}>
+                  {rows.map(this.renderRequestCard, this)}
+              </Grid>
+          </section>
         ) : (
-            <EmptyResults
-                title={`You haven't created any requests...`}
-                message={`You will see active requests appear here. Create one to get started...`}
-            />
+            <div className={classes.headerCell}>
+                <Fab
+                    aria-label={'Add'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
+                >
+                  <AddIcon />
+                </Fab>
+                <EmptyResults
+                    title={`You haven't created any requests...`}
+                    message={`You will see active requests appear here. Create one to get started...`}
+                />
+            </div>
         )
     }
 }

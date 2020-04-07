@@ -370,6 +370,13 @@ class Base extends Component {
                     <div className={classes.root} />
                     <div className={classes.sectionDesktop}>
                     <IconButton
+                      onClick={e => dispatchNewRoute(`${baseDomain}/locations`)}
+                    >
+                        <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
+                            Locations
+                      </div>
+                    </IconButton>
+                    <IconButton
                       onClick={e => dispatchNewRoute(`${baseDomain}/employees`)}
                     >
                         <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
@@ -465,7 +472,7 @@ class Base extends Component {
                       </div>
                       <Divider style={{backgroundColor: '#eeeeee54'}} />
                       <List>
-                        {['requests', 'create_request'].map((text, index) => (
+                        {['requests'].map((text, index) => (
                           <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
                             <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
                             <ListItemText primary={text} />
@@ -474,7 +481,7 @@ class Base extends Component {
                       </List>
                       <Divider style={{backgroundColor: '#eeeeee54'}} />
                       <List>
-                        {['orders', 'search_requests'].map((text, index) => (
+                        {['orders'].map((text, index) => (
                           <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
                             <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
                             <ListItemText primary={text} />
@@ -483,7 +490,7 @@ class Base extends Component {
                       </List>
                       <Divider style={{backgroundColor: '#eeeeee54'}} />
                       <List>
-                        {['menuItems', 'create_menuItem'].map((text, index) => (
+                        {['menuItems'].map((text, index) => (
                           <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
                             <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
                             <ListItemText primary={text} />
