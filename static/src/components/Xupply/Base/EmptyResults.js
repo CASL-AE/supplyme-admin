@@ -6,10 +6,10 @@ const EmptyResults = ({isType}) => (
     <div style={{ color: '#fff', textAlign: 'center', paddingTop: 40, paddingBottom: 40 }}>
         <img alt="noResults" height="180" width="180" src="/src/containers/App/styles/img/no_results.png" />
         <p style={{ fontSize: 16 }}>
-            {`You haven't created any ${isType}s...`}
+            {title}
         </p>
         <p style={{ fontSize: 14 }}>
-            {`You will see active ${isType}s appear here. Create one to get started...`}
+            {message}
         </p>
     </div>
 );
