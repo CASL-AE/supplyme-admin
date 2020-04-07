@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const EmptyResults = ({isType}) => (
+const EmptyResults = ({title, message}) => (
     <div style={{ color: '#fff', textAlign: 'center', paddingTop: 40, paddingBottom: 40 }}>
         <img alt="noResults" height="180" width="180" src="/src/containers/App/styles/img/no_results.png" />
         <p style={{ fontSize: 16 }}>
