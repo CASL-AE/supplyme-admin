@@ -22,7 +22,6 @@ const styles = (theme) => ({
         flex: 1,
         display: 'inline-block',
         width: '100%',
-        backgroundColor: theme.palette.primary.background,
     },
     content: {
         paddingTop: 42,
@@ -93,6 +92,11 @@ class MenuItemListView extends React.Component {
         if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
             this.receiveMenuItems(nextProps.menuItems);
         }
+        const { accountID } = nextProps;
+        if (nextProps.receivedAt !== null && nextProps.menuItems.length === 0) {
+            const route = `/accounts/${accountID}/menuItems/create/beta`;
+            dispatchNewRoute(route);
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -152,7 +156,7 @@ class MenuItemListView extends React.Component {
               disableFocusRipple
               className={classes.firstButton}
               classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create`)}
+              onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
             >
                 {'+ New MenuItem'}
             </Button>

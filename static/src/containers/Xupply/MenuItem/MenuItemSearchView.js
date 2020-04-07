@@ -15,12 +15,11 @@ import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import PublicMenuItemResultsTable from '../../../components/Xupply/MenuItem/PublicMenuItemResultsTable';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
-import { fetchPublicMenuItems } from '../../../services/menuItem/actions';
 
 const styles = (theme) => ({
     root: {
         flex: 1,
-        backgroundColor: theme.palette.primary.background,
+        height: '100%'
     },
     content: {
         paddingTop: 42,
@@ -228,23 +227,16 @@ class MenuItemSearchView extends React.Component {
               classes={{ label: classes.buttonLabel }}
               onClick={e => handleItemsSelected(e, requestItems, stockPerItem)}
             >
-                {'Back To Request'}
+                {'Finalize Request'}
             </Button>
             </div>
         );
 
         return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
-                    <PublicMenuItemResultsTable
-                        menuItems={menuItems}
-                        handleChange={this.handleMenuItemChange}
-                    />
-                </div>
-            </div>
+              <PublicMenuItemResultsTable
+                  menuItems={menuItems}
+                  handleChange={this.handleMenuItemChange}
+              />
         );
     }
 }

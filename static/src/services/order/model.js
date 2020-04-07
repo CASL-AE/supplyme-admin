@@ -1,6 +1,6 @@
 import { parseFirestoreTimeStamp } from '../../utils/misc';
 import { toNewLocation } from '../../services/location/model';
-import { toNewRequest } from '../../services/request/model';
+import { toNewRequest, toNewTotals } from '../../services/request/model';
 import { toNewMenuItem } from '../../services/menuItem/model';
 
 export function getOrderFromSnapshot(order) {
@@ -11,7 +11,7 @@ export function getOrderFromSnapshot(order) {
         status: order.status,
         request: order.request,
         menuItems: order.menuItems,
-        total: order.total,
+        totals: order.totals,
         stockPerItem: order.stockPerItem,
     };
 }
@@ -27,7 +27,7 @@ export function toNewOrder() {
         },
         request: toNewRequest(),
         items: [],
-        total: 0,
+        totals: toNewTotals(),
         stockPerItem: {},
     };
 }

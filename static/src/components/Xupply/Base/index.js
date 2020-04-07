@@ -4,13 +4,26 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
+import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import List from '@material-ui/core/List';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 import history from '../../../history';
 
@@ -20,30 +33,41 @@ import { dispatchNewRoute, parseLabel } from '../../../utils/misc';
 
 import { version } from '../../../../package.json';
 
+const drawerWidth = 240;
+
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        height: '100%',
-        backgroundColor: theme.palette.primary.background,
     },
     appFrame: {
         zIndex: 1,
+        height: '100vh',
         overflow: 'hidden',
         position: 'relative',
         display: 'flex',
         width: '100%',
     },
     appBar: {
-        // zIndex: theme.zIndex.drawer + 1,
-        paddingRight: 64,
-        paddingLeft: 64,
-        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+        zIndex: theme.zIndex.drawer + 1,
+        backgroundColor: '#333333',
+        // background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+    },
+    appBarShift: {
+      marginLeft: drawerWidth,
+      paddingLeft: 0,
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: theme.transitions.create(['width', 'margin'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
     },
     toolbar: theme.mixins.toolbar,
     content: {
-        height: '100%',
         flexGrow: 1,
-        backgroundColor: theme.palette.primary.background,
+        overflow: 'scroll',
+        backgroundColor: '#202020',
+        // background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+        padding: isMobileAndTablet() ? 0 : theme.spacing(3),
     },
     sectionDesktop: {
         display: 'none',
@@ -57,6 +81,13 @@ const styles = theme => ({
             },
         },
     },
+    menuButton: {
+      color: '#25fde2',
+      marginRight: 18,
+    },
+    hide: {
+      display: 'none',
+    },
     signUpButton: {
         color: '#202020',
         fontWeight: 600,
@@ -65,14 +96,14 @@ const styles = theme => ({
         fontSize: 14,
     },
     footer: {
-        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+        // background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
         color: '#ffffff',
         fontSize: 12,
         lineHeight: 2,
-        paddingTop: 20,
+        marginTop: 20,
         paddingBottom: 20,
         textAlign: 'center',
-        position: 'absolute',
+        position: 'fixed',
         bottom: 0,
         width: '100%'
     },
@@ -100,7 +131,7 @@ const styles = theme => ({
         paddingRight: 10,
         borderBottom: 2,
         borderStyle: 'solid',
-        borderfColor: theme.palette.primary.secondary,
+        borderColor: theme.palette.primary.secondary,
         // backgroundColor: theme.palette.primary.appBar,
     },
     accountBox: {
@@ -124,6 +155,37 @@ const styles = theme => ({
         borderRadius: '50%',
         float: 'left',
     },
+    drawer: {
+      width: drawerWidth,
+      flexShrink: 0,
+      whiteSpace: 'nowrap',
+    },
+    drawerOpen: {
+      backgroundColor: '#202020',
+      color: theme.palette.primary.main,
+      width: drawerWidth,
+      borderColor: '#eeeeee54',
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    drawerClose: {
+      backgroundColor: '#202020',
+      color: theme.palette.primary.main,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+      overflowX: 'hidden',
+      width: theme.spacing(7) + 1,
+      [theme.breakpoints.up('sm')]: {
+        width: theme.spacing(9) + 1,
+      },
+    },
+    icon: {
+        color: theme.palette.primary.main,
+    }
 });
 
 function mapStateToProps(state) {
@@ -154,6 +216,7 @@ class Base extends Component {
             baseDomain: '/accounts/',
             breadcrumb: 'account',
             listItems: [],
+            showDrawer: true,
             showAccount: false,
         };
     }
@@ -162,7 +225,7 @@ class Base extends Component {
         this.getBreadcrumb();
     }
 
-    componentWillReceiveProps(nextProps) { }
+    componentWillReceiveProps(nextProps) {}
 
     componentWillUnmount() { }
 
@@ -180,24 +243,19 @@ class Base extends Component {
             switch (accountType) {
                 case 'retailer':
                     listItems = [
-                        'locations',
                         'requests',
-                        'employees',
                     ]
                     break;
                 case 'manufacturer':
                     listItems = [
-                        'locations',
-                        'requests',
                         'orders',
                         'menuItems',
-                        'employees',
+                        'requests',
                     ]
                     break;
                 case 'financier':
                     listItems = [
                         'opportunities',
-                        'employees',
                     ]
                     break;
                 default:
@@ -223,43 +281,25 @@ class Base extends Component {
     parseURL = (item) => {
         const { baseDomain } = this.state;
         switch (item) {
-        case 'locations':
-            return `${baseDomain}/locations`;
         case 'requests':
             return `${baseDomain}/requests`;
+        case 'create_request':
+            return `${baseDomain}/requests/create/beta`;
         case 'orders':
             return `${baseDomain}/orders`;
+        case 'create_order':
+            return `${baseDomain}/orders/create`;
         case 'menuItems':
             return `${baseDomain}/menuItems`;
-        case 'employees':
-            return `${baseDomain}/employees`;
+        case 'create_menuItem':
+            return `${baseDomain}/menuItems/create/beta`;
         case 'opportunities':
             return `${baseDomain}/opportunities`;
-        default:
-            return `unknown`;
         }
-    }
-
-    // REFACTOR FOR PROD
-    renderListItems = (item) => {
-        const { classes } = this.props;
-        const { breadcrumb } = this.state;
-        const route = this.parseURL(item);
-        return (
-            <IconButton
-                key={item}
-                disableRipple
-                disableFocusRipple
-                className={breadcrumb === `${item}` ? classes.selectedItem : classes.listItem}
-                onClick={e => this.dispatchNewRoute(e, route)}
-            >
-                {parseLabel(item)}
-            </IconButton>
-        );
+        return baseDomain;
     }
 
     dispatchNewRoute(e, route) {
-        console.log(route)
         e.preventDefault();
         history.push(route);
     }
@@ -277,6 +317,14 @@ class Base extends Component {
         this.setState({showAccount});
     }
 
+    handleDrawerClose = () => {
+        this.setState({showDrawer: false});
+    }
+
+    handleDrawerOpen = () => {
+        this.setState({showDrawer: true});
+    }
+
     render() {
         const {
             classes,
@@ -289,45 +337,52 @@ class Base extends Component {
         const {
             listItems,
             isMobileAndTablet,
+            showDrawer,
             showAccount,
         } = this.state;
 
         const MainAppBar = (
             <AppBar
                 position="fixed"
-                className={classes.appBar}
+                className={clsx(classes.appBar, {
+                  [classes.appBarShift]: showDrawer,
+                })}
                 elevation={0}
             >
                 <Toolbar>
-                    <a href="https://caslnpo.org"><img alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-light-named.png" /></a>
-                    <div className={classes.sectionDesktop}>
-                    {
-                      isAuthenticated ?
-                      (
-                        listItems.length > 0
-                        ? listItems.map(this.renderListItems, this)
-                        : null
-                      ) : (
-                        <section>
-                        <IconButton
-                          onClick={e => dispatchNewRoute('/valor')}
-                        >
-                            <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
-                                The Wall
-                          </div>
-                        </IconButton>
-                        <IconButton
-                          onClick={e => dispatchNewRoute('/map')}
-                        >
-                            <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
-                                Map
-                          </div>
-                        </IconButton>
-                        </section>
-                      )
-                    }
-                    </div>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={this.handleDrawerOpen}
+                        edge="start"
+                        className={clsx(classes.menuButton, {
+                          [classes.hide]: showDrawer,
+                        })}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                    {!showDrawer
+                    ? (
+                      <a><img alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-light-named.png" /></a>
+                    ) : null}
+                    <div className={classes.sectionDesktop}></div>
                     <div className={classes.root} />
+                    <div className={classes.sectionDesktop}>
+                    <IconButton
+                      onClick={e => dispatchNewRoute('/valor')}
+                    >
+                        <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
+                            The Wall
+                      </div>
+                    </IconButton>
+                    <IconButton
+                      onClick={e => dispatchNewRoute('/map')}
+                    >
+                        <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
+                            Map
+                      </div>
+                    </IconButton>
+                    </div>
                     <div className={classes.sectionDesktop}>
                         <IconButton
                             onClick={e => this.toggleAccount(!showAccount)}
@@ -395,14 +450,58 @@ class Base extends Component {
             <div className={classes.root}>
                 <div className={classes.appFrame}>
                     {MainAppBar}
+                    <Drawer
+                      variant="permanent"
+                      className={clsx(classes.drawer, {
+                        [classes.drawerOpen]: showDrawer,
+                        [classes.drawerClose]: !showDrawer,
+                      })}
+                      classes={{
+                        paper: clsx({
+                          [classes.drawerOpen]: showDrawer,
+                          [classes.drawerClose]: !showDrawer,
+                        }),
+                      }}
+                    >
+                      <div className={classes.toolbar}>
+                        <IconButton className={classes.icon} onClick={this.handleDrawerClose}>
+                          {showDrawer ? <ChevronLeftIcon /> : null}
+                          {showDrawer ? <img style={{paddingLeft: 20}} alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-light-named.png" /> : null}
+                        </IconButton>
+                      </div>
+                      <Divider style={{backgroundColor: '#eeeeee54'}} />
+                      <List>
+                        {['requests', 'create_request'].map((text, index) => (
+                          <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
+                            <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                          </ListItem>
+                        ))}
+                      </List>
+                      <Divider style={{backgroundColor: '#eeeeee54'}} />
+                      <List>
+                        {['orders', 'create_order'].map((text, index) => (
+                          <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
+                            <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                          </ListItem>
+                        ))}
+                      </List>
+                      <Divider style={{backgroundColor: '#eeeeee54'}} />
+                      <List>
+                        {['menuItems', 'create_menuItem'].map((text, index) => (
+                          <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
+                            <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </Drawer>
                     {showAccount && isAuthenticated ? Account : null}
                     <div className={classes.content}>
                         <div className={classes.toolbar} />
                         {this.props.children}
                     </div>
-                </div>
-                <div className={classes.footer}>
-                    <span>©2020 Clean Alternative. Sustainable. Life. 501(c)(3) All rights reserved.</span>
                 </div>
             </div>
         );
@@ -423,3 +522,6 @@ Base.propTypes = {
 };
 
 export default withStyles(styles)(Base);
+// <div className={classes.footer}>
+//     <span>©2020 Clean Alternative. Sustainable. Life. 501(c)(3) All rights reserved.</span>
+// </div>

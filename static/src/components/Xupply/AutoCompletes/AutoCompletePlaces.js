@@ -76,9 +76,7 @@ function getSuggestionValue(suggestion) {
 }
 
 const styles = theme => ({
-    textFieldLarge: {
-        width: '100%',
-    },
+    textFieldLarge: {},
     container: {
         position: 'relative',
         overflow: 'visable',
@@ -223,31 +221,30 @@ class AutoCompleteHospitals extends React.Component {
       };
 
       return (
-          <div>
-              <Autosuggest
-                {...autosuggestProps}
-                inputProps={{
-                      className: classes.textFieldLarge,
-                      label: 'Select Location',
-                      placeholder: 'Ex. John Hopkins Medical Center',
-                      value: this.state.place,
-                      onChange: this.handleChange,
-                      onFocus: this.handleFocus,
-                      variant: 'outlined',
-                  }}
-                theme={{
-                      container: classes.container,
-                      suggestionsContainerOpen: classes.suggestionsContainerOpen,
-                      suggestionsList: classes.suggestionsList,
-                      suggestion: classes.suggestion,
-                  }}
-                renderSuggestionsContainer={options => (
-                      <Paper {...options.containerProps} square>
-                        {options.children}
-                    </Paper>
-                  )}
-              />
-          </div>
+        <Autosuggest
+          {...autosuggestProps}
+          inputProps={{
+                className: classes.textFieldLarge,
+                label: 'Search Google Places',
+                placeholder: 'Search Google Places',
+                margin: 'dense',
+                value: this.state.place,
+                onChange: this.handleChange,
+                onFocus: this.handleFocus,
+                variant: 'outlined',
+            }}
+          theme={{
+                container: classes.container,
+                suggestionsContainerOpen: classes.suggestionsContainerOpen,
+                suggestionsList: classes.suggestionsList,
+                suggestion: classes.suggestion,
+            }}
+          renderSuggestionsContainer={options => (
+                <Paper {...options.containerProps} square>
+                  {options.children}
+              </Paper>
+            )}
+        />
       );
   }
 }

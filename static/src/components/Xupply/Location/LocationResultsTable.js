@@ -70,11 +70,12 @@ function LocationResultsTable(props) {
       <Table size="small" className={classes.table}>
         <TableHead>
           <TableRow>
+            <TableCell className={classes.tableHeaders} >Name</TableCell>
+            <TableCell className={classes.tableHeaders} >Type</TableCell>
             <TableCell className={classes.tableHeaders} >Contact Name</TableCell>
             <TableCell className={classes.tableHeaders} >Phone</TableCell>
             <TableCell className={classes.tableHeaders} >Location</TableCell>
             <TableCell className={classes.tableHeaders} >PlaceID</TableCell>
-            <TableCell className={classes.tableHeaders} >Updated Date</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -85,6 +86,12 @@ function LocationResultsTable(props) {
             <TableRow key={row.id}>
               <TableCell><a onClick={e => handleLink(e, row.id)} className={classes.linkText}>{row.name}</a></TableCell>
               <TableCell>
+                {row.locationType}
+              </TableCell>
+              <TableCell>
+                {row.contactName}
+              </TableCell>
+              <TableCell>
                 {row.phoneNumber || 'Invalid Phone Number'}
               </TableCell>
               <TableCell>
@@ -93,7 +100,6 @@ function LocationResultsTable(props) {
               <TableCell>
                 {`${row.placeID.slice(0, 15)}...`}
               </TableCell>
-              <TableCell>{formatDateNoTime(row.updatedDate ? row.updatedDate : row.createdDate)}</TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
@@ -106,7 +112,7 @@ function LocationResultsTable(props) {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={5}
+              colSpan={6}
               count={rows.length}
               rowsPerPage={rowsPerPage}
               page={page}

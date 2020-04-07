@@ -34,7 +34,7 @@ export const searchGoogleHospitals = (query) => (dispatch) => {
         .then((response) => {
             console.log(response)
             xupplyAnalytic('google_places_success', null);
-            dispatch(googleHospitalsSuccess(response.data.data));
+            dispatch(googleHospitalsSuccess(response.data));
         })
         .catch((error) => {
             console.log(error);
@@ -58,7 +58,7 @@ export const geocodeGooglePlace = (token, accountID, place) => {
         .then(parseJSON)
         .then((response) => {
             xupplyAnalytic('google_geocode_success', null);
-            return response.data.data;
+            return response.data;
         })
         .catch((error) => {
             console.log(error);

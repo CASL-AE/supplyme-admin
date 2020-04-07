@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
+import Switch from '@material-ui/core/Switch';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -33,8 +34,8 @@ import {
 
 function renderItemType() {
     const array = [];
-    array.push(<MenuItem key={'ppe'} value={'ppe'}>PPE</MenuItem>);
-    array.push(<MenuItem key={'other'} value={'other'}>Other</MenuItem>);
+    array.push(<MenuItem key={'product'} value={'product'}>Product</MenuItem>);
+    array.push(<MenuItem key={'material'} value={'material'}>Material</MenuItem>);
     return array;
 }
 function renderPackageType() {
@@ -252,6 +253,13 @@ class MenuItemCreateView extends React.Component {
         const { value } = e.target;
         const next_state = this.state;
         next_state.menuItem[name] = value;
+        this.setState(next_state, () => {});
+    }
+
+    handleSwitch = (e, name) => {
+        const { checked } = e.target;
+        const next_state = this.state;
+        next_state.menuItem[name] = checked;
         this.setState(next_state, () => {});
     }
 
@@ -535,6 +543,25 @@ class MenuItemCreateView extends React.Component {
                         FormHelperTextProps={{ classes: { root: classes.helperText } }}
                     />
                 </div>
+                <label className={classes.inputLabel}>DIY Item?</label>
+                <div className={classes.textCell}>
+                    <Switch
+                        checked={menuItem.isDIY}
+                        onChange={e => this.handleSwitch(e, 'isDIY')}
+                        color="primary"
+                    />
+                </div>
+                {
+                  menuItem.isDIY
+                  ? (
+                    <section style={{margin: 0, padding: 0}}>
+                        <label className={classes.inputLabel}>DIY Instructions</label>
+                        <div className={classes.textCell}>
+                            <UploadMedia media={menuItem.fullSizeItemImageURL} onFinishedSelecting={this.onFinishedMediaSelected} />
+                        </div>
+                    </section>
+                  ) : null
+                }
             </div>
         );
 

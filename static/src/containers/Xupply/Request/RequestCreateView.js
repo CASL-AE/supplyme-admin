@@ -1,197 +1,160 @@
-/* eslint camelcase: 0, no-underscore-dangle: 0 */
-import React from 'react';
+/* eslint camelcase: 0, no-underscore-dangle: 0, react/jsx-indent-props: 0, max-len: 0, react/forbid-prop-types: 0 */
+import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import IconButton from '@material-ui/core/IconButton';
+// Core UI
+import deburr from 'lodash/deburr';
 import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
+import IconButton from '@material-ui/core/IconButton';
+import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import HomeIcon from '@material-ui/icons/Home';
+
+// Icons
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
-import { toNewRequest } from '../../../services/request/model';
-import { saveNewRequest, updateRequest, deleteRequest } from '../../../services/request/actions';
-import { geocodeGooglePlace } from '../../../services/google/actions';
-import {
-    getKeys,
-    validateString,
-    validateDate,
-    validateEmail,
-    validateDatePick,
-    roundUp,
-} from '../../../utils/misc';
-
+// Components
 import AutoCompleteLocations from '../../../components/Xupply/AutoCompletes/AutoCompleteLocations';
-import AutoCompleteMenuItems from '../../../components/Xupply/AutoCompletes/AutoCompleteMenuItems';
+import PublicMenuItemResultsTable from '../../../components/Xupply/MenuItem/PublicMenuItemResultsTable';
+import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletCheckoutDialog';
 
-import MenuItemSearchView from '../../../containers/Xupply/MenuItem/MenuItemSearchView';
 
-function renderPriorityType() {
-    const array = [];
-    array.push(<MenuItem key={'high'} value={'high'}>High</MenuItem>);
-    array.push(<MenuItem key={'med'} value={'med'}>Medium</MenuItem>);
-    array.push(<MenuItem key={'low'} value={'low'}>Low</MenuItem>);
-    return array;
-}
+import { filterBy } from '../../../utils/misc';
+import { validateAddress } from '../../../utils/validate';
+import { toNewRequest } from '../../../services/request/model';
+import { saveNewRequest } from '../../../services/request/actions';
+import { fetchPublicMenuItems } from '../../../services/menuItem/actions';
 
-const styles = (theme) => ({
+const styles = theme => ({
     root: {
         flex: 1,
-        backgroundColor: theme.palette.primary.background,
+        height: '100%',
+        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
     },
-    content: {
-        paddingTop: 42,
-        paddingBottom: 42,
-        paddingLeft: 80,
-        paddingRight: 80,
+    rightContent: {
+        margin: 'auto',
+        width: '90%',
     },
-    outerCell: {
-        marginBottom: 40,
+    gridItem: {
+      marginLeft: '3%',
+      marginRight: '3%',
     },
-    headerCell: {
-        marginBottom: 40,
-        display: 'block',
+    gridItemBox: {
+      backgroundColor: '#fff',
+      borderRadius: 8,
+      boxShadow: '0 0.5rem 4rem 0.5rem rgba(0,0,0,0.08)',
     },
-    headers: {
-        display: 'inline-block',
-        fontWeight: 500,
-        fontSize: 28,
-        // fontFamily: 'AvenirNext-DemiBold',
+    gridItemBoxInner: {
+      margin: 80,
     },
-    subHeaderCell: {
-        marginBottom: 24,
-        display: 'block',
+    divider: {
+        display: 'flex',
+        color: '#5c5c5c',
+        fontSize: 15,
     },
-    subHeaders: {
-        display: 'inline-block',
-        fontWeight: 500,
-        fontSize: 20,
-        // fontFamily: 'AvenirNext-DemiBold',
-    },
-    childHeaderCell: {
-        marginTop: 16,
-        marginBottom: 16,
-    },
-    childHeaders: {
-        display: 'inline-block',
-        fontWeight: 500,
-        fontSize: 16,
-    },
-    textField: {
-        width: 250,
-    },
-    textCell: {
-        marginBottom: 15,
+    dividerLine: {
+        margin: 'auto',
+        content: "",
+        borderTop: '10px solid #000000',
+        // flex: 1,
+        width: 40,
+        transform: 'translateY(50%)',
     },
     inputLabel: {
         fontSize: 13,
         fontFamily: 'AvenirNext',
         paddingBottom: 5,
         display: 'inline-block',
+        textAlign: 'left',
     },
-    helperText: {
-        fontSize: 12,
-        color: '#d22323',
-    },
-    createButton: {
-        color: '#ffffff',
+    continueButton: {
+        textAlign: 'center',
+        color: '#fff',
         backgroundColor: theme.palette.primary.main,
         textTransform: 'none',
+        height: 45,
+        width: '100%',
+        fontSize: 14,
     },
-    deleteButton: {
-        color: theme.palette.primary.main,
-        backgroundColor: '#e02626',
-        textTransform: 'none',
-    },
-    outerFlexCell: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        marginBottom: 40,
-    },
-    innerFlexCell: {
+    checkbox: {
+        margin: 0,
+        padding: 0,
         paddingRight: 10,
+        marginLeft: 10,
     },
-    block: {
-        marginBottom: 40,
-    },
-    detailList: {
-        // borderTop: '1px solid #e6e6e6',
-        paddingTop: 15,
-        display: 'block',
-    },
-    detailListDt: {
-        minWidth: '30%',
-        border: 0,
-        padding: '.5rem 0',
-        margin: 0,
-    },
-    detailListDd: {
-        minWidth: '60%',
-        border: 0,
+    checkboxLabel: {
+        display: 'inline-block',
         fontWeight: 500,
-        padding: '.5rem 0',
-        margin: 0,
-        marginLeft: 5,
-    },
-    detailListFlex: {
-        // display: 'flex',
+        fontSize: 14,
+        color: '#656565'
     },
 });
 
 function mapStateToProps(state) {
     return {
-        pathname: state.router.location.pathname,
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
-        requests: state.requestData.requests,
-        receivedAt: state.requestData.receivedAt,
+        menuItems: state.menuItemData.publicMenuItems,
+        receivedAt: state.menuItemData.receivedPublicMenuItemsAt,
+        locations: state.locationData.locations,
+        receivedLocationsAt: state.locationData.receivedAt,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: {
-            saveNewRequest: bindActionCreators(saveNewRequest, dispatch),
-            deleteRequest: bindActionCreators(deleteRequest, dispatch),
-            updateRequest: bindActionCreators(updateRequest, dispatch),
+            fetchPublicMenuItems: bindActionCreators(fetchPublicMenuItems, dispatch),
+            saveNewRequest: bindActionCreators(saveNewRequest, dispatch)
         },
     };
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-class RequestCreateView extends React.Component {
+class RequestCreateView extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             request: toNewRequest(),
-            menuItemOpen: false,
-            requiredBy_error_text: null,
-            // phoneNumber_error_text: null,
-            redirectRoute: `/accounts/${this.props.accountID}/requests`,
+            searchLocation: false,
+            menuItems: [],
+            fmenuItems: [],
+            filter: {
+                isDonation: false,
+                isDIY: false,
+            },
+            isCheckout: false,
+            disabled: true,
         };
     }
 
     componentDidMount() {
-        console.log('Request Create Mounted')
-        this.loadCompData();
+        const { receivedAt, menuItems } = this.props;
+        if (receivedAt === null) {
+            this.loadCompData();
+        } else {
+            this.receiveMenuItems(menuItems);
+        }
+        const { receivedLocationsAt, locations } = this.props;
+        if (receivedLocationsAt !== null) {
+            this.loadLocationData(locations[0]);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
-            this.loadCompData(nextProps);
+            this.receiveMenuItems(nextProps.menuItems);
         }
-    }
-
-    componentWillUnmount() {
-        console.log('Request Create UnMounted')
+        if (nextProps.receivedLocationsAt !== null && this.props.receivedLocationsAt === null) {
+            this.loadLocationData(nextProps.locations[0]);
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -201,35 +164,56 @@ class RequestCreateView extends React.Component {
         return true;
     }
 
-    loadCompData = (props = this.props) => {
-        const { requests, pathname } = props;
-        const keys = getKeys(pathname);
-        const requestID = keys.second;
-        console.warn(requestID);
-        if (requestID && requestID !== null) {
-            requests.forEach((request) => {
-                if (request.requestID === requestID) {
-                    console.log('Setting Request State')
-                    const next_state = this.state;
-                    next_state.request = request;
-                    this.setState(next_state, () => {
-                        this.isRequestDisabled();
-                    });
-                }
-            })
-        }
+    receiveMenuItems = (menuItems) => {
+        console.warn('Received Search MenuItems');
+        const _menuItems = filterBy(menuItems);
+        this.setState({menuItems: _menuItems, fmenuItems: _menuItems});
+    }
+
+    loadCompData = () => {
+        const { actions, employeeID, accountID } = this.props;
+        console.warn('Fetching Search MenuItems');
+        actions.fetchPublicMenuItems(employeeID, accountID);
+    }
+
+    loadLocationData = (location) => {
+        var { request } = this.state;
+        request.location = location
+        this.setState({request});
     }
 
     handleChange = (e, name) => {
         const { value } = e.target;
+        const { quantity, pricePerUnit } = this.state.request.package;
         const next_state = this.state;
-        next_state.request[name] = value;
+        next_state.request.package[name] = value;
+        if (name === 'quantity') {
+            next_state.request.budget = parseFloat(value, 2) * parseFloat(pricePerUnit, 2);
+        } else {
+            next_state.request.budget = parseFloat(quantity, 2) * parseFloat(value, 2);
+        }
+        if (name === 'pricePerUnit' && value === 0) {
+            next_state.filter.isDonation = true;
+        }
         this.setState(next_state, () => {});
     }
 
-    handleDateChange = (name) => (date) => {
+    handleCheckBox = (e, menuItem) => {
+        const { quantity } = this.state.request.package;
         const next_state = this.state;
-        next_state.request[name] = date.toDate();
+        const itemID = menuItem.itemID;
+        const packageType = menuItem.quantities[0].packageType;
+        const found = this.state.request.items.some(o => o.itemID === itemID);
+        if (found) {
+            next_state.request.stockPerItem[menuItem.itemID] = {packageType: packageType, quantity: quantity};
+            if (quantity === 0) {
+              next_state.request.items = this.state.request.items.filter(o => o.itemID !== itemID);
+              delete next_state.request.stockPerItem[menuItem.itemID];
+            }
+        } else {
+            next_state.request.items = [...this.state.request.items, menuItem];
+            next_state.request.stockPerItem[menuItem.itemID] = {packageType: packageType, quantity: quantity};
+        }
         this.setState(next_state, () => {});
     }
 
@@ -237,53 +221,115 @@ class RequestCreateView extends React.Component {
         const next_state = this.state;
         console.log(location)
         next_state.request.location = location;
+        next_state.searchLocation = false;
         this.setState(next_state, () => {});
     }
 
-    handleItemsSelected = (e, items, stockPerItem) => {
+    getWords = (menuItem) => {
+        var newWords = '';
+        if (menuItem.itemName && menuItem.itemName.length > 0) {
+            newWords += `${menuItem.itemName}`.slice(0, menuItem.itemName.length).toLowerCase() + ' ';
+        }
+        if (menuItem.brandName && menuItem.brandName.length > 0) {
+            newWords += `${menuItem.brandName}`.slice(0, menuItem.brandName.length).toLowerCase() + ' ';
+        }
+        if (menuItem.description && menuItem.description.length > 0) {
+            newWords += `${menuItem.description}`.slice(0, menuItem.description.length).toLowerCase() + ' ';
+        }
+        return newWords;
+    }
+
+    searchItems = (e) => {
+        const { value } = e.target;
         const next_state = this.state;
-        next_state.request.items = items;
-        next_state.request.stockPerItem = stockPerItem;
-        next_state.menuItemOpen = false;
+        const inputValue = deburr(value.trim()).toLowerCase();
+        const next_rows = this.state.menuItems.filter((i) => {
+            const words = this.getWords(i);
+            return words.includes(inputValue);
+        });
+        next_state.fmenuItems = next_rows;
         this.setState(next_state, () => {});
     }
 
-    isRequestDisabled() {
+    handleFilter = (e, type) => {
+        const { checked } = e.target;
+        const next_state = this.state;
+        next_state.filter[type] = checked;
+        var next_rows = this.state.menuItems;
+        if (checked) {
+            if (type === 'isDonation') {
+                next_rows = this.state.menuItems.filter((i) => {
+                    return i.quantities[0].pricePerUnit === '0';
+                });
+            } else {
+                next_rows = this.state.menuItems.filter((i) => {
+                    return i[type] === checked;
+                });
+            }
+        }
+        next_state.fmenuItems = next_rows;
+        this.setState(next_state, () => {});
+    }
+
+    toggleAddMenuItem = (e, menuItemOpen) => {
+        this.setState({menuItemOpen: menuItemOpen})
+    }
+
+    requestCheckout = (e) => {
+        e.preventDefault();
+        this.setState({isCheckout: true});
+    }
+
+    handleClose = (e) => {
+        e.preventDefault();
+        this.setState({isCheckout: false});
+    }
+
+    toggleLocation = (e) => {
+        const { searchLocation } = this.state;
+        this.setState({searchLocation: !searchLocation});
+    }
+
+    isRequestDisabled(e) {
+        e.preventDefault();
         this.setState({
             disabled: true,
         });
-        let name_is_valid = false;
-        let email_is_valid = false;
+        let location_is_valid = false;
+        let priority_is_valid = false;
+        let requestedBy_is_valid = false;
+        let items_is_valid = false;
+        let stock_is_valid = false;
 
         // Validate Request Name
-        if (this.state.request.contactInfo.name === null || this.state.request.contactInfo.name === '') {
+        if (this.state.request.location.address.active === false && this.state.request.location.address.street1 === null) {
             this.setState({
-                name_error_text: null,
+                location_error_text: null,
             });
-        } else if (validateString(this.state.request.contactInfo.name) && this.state.request.contactInfo.name.length < 40) {
-            name_is_valid = true;
+        } else if (validateAddress(this.state.request.location.address)) {
+            location_is_valid = true;
             this.setState({
-                name_error_text: null,
+                location_error_text: null,
             });
         } else {
             this.setState({
-                name_error_text: `The request first name must be a string and < ${40} and > 1 characters.`,
+                location_error_text: `Please select a valid location`,
             });
         }
 
         // Validate Request Email
-        if (this.state.request.contactInfo.email === null || this.state.request.contactInfo.email === '') {
+        if (this.state.request.items === []) {
             this.setState({
-                email_error_text: null,
+                items_error_text: null,
             });
-        } else if (validateEmail(this.state.request.contactInfo.email) && this.state.request.contactInfo.email.length < 40) {
-            email_is_valid = true;
+        } else if (this.state.request.items.length > 0) {
+            items_is_valid = true;
             this.setState({
-                email_error_text: null,
+                items_error_text: null,
             });
         } else {
             this.setState({
-                email_error_text: `Please enter a valid email`,
+                items_error_text: `Please select a valid item`,
             });
         }
 
@@ -291,45 +337,10 @@ class RequestCreateView extends React.Component {
         // console.warn(name_is_valid)
 
         if (
-            name_is_valid && email_is_valid
+            location_is_valid && items_is_valid
         ) {
-            this.setState({
-                disabled: false,
-            });
+            this.setState({disabled: false})
         }
-    }
-
-    deleteActiveProperty = (e) => {
-        const {
-            actions,
-            idToken,
-            employeeID,
-            accountID,
-        } = this.props;
-        const { request, redirectRoute } = this.state;
-        e.preventDefault();
-        swal({
-            title: `Delete this Property?`,
-            text: `Doing so will permanently delete the data for this Property?.`,
-            icon: 'warning',
-            buttons: {
-                cancel: 'Cancel',
-                request: {
-                    text: 'Delete',
-                    value: 'delete',
-                },
-            },
-        })
-            .then((value) => {
-                switch (value) {
-                    case 'delete':
-                        console.log(`Delete Property`);
-                        actions.deleteRequest(employeeID, accountID, request, redirectRoute);
-                        break;
-                    default:
-                        break;
-                }
-            });
     }
 
     createNewRequest = () => {
@@ -338,177 +349,140 @@ class RequestCreateView extends React.Component {
         actions.saveNewRequest(idToken, employeeID, accountID, request, redirectRoute);
     }
 
-    updateThisRequest = () => {
-        const { actions, idToken, employeeID, accountID } = this.props;
-        const { request, redirectRoute } = this.state;
-        actions.updateRequest(employeeID, accountID, request, redirectRoute);
-
-    }
-
-    toggleAddMenuItem = (e, menuItemOpen) => {
-        this.setState({menuItemOpen: menuItemOpen})
-    }
-
-    renderRequestMenuItems = (item) => {
-        console.log(item)
-        const { classes } = this.props;
-        const { request } = this.state;
-        return (
-            <div key={item.itemID}>
-                <IconButton
-                  color='secondary'
-                  disabled={false}
-                  onClick={e => this.deleteMenuItem(e, item)}
-                >
-                    <RemoveCircleOutlineIcon className={classes.iconButton} />
-                </IconButton>
-                <span className={classes.detailListDt}>
-                    Item Name: {item.itemName} - Requested: {request.stockPerItem[item.itemID].quantity}
-                </span>
-            </div>
-        );
-    }
-
     render() {
         const { classes } = this.props;
         const {
-            request,
-            requiredBy_error_text,
-            menuItemOpen,
+          request,
+          searchLocation,
+          fmenuItems,
+          filter,
+          isCheckout,
+          disabled,
         } = this.state;
 
-        console.error(request);
+        console.log(fmenuItems)
+        console.error(request)
 
-        const priorityTypes = renderPriorityType();
-
-        const NameContainer = (
-            <div className={classes.outerCell}>
-                <div className={classes.subHeaderCell}>
-                    <div className={classes.subHeaders}>
-                        Request Information
-                    </div>
-                </div>
-                <div className={classes.childHeaderCell}>
-                    <div className={classes.childHeaders}>
-                        Enter the request name and contact information.
-                    </div>
-                </div>
-                <label className={classes.inputLabel}>Priority</label>
-                <div style={{paddingBottom: 20}} className={classes.textCell}>
-                    <Select
-                        onChange={e => this.handleChange(e, 'priority')}
-                        value={request.priority}
-                        variant="outlined"
-                        inputProps={{
-                            name: 'priority',
-                            id: 'priority',
-                        }}
-                    >
-                        {priorityTypes}
-                    </Select>
-                </div>
-                <label className={classes.inputLabel}>{'Required By'}</label>
-                <div className={classes.textCell}>
-                    <KeyboardDatePicker
-                        autoOk
-                        value={request.requiredBy}
-                        margin="normal"
-                        variant="inline"
-                        helperText={requiredBy_error_text}
-                        className={classes.pickerField}
-                        onChange={this.handleDateChange('requiredBy')}
-                        format="MM/DD/YYYY"
-                        id="date-picker-inline"
-                    />
-                </div>
-                <label className={classes.inputLabel}>Location</label>
-                <div className={classes.textField}>
-                    <AutoCompleteLocations name={request.location.name} onFinishedSelecting={this.handleLocationSelected}/>
-                </div>
-            </div>
-        );
-
-        const CreateContainer = (
-            <div className={classes.outerCell}>
-                <div className={classes.textCell}>
-                    <Button
-                        variant="contained"
-                        disableRipple
-                        disableFocusRipple
-                        onClick={request.active ? this.updateThisRequest : this.createNewRequest}
-                        className={classes.createButton}
-                        style={{ marginRight: 10 }}
-                    >
-                        {request.active ? 'Update Request' : 'Create Request'}
-                    </Button>
-                    {
-                      request.active
-                      ? (
-                        <Button
-                            variant="contained"
-                            disableRipple
-                            disableFocusRipple
-                            onClick={this.deleteActiveProperty}
-                            className={classes.deleteButton}
-                        >
-                            {'Delete Request'}
-                        </Button>
-                      ) : null
-                    }
-                </div>
-            </div>
-        );
-
-        const MenuItemsContainer = (
-            <div className={classes.outerCell}>
-                <div className={classes.subHeaderCell}>
-                    <div className={classes.subHeaders}>
-                        Request Menu Items
-                    </div>
-                </div>
-
-                {request.items.length > 0
-                  ? (
-                    <div className={classes.block}>
-                        <dl className={classes.detailList}>
-                            <div className={classes.detailListFlex}>
-                                {request.items.map(this.renderRequestMenuItems, this)}
-                            </div>
-                        </dl>
-                    </div>
-                  ) : null
-                }
-                <IconButton onClick={(e) => this.toggleAddMenuItem(e, !menuItemOpen)}>
-                    <AddCircleOutlineIcon className={classes.iconButton} />
-                    <span style={{ fontSize: 16, paddingLeft: 10 }}>Add New Menu Item</span>
-                </IconButton>
-            </div>
+        const RequestContainer = (
+          <div className={classes.rightContent}>
+              <div className={classes.gridItem}>
+                  <div className={classes.gridItemBox}>
+                      <div className={classes.gridItemBoxInner}>
+                          <div style={{padding: 60}}>
+                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Tell us about your Request?'}</h4>
+                              <div className={classes.divider} >
+                                  <div className={classes.dividerLine} />
+                              </div>
+                              <div style={{paddingTop: 40}}>
+                                  <HomeIcon className={classes.iconButton} />
+                                  <span style={{ fontSize: 16, paddingLeft: 10 }}>{`${request.location.name}`}</span>
+                                  <span onClick={e => this.toggleLocation(e)} style={{ fontSize: 14, paddingLeft: 10, color: 'blue', cursor: 'pointer' }}>Change Location</span>
+                              </div>
+                              {
+                                searchLocation
+                                ? (
+                                  <div style={{paddingTop: 10}}>
+                                      <AutoCompleteLocations
+                                          name={request.location.name}
+                                          onFinishedSelecting={this.handleLocationSelected}
+                                      />
+                                  </div>
+                                ) : null
+                              }
+                              <div style={{paddingTop: 10}}>
+                              <TextField
+                                  placeholder="Search Item Name"
+                                  label="Search Item Name"
+                                  variant="outlined"
+                                  margin="dense"
+                                  type="text"
+                                  // helperText={name_error_text}
+                                  // value={location.contactInfo.name}
+                                  style={{paddingRight: 20, width: '60%'}}
+                                  onChange={e => this.searchItems(e)}
+                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                              />
+                              <TextField
+                                  placeholder="# of Pieces"
+                                  label="# of Pieces"
+                                  variant="outlined"
+                                  margin="dense"
+                                  type="number"
+                                  // helperText={name_error_text}
+                                  value={request.package.quantity || ''}
+                                  style={{paddingRight: 20, width: '20%'}}
+                                  onChange={e => this.handleChange(e, 'quantity')}
+                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                              />
+                              <TextField
+                                  placeholder="Max Piece Price"
+                                  label="Max Piece Price"
+                                  variant="outlined"
+                                  margin="dense"
+                                  type="number"
+                                  // helperText={name_error_text}
+                                  value={request.package.pricePerUnit || ''}
+                                  style={{width: '20%'}}
+                                  onChange={e => this.handleChange(e, 'pricePerUnit')}
+                                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                              />
+                              <div style={{paddingTop: 10}}>
+                                  <FormControlLabel
+                                      classes={{ label: classes.checkboxLabel }}
+                                      control={
+                                        <Checkbox
+                                          checked={filter.isDIY}
+                                          onChange={e => this.handleFilter(e, 'isDIY')}
+                                          color="primary"
+                                          className={classes.checkbox}
+                                        />
+                                      }
+                                      label="DIY Only"
+                                  />
+                                  <FormControlLabel
+                                      classes={{ label: classes.checkboxLabel }}
+                                      control={
+                                        <Checkbox
+                                          checked={filter.isDonation}
+                                          onChange={e => this.handleFilter(e, 'isDonation')}
+                                          color="primary"
+                                          className={classes.checkbox}
+                                        />
+                                      }
+                                      label="Donations Only"
+                                  />
+                              </div>
+                                  <PublicMenuItemResultsTable
+                                      menuItems={fmenuItems}
+                                      approvedMenuItems={request.items}
+                                      handleCheckBox={this.handleCheckBox}
+                                  />
+                              </div>
+                              <div style={{width: '50%', margin: 'auto'}}>
+                                  <Button
+                                      disableRipple
+                                      disableFocusRipple
+                                      disabled={disabled}
+                                      onClick={e => this.requestCheckout(e)}
+                                      className={classes.continueButton}
+                                      variant="outlined"
+                                  >
+                                      {'Agree & Continue'}
+                                  </Button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
         );
 
         return (
-            <section>
-            {
-              menuItemOpen
-              ? (
-                <MenuItemSearchView
-                    request={request}
-                    handleItemsSelected={this.handleItemsSelected}
-                />
-              )
-              : (
-                <div className={classes.root}>
-                    <div className={classes.content}>
-                        <div className={classes.headerCell}>
-                            <div className={classes.headers}>
-                                {request.active ? 'Edit Request' : 'New Request'}
-                            </div>
-                        </div>
-                        {NameContainer}
-                        {MenuItemsContainer}
-                        {CreateContainer}
-                    </div>
-                </div>
-              )}
+            <section style={{margin: 0, padding: 0}}>
+            <div className={classes.root}>
+                {RequestContainer}
+            </div>
+            <WalletCheckoutDialog open={isCheckout} request={request} handleClose={this.handleClose} />
             </section>
         );
     }
@@ -516,14 +490,15 @@ class RequestCreateView extends React.Component {
 
 RequestCreateView.defaultProps = {
     saveNewRequest: f => f,
-    deleteRequest: f => f,
-    updateRequest: f => f,
+    fetchPublicMenuItems: f => f,
 };
+
 RequestCreateView.propTypes = {
-    saveNewRequest: PropTypes.func,
-    updateRequest: PropTypes.func,
-    deleteRequest: PropTypes.func,
+    saveNewRequest: PropTypes.func.isRequired,
+    fetchPublicMenuItems: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(RequestCreateView);
+
+// <WalletCheckoutDialog />

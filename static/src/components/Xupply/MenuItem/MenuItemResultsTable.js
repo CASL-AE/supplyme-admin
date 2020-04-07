@@ -18,7 +18,12 @@ import TablePaginationActions from '../../TablePaginationActions';
 
 import MenuItemCell from './MenuItemCell';
 
-import { formatDateWTime, formatAddress, formatDateNoTime } from '../../../utils/misc';
+import {
+    formatDateWTime,
+    formatAddress,
+    formatDateNoTime,
+    formatNumbersWithCommas
+} from '../../../utils/misc';
 
 const styles = (theme) => ({
   root: {
@@ -99,7 +104,7 @@ function MenuItemResultsTable(props) {
             <TableCell className={classes.tableHeaders} >Package Price</TableCell>
             <TableCell className={classes.tableHeaders} >Brand Name</TableCell>
             <TableCell className={classes.tableHeaders} >UPC ID</TableCell>
-            <TableCell className={classes.tableHeaders} >Finished Product</TableCell>
+            <TableCell className={classes.tableHeaders} >DIY?</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -133,7 +138,7 @@ function MenuItemResultsTable(props) {
                   </LocationTooltip>
               </TableCell>
               <TableCell>
-                {'$ 35.00'}
+                {row.pricePerUnit > 0 ? `$ ${formatNumbersWithCommas(row.pricePerUnit)}` : 'donation'}
               </TableCell>
               <TableCell>
                 {row.brandName}
@@ -141,7 +146,7 @@ function MenuItemResultsTable(props) {
               <TableCell>
                 {row.upcID || 'None'}
               </TableCell>
-              <TableCell>{row.isFinished ? 'True' : 'False'}</TableCell>
+              <TableCell>{row.isDIY ? 'True' : 'False'}</TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (

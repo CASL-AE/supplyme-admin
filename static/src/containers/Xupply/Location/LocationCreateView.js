@@ -10,6 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 
 import { toNewLocation } from '../../../services/location/model';
@@ -24,8 +25,16 @@ import {
     roundUp,
 } from '../../../utils/misc';
 
-import AutoCompleteHospitals from '../../../components/Xupply/AutoCompletes/AutoCompleteHospitals';
+import AutoCompletePlaces from '../../../components/Xupply/AutoCompletes/AutoCompletePlaces';
 import PhoneTextInput from '../../../components/Xupply/Misc/PhoneTextInput';
+
+function renderLocationType() {
+    const array = [];
+    array.push(<MenuItem key={'medical'} value={'medical'}>Medical</MenuItem>);
+    array.push(<MenuItem key={'warehouse'} value={'warehouse'}>Warehouse</MenuItem>);
+    array.push(<MenuItem key={'other'} value={'other'}>Other</MenuItem>);
+    return array;
+}
 
 const styles = (theme) => ({
     root: {
@@ -315,17 +324,16 @@ class LocationCreateView extends React.Component {
                     value: 'delete',
                 },
             },
-        })
-            .then((value) => {
-                switch (value) {
-                    case 'delete':
-                        console.log(`Delete Location`);
-                        actions.deleteLocation(employeeID, accountID, location, redirectRoute);
-                        break;
-                    default:
-                        break;
-                }
-            });
+        }).then((value) => {
+            switch (value) {
+                case 'delete':
+                    console.log(`Delete Location`);
+                    actions.deleteLocation(employeeID, accountID, location, redirectRoute);
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 
     createNewLocation = () => {
@@ -338,7 +346,6 @@ class LocationCreateView extends React.Component {
         const { actions, idToken, employeeID, accountID } = this.props;
         const { location, redirectRoute } = this.state;
         actions.updateLocation(employeeID, accountID, location, redirectRoute);
-
     }
 
     render() {
@@ -352,6 +359,7 @@ class LocationCreateView extends React.Component {
             disabled,
         } = this.state;
 
+        const locationTypes = renderLocationType();
 
         const NameContainer = (
             <div className={classes.outerCell}>
@@ -395,8 +403,37 @@ class LocationCreateView extends React.Component {
                 <label className={classes.inputLabel}>Contact Phone</label>
                 <PhoneTextInput phoneNumber={location.contactInfo.phoneNumber} error_text={phoneNumber_error_text} handleChange={this.handlePhoneChange}/>
                 <label className={classes.inputLabel}>Location</label>
+                <div style={{paddingBottom: 10}} className={classes.textField}>
+                    <AutoCompletePlaces name={location.name} onFinishedSelecting={this.handleLocationSelected}/>
+                </div>
+                <label className={classes.inputLabel}>Location Type</label>
                 <div className={classes.textField}>
-                    <AutoCompleteHospitals name={location.name} onFinishedSelecting={this.handleLocationSelected}/>
+                    <Select
+                        fullWidth
+                        onChange={e => this.handleChange(e, null, 'locationType')}
+                        value={location.locationType}
+                        variant="outlined"
+                        inputProps={{
+                            name: 'locationType',
+                            id: 'locationType',
+                        }}
+                    >
+                        {locationTypes}
+                    </Select>
+                </div>
+                <label className={classes.inputLabel}>CCN (Hospital NIH ID)</label>
+                <div className={classes.textCell}>
+                    <TextField
+                        placeholder="Ex. CCN ID"
+                        margin="dense"
+                        variant="outlined"
+                        type="text"
+                        helperText={licenseID_error_text}
+                        value={location.licenseID}
+                        className={classes.textField}
+                        onChange={e => this.handleChange(e, null, 'licenseID')}
+                        FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                    />
                 </div>
             </div>
         );

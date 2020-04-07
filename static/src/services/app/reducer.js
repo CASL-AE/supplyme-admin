@@ -15,6 +15,7 @@ const initialState = {
     permissionLevel: null,
     email: null,
     displayName: null,
+    merchantHash: null,
 };
 // [END Initial App State]
 

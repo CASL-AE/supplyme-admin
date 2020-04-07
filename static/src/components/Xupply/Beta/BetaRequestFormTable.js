@@ -16,8 +16,6 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Checkbox from '@material-ui/core/Checkbox';
 
-import TablePaginationActions from '../../TablePaginationActions';
-
 import {
     formatDateWTime,
     formatAddress,
@@ -25,11 +23,15 @@ import {
     formatNumbersWithCommas
 } from '../../../utils/misc';
 
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
+
 const styles = (theme) => ({
   root: {
     boxShadow: 'none',
     borderRadius: 8,
-    padding: 30,
+    padding: isMobileAndTablet() ? 0 : 30,
+    backgroundColor: theme.palette.primary.background,
+    overflow: 'scroll',
   },
   table: {},
   tableHeaders: {
@@ -83,26 +85,29 @@ const LocationTooltip = withStyles((theme) => ({
 }))(Tooltip);
 
 
-function PublicMenuItemResultsTable(props) {
-  const { classes, menuItems, approvedMenuItems, handleCheckBox } = props;
+function BetaRequestFormTable(props) {
+  const { classes, menuItems, approvedMenuItems, stockPerItem, handleCheckBox, handleChange } = props;
   console.warn(menuItems)
   return (
     <Paper className={classes.root}>
       <Table size="small" className={classes.table}>
         <TableHead>
           <TableRow>
-            <TableCell className={classes.tableHeaders} >Name</TableCell>
-            <TableCell className={classes.tableHeaders} >Package Details</TableCell>
-            <TableCell className={classes.tableHeaders} >Package Price</TableCell>
-            <TableCell className={classes.tableHeaders} >Brand Name</TableCell>
-            <TableCell className={classes.tableHeaders} >UPC ID</TableCell>
-            <TableCell style={{textAlign: 'center'}} className={classes.tableHeaders} >Will Accept</TableCell>
+            <TableCell className={classes.tableHeaders} >Need Item</TableCell>
+            <TableCell className={classes.tableHeaders} >Quantity</TableCell>
+            <TableCell className={classes.tableHeaders} >Max Price</TableCell>
+            <TableCell className={classes.tableHeaders} >Total Cost</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {menuItems.map(menuItem => (
             <TableRow key={menuItem.itemID}>
               <TableCell>
+                  <Checkbox
+                      checked={approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      onChange={e => handleCheckBox(e, menuItem)}
+                      color="primary"
+                  />
                   <ImageTooltip
                     title={
                       <React.Fragment>
@@ -114,33 +119,37 @@ function PublicMenuItemResultsTable(props) {
                   </ImageTooltip>
               </TableCell>
               <TableCell>
-                  <LocationTooltip
-                    title={
-                      <React.Fragment>
-                      <em>
-                          {`${menuItem.quantities[0].location.address.locality}, ${menuItem.quantities[0].location.address.region}`}
-                      </em>
-                      </React.Fragment>
-                    }
-                  >
-                    <span className={classes.linkText}>{`${menuItem.quantities[0].packageQuantity} / ${menuItem.quantities[0].packageType}`}</span>
-                  </LocationTooltip>
+                  <TextField
+                      placeholder="Quantity"
+                      label="Quantity"
+                      variant="outlined"
+                      margin="dense"
+                      type="number"
+                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      // helperText={name_error_text}
+                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].quantity : ''}
+                      style={{width: 150}}
+                      onChange={e => handleChange(e, 'quantity', menuItem.itemID)}
+                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                  />
               </TableCell>
               <TableCell>
-                {menuItem.quantities[0].pricePerUnit > 0 ? `$ ${formatNumbersWithCommas(menuItem.quantities[0].pricePerUnit)}` : 'donation'}
+                  <TextField
+                      placeholder="$/unit"
+                      label="$/unit"
+                      variant="outlined"
+                      margin="dense"
+                      type="number"
+                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      // helperText={name_error_text}
+                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
+                      style={{width: 150}}
+                      onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
+                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                  />
               </TableCell>
               <TableCell>
-                {menuItem.brandName}
-              </TableCell>
-              <TableCell>
-                {menuItem.upcID || 'None'}
-              </TableCell>
-              <TableCell style={{textAlign: 'center'}}>
-              <Checkbox
-                  checked={approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                  onChange={e => handleCheckBox(e, menuItem)}
-                  color="primary"
-              />
+                {stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].quantity : 'N/A'}
               </TableCell>
             </TableRow>
           ))}
@@ -152,10 +161,12 @@ function PublicMenuItemResultsTable(props) {
 
 
 
-PublicMenuItemResultsTable.propTypes = {
+BetaRequestFormTable.propTypes = {
   menuItems: PropTypes.array.isRequired,
   approvedMenuItems: PropTypes.array.isRequired,
+  stockPerItem: PropTypes.object.isRequired,
   handleCheckBox: PropTypes.func.isRequired,
+  handleChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(PublicMenuItemResultsTable);
+export default withStyles(styles)(BetaRequestFormTable);

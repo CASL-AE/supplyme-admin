@@ -7,6 +7,10 @@ export function dispatchNewRoute(route) {
     history.push(route);
 }
 
+export function parseJSON(response) {
+    return response.data;
+}
+
 /*
 
 Time Functions
@@ -216,6 +220,20 @@ export function dispatchNewObject(e, accountID, objectType, objectID, subObjectT
     dispatchNewRoute(route);
 }
 
-export function roundUp(v) {
-    return parseFloat(v.toFixed(2));
+/*
+
+Integer / Currency Functions
+
+*/
+
+export function roundUp(value, precision) {
+    precision = Math.pow(10, precision);
+    return Math.ceil(value * precision) / precision;
+}
+
+export function formatNumbersWithCommas(value) {
+    if (!roundUp(value, 2)) {
+        return value;
+    }
+    return roundUp(value, 2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }

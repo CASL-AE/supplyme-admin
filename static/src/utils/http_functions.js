@@ -91,3 +91,26 @@ export function apiGetGoogleDirections(token, accountID, origin, destination, wa
     });
 }
 // [END Get Google Directions]
+
+// Create Braintree Token
+// TODO: None
+// [START Create Braintree Token]
+export function apiCreateBraintreeToken(token, accountID, merchantHash) {
+    return axios.post('/api/braintree/v1/token', {
+        accountID,
+        merchantHash,
+    }, tokenConfig(token));
+}
+// [END Create Braintree Token]
+
+// Create Braintree Customer
+// TODO: None
+// [START Create Braintree Customer]
+export function apiCreateBraintreeCustomer(token, accountID, firstName, lastName) {
+    return axios.post('/api/braintree/v1/customer', {
+          accountID,
+          firstName,
+          lastName,
+    }, tokenConfig(token));
+}
+// [END Create Braintree Customer]

@@ -5,17 +5,19 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { loginEmployee, forgotPassword } from '../../../services/app/actions';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 import { validateEmail, dispatchNewRoute, getRegistrationSearch } from '../../../utils/misc';
 
 function mapStateToProps(state) {
@@ -38,86 +40,49 @@ function mapDispatchToProps(dispatch) {
 
 const styles = theme => ({
     root: {
-        flex: 1,
-        backgroundColor: theme.palette.primary.background,
+        flexGrow: 1,
+        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+    },
+    appFrame: {
+        zIndex: 1,
         height: '100vh',
-    },
-    loginStyle: {
-        margin: 'auto',
-        paddingTop: '6rem',
-        width: 400,
-    },
-    loginBoxStyle: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    loginHeader: {
-      fontSize: 45,
-      fontFamily: 'monospace',
-      fontWeight: 600,
-      lineHeight: '50px',
-    },
-    loginActions: {
-        margin: 0,
-    },
-    loginBoxInner: {
-        marginTop: '2rem',
-    },
-    inputLabel: {
-        fontSize: 13,
-        marginBottom: 5,
-        display: 'inline-block',
-    },
-    text: {
+        overflow: 'hidden',
         position: 'relative',
-        display: 'block',
-        marginBottom: '1.5rem',
-        color: theme.palette.primary.secondary,
-    },
-    loginButtom: {
-        color: '#FFFFFF',
-        backgroundColor: theme.palette.primary.main,
+        display: 'flex',
         width: '100%',
-        height: 45,
     },
-    loginDivider: {
+    content: {
+        padding: theme.spacing(2),
+        backgroundColor: theme.palette.primary.background,
+        borderRadius: 8,
+    },
+    gridItemBoxInner: {
+        padding: isMobileAndTablet() ? 15 : 30,
+    },
+    divider: {
         display: 'flex',
         color: '#5c5c5c',
-        margin: '10 0',
         fontSize: 15,
     },
-    loginDividerB: {
-        marginRight: 10,
+    dividerLine: {
+        margin: 'auto',
         content: "",
-        borderTop: '1px solid #d6d6d6',
-        flex: 1,
+        borderTop: '10px solid #000000',
+        // flex: 1,
+        width: 40,
         transform: 'translateY(50%)',
     },
-    loginDividerA: {
-        marginLeft: 10,
-        content: "",
-        borderTop: '1px solid #d6d6d6',
-        flex: 1,
-        transform: 'translateY(50%)',
+    textField: {
+        width: 300,
+        marginTop: 10,
     },
-    loginFooter: {
-      fontSize: 12,
-      margin: '10 0',
-      textAlign: 'center',
-    },
-    forgotPasswordAction: {
-        float: 'left',
-        margin: theme.spacing(2)
-    },
-    forgotPasswordLabel: {
-        cursor: 'pointer',
+    registerButton: {
+        color: '#fff',
+        backgroundColor: theme.palette.primary.main,
+        textTransform: 'none',
         fontSize: 14,
-        color: '#000',
-        fontWeight: 500,
-    },
-    loader: {
-        color: theme.palette.primary.main,
-        backgroundColor: theme.palette.primary.secondary,
+        width: 300,
+        marginTop: 10,
     },
 });
 
@@ -131,11 +96,12 @@ class LoginView extends Component {
             password: '',
             email_error_text: null,
             password_error_text: null,
-            disabled: false,
+            disabled: true,
             forgotDisabled: true,
             showDialog: false,
             redirectRoute: '/',
             loading: false,
+            showEmail: false,
         };
     }
 
@@ -252,9 +218,7 @@ class LoginView extends Component {
 
     login(e) {
         e.preventDefault();
-        this.setState({
-            loading: true,
-        });
+        this.setState({ loading: true });
         this.props.actions.loginEmployee(this.state.email, this.state.password, this.state.redirectRoute);
     }
 
@@ -299,6 +263,15 @@ class LoginView extends Component {
         actions.forgotPassword(email)
     }
 
+    emailSignup = () => {
+        this.setState({showEmail: true})
+    }
+
+    dispatchNewRoute = (e) => {
+        e.preventDefault();
+        dispatchNewRoute('/register');
+    }
+
     render() {
         const { classes } = this.props;
         const {
@@ -309,94 +282,97 @@ class LoginView extends Component {
             disabled,
             showDialog,
             loading,
+            showEmail,
         } = this.state;
 
         const ForgotComponent = (
             <div className={classes.forgotPasswordLabel} onClick={e => this.toggleForgotPassword(!showDialog)}>Forgot</div>
         )
 
-        const LoginUser = (
-            <div className={classes.loginBoxInner}>
-                <label className={classes.inputLabel}>Email</label>
-                <div className={classes.text}>
+        const LoginAccountContainer = (
+            <section style={{margin: 0, padding: 0}}>
+            <div style={{ margin: 'auto', textAlign: 'center', paddingTop: 40 }}>
+                <a style={{cursor: 'pointer'}} onClick={e => this.isDisabled(e)}><img alt="google_signup" height="48px" width="300px" src="/src/containers/App/styles/img/google.png" /></a>
+            </div>
+            <div style={{ margin: 'auto', textAlign: 'center', paddingTop: 10 }}>
+            {
+              showEmail
+              ? (
+                <div>
                     <TextField
+                        placeholder="Email Address"
+                        label="Email Address"
                         type="email"
                         value={email}
                         variant="outlined"
                         autoComplete="username email"
-                        fullWidth
+                        className={classes.textField}
                         helpertext={email_error_text}
                         onChange={e => this.changeValue(e, 'email')}
                     />
-                </div>
-                <label className={classes.inputLabel}>Password</label>
-                <div className={classes.text}>
+                    < br/>
                     <TextField
+                        placeholder="Password"
+                        label="Password"
                         type="password"
                         value={password}
                         variant="outlined"
                         autoComplete="current-password"
-                        fullWidth
+                        className={classes.textField}
                         helpertext={password_error_text}
                         onChange={e => this.changeValue(e, 'password')}
                         InputProps={{
                             endAdornment: ForgotComponent,
                         }}
                     />
+                    < br/>
+                    <Button
+                        disableRipple
+                        disableFocusRipple
+                        disabled={disabled}
+                        onClick={e => this.login(e)}
+                        className={classes.registerButton}
+                        variant="outlined"
+                    >
+                        {'Login'}
+                    </Button>
                 </div>
+              ) : (
+                <div>
+                    <a style={{cursor: 'pointer'}} onClick={e => this.emailSignup(e)}><img alt="google_signup" height="48px" width="300px" src="/src/containers/App/styles/img/email.png" /></a>
+                </div>
+              )
+            }
             </div>
+            <div style={{ margin: 'auto', width: '50%' }}>
+                <p onClick={e => this.dispatchNewRoute(e, '/register')} style={{ fontSize: 14, textAlign: 'center', paddingTop: 20, cursor: 'pointer', color: 'blue'}}>Don't have an account?</p>
+            </div>
+            </section>
         );
+
         return (
-            <div className={classes.root}>
-                <div className={classes.loginStyle}>
-                    <div onKeyPress={e => this._handleKeyPress(e)}>
-                        <div className={classes.loginBoxStyle}>
-                            <div className={classes.loginHeader}>
-                                Log into Xupply
+            <div className={classes.appFrame}>
+                <Grid container alignItems="center" justify="center" className={classes.root} spacing={2}>
+                    <Grid item xs={isMobileAndTablet() ? 12 : 8}>
+                        <Paper className={classes.content}>
+                            <div className={classes.gridItemBoxInner}>
+                                <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
+                                      <img alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-named.png" />
+                                </div>
+                                <div style={{ textAlign: 'center', paddingTop: 20 }}>
+                                    {loading
+                                      ? (<CircularProgress style={{marginBottom: 15}} color="inherit" />)
+                                      : null}
+                                    <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{loading ? 'Logging into your account...' : 'Please login in to your account'}</h4>
+                                    <div className={classes.divider} >
+                                        <div className={classes.dividerLine} />
+                                    </div>
+                                </div>
+                                {!loading ? LoginAccountContainer : null}
                             </div>
-                            <div style={{margin: 10}}>
-                                {
-                                    loading ?
-                                    (<LinearProgress className={classes.loader} />)
-                                    : null
-                                }
-                            </div>
-                            {LoginUser}
-                            <div className={classes.loginActions}>
-                                <Button disabled={disabled} className={classes.loginButtom} variant="outlined" onClick={e => this.login(e)}>
-                                    Login
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <Dialog
-                    open={showDialog}
-                    onClose={e => this.toggleForgotPassword(false)}
-                    aria-labelledby="form-dialog-title"
-                >
-                    <DialogTitle id="form-dialog-title">Reset Password</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                                Please enter your email address to reset your password.
-                        </DialogContentText>
-                        <label className={classes.inputLabel}>Email</label>
-                        <div className={classes.text}>
-                            <TextField
-                                type="email"
-                                variant="outlined"
-                                fullWidth={true}
-                                helpertext={this.state.email_error_text}
-                                onChange={e => this.changeForgotPasswordValue(e, 'email')}
-                            />
-                        </div>
-                        <DialogActions>
-                            <Button onClick={this.forgotPasswordPressed} color="primary" disabled={this.state.forgotDisabled}>
-                                  Send Reset Link
-                            </Button>
-                        </DialogActions>
-                    </DialogContent>
-                </Dialog>
+                        </Paper>
+                    </Grid>
+                </Grid>
             </div>
         );
     }
@@ -416,3 +392,31 @@ LoginView.propTypes = {
 };
 
 export default withStyles(styles)(LoginView);
+
+// <Dialog
+//     open={showDialog}
+//     onClose={e => this.toggleForgotPassword(false)}
+//     aria-labelledby="form-dialog-title"
+// >
+//     <DialogTitle id="form-dialog-title">Reset Password</DialogTitle>
+//     <DialogContent>
+//         <DialogContentText>
+//                 Please enter your email address to reset your password.
+//         </DialogContentText>
+//         <label className={classes.inputLabel}>Email</label>
+//         <div className={classes.text}>
+//             <TextField
+//                 type="email"
+//                 variant="outlined"
+//                 fullWidth={true}
+//                 helpertext={this.state.email_error_text}
+//                 onChange={e => this.changeForgotPasswordValue(e, 'email')}
+//             />
+//         </div>
+//         <DialogActions>
+//             <Button onClick={this.forgotPasswordPressed} color="primary" disabled={this.state.forgotDisabled}>
+//                   Send Reset Link
+//             </Button>
+//         </DialogActions>
+//     </DialogContent>
+// </Dialog>
