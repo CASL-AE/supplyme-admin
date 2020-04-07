@@ -1,27 +1,29 @@
 /* eslint camelcase: 0, no-underscore-dangle: 0 */
-import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import React from "react";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import algoliasearch from "algoliasearch/lite";
+import { InstantSearch, SearchBox, Configure } from "react-instantsearch-dom";
 
-import MenuItemResultsTable from '../../../components/Xupply/MenuItem/MenuItemResultsTable';
+import MenuItemResultsTable from "../../../components/Xupply/MenuItem/MenuItemResultsTable";
+import HitComponent from "../../../components/Xupply/MenuItem/MenuItemResultsRow";
 
-import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
-import { fetchMenuItems } from '../../../services/menuItem/actions';
-import { menuItemRowObject } from '../../../services/menuItem/model';
+import {
+    dispatchNewRoute,
+    filterBy,
+} from "../../../utils/misc";
+import { fetchMenuItems } from "../../../services/menuItem/actions";
+import { menuItemRowObject } from "../../../services/menuItem/model";
 
 const styles = (theme) => ({
     root: {
         flex: 1,
-        display: 'inline-block',
-        width: '100%',
+        display: "inline-block",
+        width: "100%",
     },
     content: {
         paddingTop: 42,
@@ -34,13 +36,13 @@ const styles = (theme) => ({
     },
     headerCell: {
         marginBottom: 40,
-        display: 'block',
+        display: "block",
     },
     firstButton: {
         marginTop: 28,
-        color: '#ffffff',
+        color: "#ffffff",
         backgroundColor: theme.palette.primary.main,
-        textTransform: 'none',
+        textTransform: "none",
     },
     buttonLabel: {
         padding: 3,
@@ -61,25 +63,28 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: {
-            fetchMenuItems: bindActionCreators(fetchMenuItems, dispatch)
+            fetchMenuItems: bindActionCreators(fetchMenuItems, dispatch),
         },
     };
 }
-
-@connect(mapStateToProps, mapDispatchToProps)
 class MenuItemListView extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
             menuItem: {},
             showMenuItemDialog: false,
             rows: [],
+            hitsPerPage: 5,
         };
     }
 
+    searchClient = algoliasearch(
+        "5EIN2BYQ8O",
+        "db2234eba37bde834ae2504e6c6bbeca"
+    );
+
     componentDidMount() {
-        console.log('MenuItems View Mounted');
+        console.log("MenuItems View Mounted");
         const { receivedAt, menuItems } = this.props;
         if (receivedAt === null) {
             this.loadCompData();
@@ -107,11 +112,11 @@ class MenuItemListView extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log('MenuItems View Updated');
+        console.log("MenuItems View Updated");
     }
 
     componentWillUnmount() {
-        console.log('MenuItems View UnMounted');
+        console.log("MenuItems View UnMounted");
         const { actions } = this.props;
         // actions.unmountMenuItemListener();
         this.receiveMenuItems = undefined;
@@ -120,58 +125,75 @@ class MenuItemListView extends React.Component {
     }
 
     receiveMenuItems = (menuItems) => {
-        console.warn('Received MenuItems');
+        console.warn("Received MenuItems");
         var rows = [];
         filterBy(menuItems).forEach((m) => {
-              m.quantities.forEach((q) => {
-                    rows.push(menuItemRowObject(m, q));
-              });
+            m.quantities.forEach((q) => {
+                rows.push(menuItemRowObject(m, q));
+            });
         });
-        this.setState({rows});
-    }
+        this.setState({ rows });
+    };
 
     loadCompData = () => {
         const { actions, employeeID, accountID } = this.props;
         actions.fetchMenuItems(employeeID, accountID);
-    }
+    };
 
     dispatchNewMenuItem = (e, menuItemID) => {
         e.preventDefault();
         const { accountID } = this.props;
-        const route = `/accounts/${accountID}/menuItems/${menuItemID}`
+        const route = `/accounts/${accountID}/menuItems/${menuItemID}`;
         dispatchNewRoute(route);
+    };
+
+    setHitsPerPage = (number) => {
+        this.setState({
+            hitsPerPage: number
+        })
     }
 
     render() {
         const { classes, accountID } = this.props;
-        const {
-            rows,
-        } = this.state;
+        const { rows, hitsPerPage } = this.state;
 
         const GeneralContainer = (
             <div className={classes.outerCell}>
-            <Button
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              className={classes.firstButton}
-              classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
-            >
-                {'+ New MenuItem'}
-            </Button>
+                <Button
+                    variant="contained"
+                    disableRipple
+                    disableFocusRipple
+                    className={classes.firstButton}
+                    classes={{ label: classes.buttonLabel }}
+                    onClick={(e) =>
+                        dispatchNewRoute(
+                            `/accounts/${accountID}/menuItems/create/beta`
+                        )
+                    }
+                >
+                    {"+ New MenuItem"}
+                </Button>
             </div>
         );
         return (
             <div className={classes.root}>
                 <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
-                    <MenuItemResultsTable
-                        rows={rows}
-                        handleLink={this.dispatchNewMenuItem}
-                    />
+                    <div className={classes.headerCell}>{GeneralContainer}</div>
+                    <InstantSearch
+                        indexName="MenuItems"
+                        searchClient={this.searchClient}
+                    >
+                        <SearchBox />
+                        <Configure hitsPerPage={hitsPerPage} />
+                        <MenuItemResultsTable
+                            rows={rows}
+                            handleLink={this.dispatchNewMenuItem}
+                            setHitsPerPage = {this.setHitsPerPage}
+                            hitsPerPage = {hitsPerPage}
+                        >
+                            <HitComponent />
+                        </MenuItemResultsTable>
+                    </InstantSearch>
                 </div>
             </div>
         );
@@ -179,9 +201,9 @@ class MenuItemListView extends React.Component {
 }
 
 MenuItemListView.defaultProps = {
-    accountID: '',
-    employeeID: '',
-    fetchMenuItems: f => f,
+    accountID: "",
+    employeeID: "",
+    fetchMenuItems: (f) => f,
 };
 MenuItemListView.propTypes = {
     accountID: PropTypes.string,
@@ -189,4 +211,5 @@ MenuItemListView.propTypes = {
     fetchMenuItems: PropTypes.func,
     classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(MenuItemListView);
+let ListViewWithStyles =  withStyles(styles)(MenuItemListView)
+export default connect(mapStateToProps, mapDispatchToProps)(ListViewWithStyles);
