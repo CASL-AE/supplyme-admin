@@ -337,6 +337,7 @@ class Base extends Component {
         const {
             listItems,
             isMobileAndTablet,
+            baseDomain,
             showDrawer,
             showAccount,
         } = this.state;
@@ -369,17 +370,10 @@ class Base extends Component {
                     <div className={classes.root} />
                     <div className={classes.sectionDesktop}>
                     <IconButton
-                      onClick={e => dispatchNewRoute('/valor')}
+                      onClick={e => dispatchNewRoute(`${baseDomain}/employees`)}
                     >
                         <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
-                            The Wall
-                      </div>
-                    </IconButton>
-                    <IconButton
-                      onClick={e => dispatchNewRoute('/map')}
-                    >
-                        <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
-                            Map
+                            Employees
                       </div>
                     </IconButton>
                     </div>

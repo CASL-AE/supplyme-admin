@@ -72,6 +72,7 @@ export const saveNewEmployee = (token, employeeCodeInfo, redirectRoute) => (disp
     console.log(redirectRoute)
 
     const accountID = employeeCodeInfo.accountID;
+    const accountType = employeeCodeInfo.accountType;
 
     const employmentDate = new Date()
 
@@ -85,14 +86,15 @@ export const saveNewEmployee = (token, employeeCodeInfo, redirectRoute) => (disp
     employee.firstName = newName[0]
     employee.lastName = newName[1]
     employee.email = employeeCodeInfo.email;
-    employee.activationCode = newEmployeeCodeDocRef.id
-    employee.createdTime = employmentDate
-    employee.updatedTime = employmentDate
+    employee.activationCode = newEmployeeCodeDocRef.id;
+    employee.createdTime = employmentDate;
+    employee.updatedTime = employmentDate;
     employee.employeeID = employeeID;
 
-    employeeCodeInfo.activationCode = employee.activationCode
-    employeeCodeInfo.createdTime = employmentDate
-    employeeCodeInfo.updatedTime = employmentDate
+    employeeCodeInfo.activationCode = employee.activationCode;
+    employeeCodeInfo.accountType = accountType;
+    employeeCodeInfo.createdTime = employmentDate;
+    employeeCodeInfo.updatedTime = employmentDate;
 
     console.warn(employee)
     console.warn(employeeCodeInfo)
@@ -104,7 +106,6 @@ export const saveNewEmployee = (token, employeeCodeInfo, redirectRoute) => (disp
     }).then((employeeID, accountID) => {
         console.log("Transaction successfully committed!");
         dispatch(saveNewEmployeeSuccess());
-        dispatch(apiSendEmailEmployeeCode(token, employeeCodeInfo));
         xupplyAnalytic('update_employee_success', null);
         history.back();
     }).catch((error) => {

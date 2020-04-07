@@ -45,6 +45,16 @@ export function apiSendEmailEmployeeCode(token, activationCode) {
 }
 // [END Activate Employee Code Endpoint]
 
+// Registration Employee Email Endpoint
+// TODO: None
+// [START Registration Employee Email Endpoint]
+export function apiSendEmailRegisteredEmployee(token, activationCode) {
+    return axios.post('/api/google/v1/employee/registration/send', {
+        activationCode,
+    }, tokenConfig(token));
+}
+// [END Registration Employee Email Endpoint]
+
 // Search Google Places
 // TODO: None
 // [START Search Google Places]
