@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -12,6 +13,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 
 import OrderResultsTable from '../../../components/Xupply/Order/OrderResultsTable';
+import OrderCard from '../../../components/Xupply/Order/OrderCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchOrders } from '../../../services/order/actions';
@@ -136,22 +139,26 @@ class OrderListView extends React.Component {
         dispatchNewRoute(route);
     }
 
+    renderOrderCard = (row) => {
+        return (
+            <Grid item xs={isMobileAndTablet() ? 12 : 3}>
+              <OrderCard row={row} />
+            </Grid>
+        )
+    }
+
     render() {
         const { classes, accountID } = this.props;
         const {
             rows,
         } = this.state;
-        return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}></div>
-                    <OrderResultsTable
-                        rows={rows}
-                        handleLink={this.dispatchNewOrder}
-                    />
-                </div>
-            </div>
-        );
+
+        return rows.length > 0
+        ? (
+          <Grid container className={classes.root} spacing={2}>
+            {rows.map(this.renderOrderCard, this)}
+          </Grid>
+        ) : <EmptyResults isType='order'/>
     }
 }
 

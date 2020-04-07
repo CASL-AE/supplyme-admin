@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -12,6 +13,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 
 import MenuItemResultsTable from '../../../components/Xupply/MenuItem/MenuItemResultsTable';
+import MenuItemCard from '../../../components/Xupply/MenuItem/MenuItemCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchMenuItems } from '../../../services/menuItem/actions';
@@ -142,39 +145,28 @@ class MenuItemListView extends React.Component {
         dispatchNewRoute(route);
     }
 
+    renderMenuItemCard = (row) => {
+        return (
+            <Grid item xs={isMobileAndTablet() ? 12 : 3}>
+              <MenuItemCard row={row} />
+            </Grid>
+        )
+    }
+
     render() {
         const { classes, accountID } = this.props;
         const {
             rows,
         } = this.state;
 
-        const GeneralContainer = (
-            <div className={classes.outerCell}>
-            <Button
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              className={classes.firstButton}
-              classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
-            >
-                {'+ New MenuItem'}
-            </Button>
-            </div>
-        );
-        return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
-                    <MenuItemResultsTable
-                        rows={rows}
-                        handleLink={this.dispatchNewMenuItem}
-                    />
-                </div>
-            </div>
-        );
+        console.error(rows)
+
+        return rows.length > 0
+        ? (
+          <Grid container className={classes.root} spacing={2}>
+            {rows.map(this.renderMenuItemCard, this)}
+          </Grid>
+        ) : <EmptyResults isType='request'/>
     }
 }
 

@@ -49,7 +49,7 @@ const styles = (theme) => ({
   },
 });
 
-function RequestCard(props) {
+function MenuItemCard(props) {
   const { classes, row } = props;
   const [expanded, setExpanded] = React.useState(false);
 
@@ -92,8 +92,8 @@ function RequestCard(props) {
   );
 }
 
-RequestCard.propTypes = {
+MenuItemCard.propTypes = {
   row: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(RequestCard);
+export default withStyles(styles)(MenuItemCard);

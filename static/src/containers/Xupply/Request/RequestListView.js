@@ -14,6 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 
 import RequestResultsTable from '../../../components/Xupply/Request/RequestResultsTable';
 import RequestCard from '../../../components/Xupply/Request/RequestCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchRequests } from '../../../services/request/actions';
@@ -145,7 +146,6 @@ class RequestListView extends React.Component {
     }
 
     renderRequestCard = (row) => {
-        console.warn(row)
         return (
             <Grid item xs={isMobileAndTablet() ? 12 : 3}>
               <RequestCard row={row} />
@@ -161,14 +161,12 @@ class RequestListView extends React.Component {
 
         console.error(rows)
 
-        return (
-            <Grid container className={classes.root} spacing={2}>
-                {rows.length > 0
-                  ? rows.map(this.renderRequestCard, this)
-                  : null
-                }
-            </Grid>
-        );
+        return rows.length > 0
+        ? (
+          <Grid container className={classes.root} spacing={2}>
+            {rows.map(this.renderRequestCard, this)}
+          </Grid>
+        ) : <EmptyResults isType='request'/>
     }
 }
 
