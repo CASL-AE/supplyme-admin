@@ -8,7 +8,6 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import App from './containers/App';
 import NotFoundView from './containers/Global/NotFoundView';
 import LoginView from './containers/NotAuth/Register/LoginView';
-import XupplyAlgoView from './containers/NotAuth/Register/XupplyAlgoView';
 import RegisterView from './containers/NotAuth/Register/RegisterView';
 import ValorListView from './containers/NotAuth/Valor/ValorListView';
 import ValorCreateView from './containers/NotAuth/Valor/ValorCreateView';
@@ -56,7 +55,6 @@ export default (
             <Route exact path="/" component={requireAuthentication(LocationListView)} />
             <Route exact path="/register" component={requireNoAuthentication(RegisterView)} />
             <Route exact path="/login" component={requireNoAuthentication(LoginView)} />
-            <Route exact path="/algo" component={requireNoAuthentication(XupplyAlgoView)} />
 
             // Determine Auth Views
             <Route exact path="/verify/email" component={requireNoAuthentication(VerifyEmailView)} />
@@ -73,6 +71,7 @@ export default (
             <Route exact path="/accounts/:id/locations/:id" component={requireAuthentication(LocationDetailView)} />
             <Route exact path="/accounts/:id/locations/:id/edit" component={requireAuthentication(LocationCreateView)} />
             <Route exact path="/accounts/:id/requests" component={requireAuthentication(RequestListView)} />
+            <Route exact path="/accounts/:id/requests/search" component={requireAuthentication(PublicRequestListView)} />
             <Route exact path="/accounts/:id/requests/create" component={requireAuthentication(RequestCreateView)} />
             <Route exact path="/accounts/:id/requests/create/beta" component={requireAuthentication(RequestCreateBetaView)} />
             <Route exact path="/accounts/:id/requests/:id" component={requireAuthentication(RequestDetailView)} />
@@ -82,7 +81,6 @@ export default (
             <Route exact path="/accounts/:id/menuItems/:id" component={requireAuthentication(MenuItemDetailView)} />
             <Route exact path="/accounts/:id/menuItems/:id/edit" component={requireAuthentication(MenuItemCreateView)} />
             <Route exact path="/accounts/:id/orders" component={requireAuthentication(OrderListView)} />
-            <Route exact path="/accounts/:id/orders/search" component={requireAuthentication(PublicRequestListView)} />
             <Route exact path="/accounts/:id/orders/create" component={requireAuthentication(OrderCreateView)} />
             <Route exact path="/accounts/:id/orders/:id" component={requireAuthentication(OrderDetailView)} />
             <Route exact path="/accounts/:id/opportunities" component={requireAuthentication(OpportunityListView)} />

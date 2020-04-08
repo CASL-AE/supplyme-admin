@@ -5,23 +5,28 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import OrderResultsTable from '../../../components/Xupply/Order/OrderResultsTable';
+import OrderCard from '../../../components/Xupply/Order/OrderCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchOrders } from '../../../services/order/actions';
 import { orderRowObject } from '../../../services/order/model';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        display: 'inline-block',
-        width: '100%',
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
@@ -44,6 +49,11 @@ const styles = (theme) => ({
     },
     buttonLabel: {
         padding: 3,
+    },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
     },
 });
 
@@ -136,22 +146,54 @@ class OrderListView extends React.Component {
         dispatchNewRoute(route);
     }
 
+    renderOrderCard = (row) => {
+        return (
+            <Grid item xs={isMobileAndTablet() ? 12 : 3}>
+              <OrderCard row={row} />
+            </Grid>
+        )
+    }
+
     render() {
         const { classes, accountID } = this.props;
         const {
             rows,
         } = this.state;
-        return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}></div>
-                    <OrderResultsTable
-                        rows={rows}
-                        handleLink={this.dispatchNewOrder}
-                    />
-                </div>
+
+        return rows.length > 0
+        ? (
+          <section>
+          <div className={classes.headerCell}>
+              <Fab
+                  aria-label={'Add'}
+                  className={isMobileAndTablet() ? classes.fab : null}
+                  color={'primary'}
+                  onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/search`)}
+              >
+                <AddIcon />
+              </Fab>
+          </div>
+          <Grid container className={classes.root} spacing={2}>
+            {rows.map(this.renderOrderCard, this)}
+          </Grid>
+          </section>
+
+        ) : (
+            <div className={classes.headerCell}>
+                <Fab
+                    aria-label={'Add'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/search`)}
+                >
+                  <AddIcon />
+                </Fab>
+                <EmptyResults
+                    title={`You haven't created any orders...`}
+                    message={`You will see active orders appear here. Create one to get started...`}
+                />
             </div>
-        );
+        )
     }
 }
 

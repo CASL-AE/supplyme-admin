@@ -293,7 +293,7 @@ class WalletCheckoutDialog extends Component {
                           <div style={{ padding: 15, textAlign: 'left', margin: 'auto', width: '50%' }}>
                               <h5 style={{color: '#a7a7a7', fontWeight: 600}}>Ship To</h5>
                               <p style={{marginBottom: 0, fontWeight: 600, paddingTop: 10, color: '#000'}}>{request.location.contactInfo.name}</p>
-                              <span style={{color: '#828282'}}>{`${request.location.address.street1} ${request.location.address.street1}`}</span>
+                              <span style={{color: '#828282'}}>{`${request.location.address.street1}., ${request.location.address.street2}`}</span>
                               < br/>
                               <span style={{color: '#828282'}}>{`${request.location.address.locality}, ${request.location.address.region} ${request.location.address.postal}`}</span>
                           </div>
@@ -345,12 +345,6 @@ class WalletCheckoutDialog extends Component {
                         ? (<XupplyLoader open={loading} />)
                         : (
                           <section>
-                          <Checkbox
-                            // checked={filter.isDIY}
-                            // onChange={e => this.handleFilter(e, 'isDIY')}
-                            color="primary"
-                            className={classes.checkbox}
-                          />
                           <div style={{ fontSize: 12, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>
                               <Checkbox
                                 // checked={filter.isDIY}

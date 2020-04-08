@@ -5,23 +5,28 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import MenuItemResultsTable from '../../../components/Xupply/MenuItem/MenuItemResultsTable';
+import MenuItemCard from '../../../components/Xupply/MenuItem/MenuItemCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchMenuItems } from '../../../services/menuItem/actions';
 import { menuItemRowObject } from '../../../services/menuItem/model';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        display: 'inline-block',
-        width: '100%',
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
@@ -44,6 +49,11 @@ const styles = (theme) => ({
     },
     buttonLabel: {
         padding: 3,
+    },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
     },
 });
 
@@ -142,39 +152,55 @@ class MenuItemListView extends React.Component {
         dispatchNewRoute(route);
     }
 
+    renderMenuItemCard = (row) => {
+        return (
+            <Grid item xs={isMobileAndTablet() ? 12 : 4}>
+                <MenuItemCard row={row} />
+            </Grid>
+        )
+    }
+
     render() {
         const { classes, accountID } = this.props;
         const {
             rows,
         } = this.state;
 
-        const GeneralContainer = (
-            <div className={classes.outerCell}>
-            <Button
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              className={classes.firstButton}
-              classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
-            >
-                {'+ New MenuItem'}
-            </Button>
+        console.error(rows)
+
+        return rows.length > 0
+        ? (
+            <section>
+            <div className={classes.headerCell}>
+                <Fab
+                    aria-label={'Add'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
+                >
+                  <AddIcon />
+                </Fab>
             </div>
-        );
-        return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
-                    <MenuItemResultsTable
-                        rows={rows}
-                        handleLink={this.dispatchNewMenuItem}
-                    />
-                </div>
+            <Grid container className={classes.root} spacing={3}>
+                {rows.map(this.renderMenuItemCard, this)}
+            </Grid>
+            </section>
+        ) : (
+          <div className={classes.headerCell}>
+                <Fab
+                    aria-label={'Add'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
+                >
+                  <AddIcon />
+                </Fab>
+                <EmptyResults
+                    title={`You haven't created any menu items...`}
+                    message={`You will see active menu items appear here. Create one to get started...`}
+                />
             </div>
-        );
+        )
     }
 }
 

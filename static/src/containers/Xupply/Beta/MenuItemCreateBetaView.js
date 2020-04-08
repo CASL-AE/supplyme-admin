@@ -274,11 +274,11 @@ class MenuItemCreateBetaView extends Component {
         }
     }
 
-    createNewRequest = () => {
-        const { actions, idToken, employeeID, accountID } = this.props;
-        const { request, redirectRoute } = this.state;
-        actions.saveNewRequest(idToken, employeeID, accountID, request, redirectRoute);
-    }
+    // createNewRequest = () => {
+    //     const { actions, idToken, employeeID, accountID } = this.props;
+    //     const { request, redirectRoute } = this.state;
+    //     actions.saveNewRequest(idToken, employeeID, accountID, request, redirectRoute);
+    // }
 
     render() {
         const { classes } = this.props;

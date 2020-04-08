@@ -285,10 +285,10 @@ class Base extends Component {
             return `${baseDomain}/requests`;
         case 'create_request':
             return `${baseDomain}/requests/create/beta`;
+        case 'search_requests':
+            return `${baseDomain}/requests/search`;
         case 'orders':
             return `${baseDomain}/orders`;
-        case 'create_order':
-            return `${baseDomain}/orders/create`;
         case 'menuItems':
             return `${baseDomain}/menuItems`;
         case 'create_menuItem':
@@ -369,6 +369,13 @@ class Base extends Component {
                     <div className={classes.sectionDesktop}></div>
                     <div className={classes.root} />
                     <div className={classes.sectionDesktop}>
+                    <IconButton
+                      onClick={e => dispatchNewRoute(`${baseDomain}/locations`)}
+                    >
+                        <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
+                            Locations
+                      </div>
+                    </IconButton>
                     <IconButton
                       onClick={e => dispatchNewRoute(`${baseDomain}/employees`)}
                     >
@@ -465,7 +472,7 @@ class Base extends Component {
                       </div>
                       <Divider style={{backgroundColor: '#eeeeee54'}} />
                       <List>
-                        {['requests', 'create_request'].map((text, index) => (
+                        {['requests'].map((text, index) => (
                           <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
                             <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
                             <ListItemText primary={text} />
@@ -474,7 +481,7 @@ class Base extends Component {
                       </List>
                       <Divider style={{backgroundColor: '#eeeeee54'}} />
                       <List>
-                        {['orders', 'create_order'].map((text, index) => (
+                        {['orders'].map((text, index) => (
                           <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
                             <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
                             <ListItemText primary={text} />
@@ -483,7 +490,7 @@ class Base extends Component {
                       </List>
                       <Divider style={{backgroundColor: '#eeeeee54'}} />
                       <List>
-                        {['menuItems', 'create_menuItem'].map((text, index) => (
+                        {['menuItems'].map((text, index) => (
                           <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
                             <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
                             <ListItemText primary={text} />

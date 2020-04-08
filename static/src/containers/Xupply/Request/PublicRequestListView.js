@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -12,6 +13,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 
 import PublicRequestResultsTable from '../../../components/Xupply/Request/PublicRequestResultsTable';
+import RequestCard from '../../../components/Xupply/Request/RequestCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchPublicRequests } from '../../../services/request/actions';
@@ -19,9 +22,8 @@ import { requestRowObject } from '../../../services/request/model';
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        display: 'inline-block',
-        width: '100%',
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
@@ -138,31 +140,31 @@ class PublicRequestListView extends React.Component {
         dispatchNewRoute(route);
     }
 
+    renderRequestCard = (row) => {
+        return (
+            <Grid item xs={isMobileAndTablet() ? 12 : 3}>
+              <RequestCard row={row} />
+            </Grid>
+        )
+    }
+
     render() {
         const { classes, accountID } = this.props;
         const {
             rows,
         } = this.state;
 
-        const GeneralContainer = (
-            <div className={classes.outerCell}><h1>Search Requests</h1>
-            </div>
-        );
-
-        return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
-                    <PublicRequestResultsTable
-                        type={'request'}
-                        rows={rows}
-                        handleLink={this.dispatchNewRequest}
-                    />
-                </div>
-            </div>
-        );
+        return rows.length > 0
+        ? (
+          <Grid container className={classes.root} spacing={2}>
+            {rows.map(this.renderRequestCard, this)}
+          </Grid>
+        ) : (
+            <EmptyResults
+              title={`There are currently no open requests...`}
+              message={`You will see open requests appear here. Please check back soon...`}
+            />
+        )
     }
 }
 
@@ -178,15 +180,3 @@ PublicRequestListView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(PublicRequestListView);
-
-// {requestItems.length > 0
-//   ? (
-//     <div className={classes.block}>
-//         <dl className={classes.detailList}>
-//             <div className={classes.detailListFlex}>
-//                 {orderItems.map(this.renderRequestMenuItems, this)}
-//             </div>
-//         </dl>
-//     </div>
-//   ) : null
-// }

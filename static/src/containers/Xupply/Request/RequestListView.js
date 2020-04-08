@@ -11,9 +11,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import RequestResultsTable from '../../../components/Xupply/Request/RequestResultsTable';
 import RequestCard from '../../../components/Xupply/Request/RequestCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchRequests } from '../../../services/request/actions';
@@ -51,6 +54,11 @@ const styles = (theme) => ({
       padding: theme.spacing(2),
       textAlign: 'center',
     },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
+    },
 });
 
 function mapStateToProps(state) {
@@ -76,9 +84,7 @@ class RequestListView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            request: {},
-            showRequestDialog: false,
-            rows: [],
+            requests: [],
         };
     }
 
@@ -126,9 +132,8 @@ class RequestListView extends React.Component {
 
     receiveRequests = (requests) => {
         console.warn('Received Requests');
-        const rows = requests.map(e => requestRowObject(e));
         this.setState({
-            rows,
+            requests,
         });
     }
 
@@ -144,11 +149,42 @@ class RequestListView extends React.Component {
         dispatchNewRoute(route);
     }
 
-    renderRequestCard = (row) => {
-        console.warn(row)
+    deleteActiveRequest = (e, request) => {
+        const {
+            actions,
+            idToken,
+            employeeID,
+            accountID,
+        } = this.props;
+        const { redirectRoute } = this.state;
+        e.preventDefault();
+        swal({
+            title: `Delete this Request?`,
+            text: `Doing so will permanently delete the data for this Request?.`,
+            icon: 'warning',
+            buttons: {
+                cancel: 'Cancel',
+                request: {
+                    text: 'Delete',
+                    value: 'delete',
+                },
+            },
+        }).then((value) => {
+            switch (value) {
+                case 'delete':
+                    console.log(`Delete Request`);
+                    actions.deleteRequest(employeeID, accountID, request, redirectRoute);
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    renderRequestCard = (request) => {
         return (
-            <Grid item xs={isMobileAndTablet() ? 12 : 3}>
-              <RequestCard row={row} />
+            <Grid key={request.requestID} item xs={isMobileAndTablet() ? 12 : 4}>
+                <RequestCard request={request} handleLink={this.dispatchNewRequest} handleDelete={this.deleteActiveRequest} />
             </Grid>
         )
     }
@@ -156,19 +192,44 @@ class RequestListView extends React.Component {
     render() {
         const { classes, accountID } = this.props;
         const {
-            rows,
+            requests,
         } = this.state;
 
-        console.error(rows)
+        console.error(requests)
 
-        return (
-            <Grid container className={classes.root} spacing={2}>
-                {rows.length > 0
-                  ? rows.map(this.renderRequestCard, this)
-                  : null
-                }
-            </Grid>
-        );
+        return requests.length > 0
+        ? (
+          <section>
+              <div className={classes.headerCell}>
+                  <Fab
+                      aria-label={'Add'}
+                      className={isMobileAndTablet() ? classes.fab : null}
+                      color={'primary'}
+                      onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
+                  >
+                    <AddIcon />
+                  </Fab>
+              </div>
+              <Grid container className={classes.root} spacing={2}>
+                  {requests.map(this.renderRequestCard, this)}
+              </Grid>
+          </section>
+        ) : (
+            <div className={classes.headerCell}>
+                <Fab
+                    aria-label={'Add'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
+                >
+                  <AddIcon />
+                </Fab>
+                <EmptyResults
+                    title={`You haven't created any requests...`}
+                    message={`You will see active requests appear here. Create one to get started...`}
+                />
+            </div>
+        )
     }
 }
 
@@ -186,13 +247,3 @@ RequestListView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(RequestListView);
-
-// <Grid item xs={isMobileAndTablet() ? 12 : 3}>
-//     <div className={classes.headerCell}>
-//         {GeneralContainer}
-//     </div>
-//     <RequestResultsTable
-//         rows={rows}
-//         handleLink={this.dispatchNewRequest}
-//     />
-// </Grid>

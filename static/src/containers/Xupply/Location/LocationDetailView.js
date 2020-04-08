@@ -20,24 +20,19 @@ const styles = {
         flex: 1,
         height: '100vh'
     },
-    content: {
-        paddingTop: 42,
-        paddingBottom: 42,
-        paddingLeft: 80,
-        paddingRight: 80,
-    },
     display: {
         display: 'flex',
     },
     leftDetail: {
-      paddingRight: '8rem',
       flexBasis: 0,
       flexGrow: 1,
+      marginRight: 30,
     },
     detailCard: {
       padding: '2.0rem',
       boxShadow: '0 8px 64px rgba(32, 32, 32, 0.08), 0 4px 16px rgba(32, 32, 32, 0.02)',
-      blocationRadius: 16,
+      backgroundColor: '#eee',
+      borderRadius: 8,
     },
     detailTop: {
       marginBottom: 30,
@@ -70,6 +65,9 @@ const styles = {
     rightDetail: {
       flexGrow: 2,
       flexBasis: 0,
+      backgroundColor: '#eee',
+      padding: 30,
+      borderRadius: 8,
     },
     block: {
         marginBottom: 40,
@@ -204,112 +202,110 @@ class LocationDetailView extends React.Component {
         console.error(location)
         return (
           <div className={classes.root}>
-              <div className={classes.content}>
-                  <div className={classes.display}>
-                      <div className={classes.leftDetail}>
-                          <div className={classes.detailCard}>
-                              <div className={classes.detailTop}>
-                                  {
-                                    location.active
-                                    ? (
-                                      <MiniDetailMap
-                                          isMarkerShown={true}
-                                          googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}`}
-                                          loadingElement={<div style={{ height: `100%` }} />}
-                                          containerElement={<div style={{ width: 400, height: 200 }} />}
-                                          mapElement={<div style={{ height: `100%` }} />}
-                                          id={location.locationID}
-                                          location={location.address.location}
-                                      />
-                                    ) : null
-                                  }
-                              </div>
-                              <div className={classes.detailTitle}>
-                                <span className={classes.detailTitleText}>{`${location.contactInfo.name}`}</span>
-                                <br />
-                                <span style={{fontSize: 14, color: '#505050'}}>{`${location.name}`}</span>
-                                <br />
-                                <span style={{fontSize: 12, color: '#8c8c8c'}}>{location.active ? `Lat: ${location.address.location.lat} Lng: ${location.address.location.lng}` : null}</span>
-                              </div>
+              <div className={classes.display}>
+                  <div className={classes.leftDetail}>
+                      <div className={classes.detailCard}>
+                          <div className={classes.detailTop}>
+                              {
+                                location.active
+                                ? (
+                                  <MiniDetailMap
+                                      isMarkerShown={true}
+                                      googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}`}
+                                      loadingElement={<div style={{ height: `100%` }} />}
+                                      containerElement={<div style={{ width: 400, height: 200 }} />}
+                                      mapElement={<div style={{ height: `100%` }} />}
+                                      id={location.locationID}
+                                      location={location.address.location}
+                                  />
+                                ) : null
+                              }
+                          </div>
+                          <div className={classes.detailTitle}>
+                            <span className={classes.detailTitleText}>{`${location.contactInfo.name}`}</span>
+                            <br />
+                            <span style={{fontSize: 14, color: '#505050'}}>{`${location.name}`}</span>
+                            <br />
+                            <span style={{fontSize: 12, color: '#8c8c8c'}}>{location.active ? `Lat: ${location.address.location.lat} Lng: ${location.address.location.lng}` : null}</span>
                           </div>
                       </div>
-                      <div className={classes.rightDetail}>
-                          <div className={classes.block}>
-                              <div className={classes.section}>
-                                  <span className={classes.detailTitleText}>Details</span>
-                                  <Button
-                                    variant="contained"
-                                    disableRipple
-                                    disableFocusRipple
-                                    onClick={(e) => dispatchNewObject(e, accountID, 'location', location.locationID, 'edit')}
-                                    className={classes.editButton}
-                                  >
-                                      {'Edit'}
-                                  </Button>
-                              </div>
-                              <dl className={classes.detailList}>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      ID
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {location.locationID}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Location Type
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {location.locationType}
-                                  </dd>
-                                  </div>
-                                  {
-                                    location.licenseID
-                                  ? (
-                                    <div className={classes.detailListFlex}>
-                                    <dt className={classes.detailListDt}>
-                                        License ID
-                                    </dt>
-                                    <dd className={classes.detailListDd}>
-                                        {location.licenseID}
-                                    </dd>
-                                    </div>
-                                  ): null}
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Created
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {`${formatDateWTime(location.createdDate)}`}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Contact Name
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {location.contactInfo.name}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Contact Email
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {location.contactInfo.email}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Contact Phone
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {location.contactInfo.phoneNumber}
-                                  </dd>
-                                  </div>
-                              </dl>
+                  </div>
+                  <div className={classes.rightDetail}>
+                      <div className={classes.block}>
+                          <div className={classes.section}>
+                              <span className={classes.detailTitleText}>Details</span>
+                              <Button
+                                variant="contained"
+                                disableRipple
+                                disableFocusRipple
+                                onClick={(e) => dispatchNewObject(e, accountID, 'location', location.locationID, 'edit')}
+                                className={classes.editButton}
+                              >
+                                  {'Edit'}
+                              </Button>
                           </div>
+                          <dl className={classes.detailList}>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  ID
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {location.locationID}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Location Type
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {location.locationType}
+                              </dd>
+                              </div>
+                              {
+                                location.licenseID
+                              ? (
+                                <div className={classes.detailListFlex}>
+                                <dt className={classes.detailListDt}>
+                                    License ID
+                                </dt>
+                                <dd className={classes.detailListDd}>
+                                    {location.licenseID}
+                                </dd>
+                                </div>
+                              ): null}
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Created
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {`${formatDateWTime(location.createdDate)}`}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Contact Name
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {location.contactInfo.name}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Contact Email
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {location.contactInfo.email}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Contact Phone
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {location.contactInfo.phoneNumber}
+                              </dd>
+                              </div>
+                          </dl>
                       </div>
                   </div>
               </div>

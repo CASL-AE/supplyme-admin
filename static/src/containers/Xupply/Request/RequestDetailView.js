@@ -20,24 +20,19 @@ const styles = (theme) => ({
         flex: 1,
         height: '100vh'
     },
-    content: {
-        paddingTop: 42,
-        paddingBottom: 42,
-        paddingLeft: 80,
-        paddingRight: 80,
-    },
     display: {
         display: 'flex',
     },
     leftDetail: {
-      paddingRight: '8rem',
       flexBasis: 0,
       flexGrow: 1,
+      marginRight: 30,
     },
     detailCard: {
       padding: '2.0rem',
       boxShadow: '0 8px 64px rgba(32, 32, 32, 0.08), 0 4px 16px rgba(32, 32, 32, 0.02)',
-      brequestRadius: 16,
+      backgroundColor: '#eee',
+      borderRadius: 8,
     },
     detailTop: {
       marginBottom: 30,
@@ -68,6 +63,9 @@ const styles = (theme) => ({
     rightDetail: {
       flexGrow: 2,
       flexBasis: 0,
+      backgroundColor: '#eee',
+      padding: 30,
+      borderRadius: 8,
     },
     block: {
         marginBottom: 40,
@@ -246,93 +244,91 @@ class RequestDetailView extends React.Component {
         console.error(request)
         return (
           <div className={classes.root}>
-              <div className={classes.content}>
-                  <div className={classes.display}>
-                      <div className={classes.leftDetail}>
-                          <div className={classes.detailCard}>
-                              <div className={classes.detailTop}>
-                                  {
-                                    request.active
-                                    ? (
-                                      <MiniDetailMap
-                                          isMarkerShown={true}
-                                          googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}`}
-                                          loadingElement={<div style={{ height: `100%` }} />}
-                                          containerElement={<div style={{ width: 400, height: 200 }} />}
-                                          mapElement={<div style={{ height: `100%` }} />}
-                                          id={request.requestID}
-                                          location={request.location.address.location}
-                                      />
-                                    ) : null
-                                  }
-                              </div>
-                              <div className={classes.detailTitle}>
-                                <span className={classes.detailTitleText}>{`Total Funded:  $ ${request.budget || '0'}`}</span>
-                                <br />
-                                <span>{`${request.location.name}`}</span>
-                                <br />
-                                <span>{request.active ? `Lat: ${request.location.address.location.lat} Lng: ${request.location.address.location.lng}` : null}</span>
-                              </div>
-                              <div className={classes.detailActions}>
-                                  {this.renderAction()}
-                              </div>
+              <div className={classes.display}>
+                  <div className={classes.leftDetail}>
+                      <div className={classes.detailCard}>
+                          <div className={classes.detailTop}>
+                              {
+                                request.active
+                                ? (
+                                  <MiniDetailMap
+                                      isMarkerShown={true}
+                                      googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}`}
+                                      loadingElement={<div style={{ height: `100%` }} />}
+                                      containerElement={<div style={{ width: 400, height: 200 }} />}
+                                      mapElement={<div style={{ height: `100%` }} />}
+                                      id={request.requestID}
+                                      location={request.location.address.location}
+                                  />
+                                ) : null
+                              }
+                          </div>
+                          <div className={classes.detailTitle}>
+                            <span className={classes.detailTitleText}>{`Total Funded:  $ ${request.budget || '0'}`}</span>
+                            <br />
+                            <span>{`${request.location.name}`}</span>
+                            <br />
+                            <span>{request.active ? `Lat: ${request.location.address.location.lat} Lng: ${request.location.address.location.lng}` : null}</span>
+                          </div>
+                          <div className={classes.detailActions}>
+                              {this.renderAction()}
                           </div>
                       </div>
-                      <div className={classes.rightDetail}>
-                          <div className={classes.block}>
-                              <div className={classes.section}>
-                                  <span className={classes.detailTitleText}>Details</span>
+                  </div>
+                  <div className={classes.rightDetail}>
+                      <div className={classes.block}>
+                          <div className={classes.section}>
+                              <span className={classes.detailTitleText}>Details</span>
 
-                              </div>
-                              <dl className={classes.detailList}>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      ID
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {request.requestID}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Created
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {'formatDateWTime(request.status.events[0].time)'}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Priority
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {request.priority}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Request Type
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {request.requestType}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Required By
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {formatDateWTime(request.requiredBy)}
-                                  </dd>
-                                  </div>
-                              </dl>
                           </div>
-                          <div className={classes.block}>
-                              <div className={classes.section}>
-                                  <span className={classes.detailTitleText}>{'Requested Menu Items'}</span>
+                          <dl className={classes.detailList}>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  ID
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {request.requestID}
+                              </dd>
                               </div>
-                              <RequestMenuItemsTable menuItems={request.items} stockPerItem={request.stockPerItem} />
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Created
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {'formatDateWTime(request.status.events[0].time)'}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Priority
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {request.priority}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Request Type
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {request.requestType}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Required By
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {formatDateWTime(request.requiredBy)}
+                              </dd>
+                              </div>
+                          </dl>
+                      </div>
+                      <div className={classes.block}>
+                          <div className={classes.section}>
+                              <span className={classes.detailTitleText}>{'Requested Menu Items'}</span>
                           </div>
+                          <RequestMenuItemsTable menuItems={request.items} stockPerItem={request.stockPerItem} />
                       </div>
                   </div>
               </div>

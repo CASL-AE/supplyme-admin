@@ -5,23 +5,28 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import LocationResultsTable from '../../../components/Xupply/Location/LocationResultsTable';
+import LocationCard from '../../../components/Xupply/Location/LocationCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchLocations } from '../../../services/location/actions';
 import { locationRowObject } from '../../../services/location/model';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        display: 'inline-block',
-        width: '100%',
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
@@ -33,7 +38,7 @@ const styles = (theme) => ({
         marginBottom: 80,
     },
     headerCell: {
-        marginBottom: 40,
+        height: 80,
         display: 'block',
     },
     firstButton: {
@@ -44,6 +49,11 @@ const styles = (theme) => ({
     },
     buttonLabel: {
         padding: 3,
+    },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
     },
 });
 
@@ -136,40 +146,43 @@ class LocationListView extends React.Component {
         dispatchNewRoute(route);
     }
 
+    renderLocationCard = (row) => {
+        return (
+            <Grid item xs={isMobileAndTablet() ? 12 : 4}>
+              <LocationCard row={row} handleLink={this.dispatchNewLocation} />
+            </Grid>
+        )
+    }
+
     render() {
         const { classes, accountID } = this.props;
         const {
             rows,
         } = this.state;
 
-        const GeneralContainer = (
-            <div className={classes.outerCell}>
-            <Button
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              className={classes.firstButton}
-              classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/locations/create`)}
-            >
-                {'+ New Location'}
-            </Button>
-            </div>
-        );
-        return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
-                    <LocationResultsTable
-                        type={'location'}
-                        rows={rows}
-                        handleLink={this.dispatchNewLocation}
-                    />
-                </div>
-            </div>
-        );
+        return rows.length > 0
+        ? (
+          <section>
+              <div className={classes.headerCell}>
+                  <Fab
+                      aria-label={'Add'}
+                      className={isMobileAndTablet() ? classes.fab : null}
+                      color={'primary'}
+                      onClick={e => dispatchNewRoute(`/accounts/${accountID}/locations/create`)}
+                  >
+                    <AddIcon />
+                  </Fab>
+              </div>
+              <Grid container className={classes.root} spacing={3}>
+                {rows.map(this.renderLocationCard, this)}
+              </Grid>
+          </section>
+        ) : (
+            <EmptyResults
+                title={`You haven't created any requests...`}
+                message={`You will see active requests appear here. Create one to get started...`}
+            />
+        )
     }
 }
 

@@ -360,6 +360,18 @@ class RequestCreateBetaView extends Component {
                             </div>
                         </div>
                     </Paper>
+                    {
+                      isCheckout
+                      ? (
+                        <WalletCheckoutDialog
+                            open={isCheckout}
+                            loading={loading}
+                            request={request}
+                            handleClose={this.handleClose}
+                            handleSubmit={this.createNewRequest}
+                        />
+                      ) : null
+                    }
                 </Grid>
             </Grid>
         );
@@ -378,16 +390,3 @@ RequestCreateBetaView.propTypes = {
 };
 
 export default withStyles(styles)(RequestCreateBetaView);
-
-// <WalletCheckoutDialog
-//     open={isCheckout}
-//     request={request}
-//     handleClose={this.handleClose}
-//     handleSubmit={this.createNewRequest}
-// />
-// {
-//   loading
-//   ? (
-//     <XupplyLoader open={true} />
-//   ) : null
-// }

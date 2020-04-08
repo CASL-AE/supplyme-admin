@@ -21,8 +21,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import MiniDetailMap from '../../../components/Xupply/Misc/MiniDetailMap';
 
 import {
-  parseFirestoreTimeStamp,
-  formatDateNoTime,
+  formatDateNoTime
 } from '../../../utils/misc';
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
@@ -50,17 +49,22 @@ const styles = (theme) => ({
   },
 });
 
-function RequestCard(props) {
-  const { classes, request, handleLink, handleDelete } = props;
+function LocationCard(props) {
+  const { classes, row, handleLink } = props;
+  const [expanded, setExpanded] = React.useState(false);
 
-  console.log(request)
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
+
+  console.log(row)
 
   return (
     <Card className={classes.root}>
       <CardHeader
-          title={`Funded: ${request.totals.paid || 0}`}
-          subheader={`Req. By: ${formatDateNoTime(request.requiredBy)}`}
-          onClick={e => handleLink(e, request.requestID)}
+          title={row.name}
+          subheader={row.locationType}
+          onClick={e => handleLink(e, row.id)}
           style={{cursor: 'pointer'}}
       />
       <MiniDetailMap
@@ -69,20 +73,20 @@ function RequestCard(props) {
           loadingElement={<div style={{ height: `100%` }} />}
           containerElement={<div style={{ width: '100%', height: 200 }} />}
           mapElement={<div style={{ height: `100%` }} />}
-          id={request.requestID}
-          location={request.location.address.location}
+          id={row.id}
+          location={row.location}
       />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
-          {'Requested: '}
+          {row.contactName}
         </Typography>
         <Typography style={{fontWeight: 600}} variant="body2" color="textSecondary" component="p">
-          {request.items.length > 0 ? request.items.map(i => `${i.itemName}, `) : null}
+          {row.phoneNumber}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <span style={{fontSize: 12, color: 'gray', padding: 12}}>{`Created: ${formatDateNoTime(parseFirestoreTimeStamp(request.status.isStatusTime))}`}</span>
-        <IconButton onClick={e => handleDelete(e, request)} className={classes.expand} aria-label="delete">
+        <span style={{fontSize: 12, color: 'gray', padding: 12}}>{`Created: ${formatDateNoTime(row.isStatusTime)}`}</span>
+        <IconButton onClick={e => handleDelete(e, location)} className={classes.expand} aria-label="delete">
           <DeleteForeverIcon />
         </IconButton>
       </CardActions>
@@ -90,10 +94,9 @@ function RequestCard(props) {
   );
 }
 
-RequestCard.propTypes = {
-    request: PropTypes.object.isRequired,
-    handleLink: PropTypes.func.isRequired,
-    handleDelete: PropTypes.func.isRequired,
-    classes: PropTypes.object.isRequired,
+LocationCard.propTypes = {
+  row: PropTypes.object.isRequired,
+  handleLink: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(RequestCard);
+export default withStyles(styles)(LocationCard);

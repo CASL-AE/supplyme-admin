@@ -82,10 +82,9 @@ function RequestMenuItemsTable(props) {
         <TableHead>
           <TableRow>
             <TableCell className={classes.tableHeaders} >Name</TableCell>
-            <TableCell className={classes.tableHeaders} >Brand</TableCell>
             <TableCell className={classes.tableHeaders} >Requested</TableCell>
             <TableCell className={classes.tableHeaders} >Package</TableCell>
-            <TableCell className={classes.tableHeaders} >$ Per Package</TableCell>
+            <TableCell className={classes.tableHeaders} >$/Package</TableCell>
             <TableCell className={classes.tableHeaders} >Total</TableCell>
           </TableRow>
         </TableHead>
@@ -103,9 +102,6 @@ function RequestMenuItemsTable(props) {
                   <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{menuItem.itemName}</a>
                 </ImageTooltip>
             </TableCell>
-              <TableCell>
-                {menuItem.brandName}
-              </TableCell>
               <TableCell>
                 {stockPerItem[menuItem.itemID].quantity}
               </TableCell>
