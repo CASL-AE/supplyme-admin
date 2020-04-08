@@ -39,20 +39,7 @@ export function toNewEmployee() {
         oldEmployeeRef: null,
     }
 }
-export function employeeRowObject(employee) {
-    return {
-        index: employee.employeeID,
-        id: employee.employeeID,
-        active: employee.active,
-        deleted: employee.deleted,
-        name: `${employee.firstName} ${employee.lastName}`,
-        permissionLevel: employee.permissionLevel,
-        email: employee.email,
-        phoneNumber: employee.phoneNumber,
-        createdDate: employee.createdDate,
-        updatedDate: employee.updatedDate,
-    };
-}
+
 export function getEmployeeCodeFromSnapshot(employee) {
     return {
         activationCode: employee.activationCode,

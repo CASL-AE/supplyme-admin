@@ -82,7 +82,7 @@ class LocationListView extends React.Component {
         this.state = {
             location: {},
             showLocationDialog: false,
-            rows: [],
+            locations: [],
         };
     }
 
@@ -127,10 +127,8 @@ class LocationListView extends React.Component {
 
     receiveLocations = (locations) => {
         console.warn('Received Locations');
-        const rows = filterBy(locations).map(e => locationRowObject(e));
-
         this.setState({
-            rows,
+            locations: filterBy(locations),
         });
     }
 
@@ -146,10 +144,10 @@ class LocationListView extends React.Component {
         dispatchNewRoute(route);
     }
 
-    renderLocationCard = (row) => {
+    renderLocationCard = (location) => {
         return (
             <Grid item xs={isMobileAndTablet() ? 12 : 4}>
-              <LocationCard row={row} handleLink={this.dispatchNewLocation} />
+              <LocationCard location={location} handleLink={this.dispatchNewLocation} />
             </Grid>
         )
     }
@@ -157,10 +155,10 @@ class LocationListView extends React.Component {
     render() {
         const { classes, accountID } = this.props;
         const {
-            rows,
+            locations,
         } = this.state;
 
-        return rows.length > 0
+        return locations.length > 0
         ? (
           <section>
               <div className={classes.headerCell}>
@@ -174,7 +172,7 @@ class LocationListView extends React.Component {
                   </Fab>
               </div>
               <Grid container className={classes.root} spacing={3}>
-                {rows.map(this.renderLocationCard, this)}
+                {locations.map(this.renderLocationCard, this)}
               </Grid>
           </section>
         ) : (

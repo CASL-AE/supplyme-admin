@@ -18,8 +18,6 @@ import ShareIcon from '@material-ui/icons/Share';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-import MiniDetailMap from '../../../components/Xupply/Misc/MiniDetailMap';
-
 import {
   formatDateNoTime
 } from '../../../utils/misc';
