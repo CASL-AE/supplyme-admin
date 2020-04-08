@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -14,6 +15,8 @@ import AddIcon from '@material-ui/icons/Add';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 
 import EmployeeResultsTable from '../../../components/Xupply/Employee/EmployeeResultsTable';
+import EmployeeCard from '../../../components/Xupply/Employee/EmployeeCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchEmployees, sendEmployeeCodeEmail } from '../../../services/employee/actions';
@@ -90,7 +93,7 @@ class EmployeeListView extends React.Component {
         this.state = {
             employee: {},
             showEmployeeDialog: false,
-            rows: [],
+            employees: [],
         };
     }
 
@@ -132,9 +135,8 @@ class EmployeeListView extends React.Component {
 
     receiveEmployees = (employees) => {
         console.warn('Received Employees');
-        const rows = filterBy(employees).map(e => employeeRowObject(e));
         this.setState({
-            rows,
+            employees: filterBy(employees),
         });
     }
 
@@ -158,10 +160,18 @@ class EmployeeListView extends React.Component {
         actions.sendEmployeeCodeEmail(idToken, employeeCode);
     }
 
+    renderEmployeeCard = (employee) => {
+        return (
+            <Grid item xs={isMobileAndTablet() ? 12 : 4}>
+                <EmployeeCard employee={employee} handleLink={this.dispatchNewEmployee} />
+            </Grid>
+        )
+    }
+
     render() {
         const { classes, accountID } = this.props;
         const {
-            rows,
+            employees,
         } = this.state;
 
         const GeneralContainer = (
@@ -209,6 +219,9 @@ class EmployeeListView extends React.Component {
                       <ClearAllIcon />
                     </Fab>
                 </div>
+                <Grid container className={classes.root} spacing={3}>
+                    {employees.map(this.renderEmployeeCard, this)}
+                </Grid>
             </section>
         );
     }

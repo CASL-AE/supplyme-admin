@@ -50,38 +50,29 @@ const styles = (theme) => ({
 });
 
 function LocationCard(props) {
-  const { classes, location, handleLink } = props;
+  const { classes, employee, handleLink } = props;
 
-  console.log(location)
+  console.log(employee)
 
   return (
     <Card className={classes.root}>
       <CardHeader
-          title={location.name}
-          subheader={location.locationType}
-          onClick={e => handleLink(e, location.id)}
+          title={`${employee.firstName} ${employee.lastName}`}
+          subheader={employee.permissionLevel}
+          onClick={e => handleLink(e, employee.employeeID)}
           style={{cursor: 'pointer'}}
-      />
-      <MiniDetailMap
-          isMarkerShown={true}
-          googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}`}
-          loadingElement={<div style={{ height: `100%` }} />}
-          containerElement={<div style={{ width: '100%', height: 200 }} />}
-          mapElement={<div style={{ height: `100%` }} />}
-          id={location.id}
-          location={location.address.location}
       />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
-          {location.contactInfo.name}
+          {employee.email || 'Invalid Email'}
         </Typography>
         <Typography style={{fontWeight: 600}} variant="body2" color="textSecondary" component="p">
-          {location.contactInfo.phoneNumber || location.contactInfo.email}
+          {employee.phoneNumber || 'Invalid Phone'}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <span style={{fontSize: 12, color: 'gray', padding: 12}}>{`Created: ${formatDateNoTime(location.createdDate)}`}</span>
-        <IconButton onClick={e => handleDelete(e, location)} className={classes.expand} aria-label="delete">
+        <span style={{fontSize: 12, color: 'gray', padding: 12}}>{`Created: ${formatDateNoTime(employee.createdDate)}`}</span>
+        <IconButton onClick={e => handleDelete(e, employee)} className={classes.expand} aria-label="delete">
           <DeleteForeverIcon />
         </IconButton>
       </CardActions>
@@ -90,7 +81,7 @@ function LocationCard(props) {
 }
 
 LocationCard.propTypes = {
-  location: PropTypes.object.isRequired,
+  employee: PropTypes.object.isRequired,
   handleLink: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
 };

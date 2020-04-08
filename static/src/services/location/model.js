@@ -42,20 +42,3 @@ export function toNewLocation() {
         createdDate: null,
     };
 }
-export function locationRowObject(location) {
-    return {
-        index: location.locationID,
-        id: location.locationID,
-        active: location.active,
-        deleted: location.deleted,
-        locationType: location.locationType,
-        licenseID: location.licenseID,
-        location: location.address.location,
-        name: location.name,
-        contactName: location.contactInfo.name,
-        placeID: location.address.placeID,
-        phoneNumber: location.contactInfo.phoneNumber,
-        updatedDate: location.updatedDate,
-        createdDate: location.createdDate,
-    };
-}
