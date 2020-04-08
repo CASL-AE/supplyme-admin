@@ -18,8 +18,8 @@ import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc'
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        height: '100%'
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,

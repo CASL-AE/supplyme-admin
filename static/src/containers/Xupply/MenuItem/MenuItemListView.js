@@ -25,9 +25,8 @@ import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        display: 'inline-block',
-        width: '100%',
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
@@ -155,8 +154,8 @@ class MenuItemListView extends React.Component {
 
     renderMenuItemCard = (row) => {
         return (
-            <Grid item xs={isMobileAndTablet() ? 12 : 3}>
-              <MenuItemCard row={row} />
+            <Grid item xs={isMobileAndTablet() ? 12 : 4}>
+                <MenuItemCard row={row} />
             </Grid>
         )
     }
@@ -182,8 +181,8 @@ class MenuItemListView extends React.Component {
                   <AddIcon />
                 </Fab>
             </div>
-            <Grid container className={classes.root} spacing={2}>
-              {rows.map(this.renderMenuItemCard, this)}
+            <Grid container className={classes.root} spacing={3}>
+                {rows.map(this.renderMenuItemCard, this)}
             </Grid>
             </section>
         ) : (

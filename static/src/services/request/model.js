@@ -64,23 +64,6 @@ export function toNewTotals() {
     }
 };
 
-export function requestRowObject(request) {
-    return {
-        index: request.requestID,
-        id: request.requestID,
-        active: request.active,
-        deleted: request.deleted,
-        priority: request.priority,
-        requiredBy: request.requiredBy,
-        isStatus: request.status.isStatus,
-        isStatusTime: parseFirestoreTimeStamp(request.status.isStatusTime),
-        locationName: request.location.name,
-        items: request.items.length > 0 ? request.items.map(i => `${i.itemName}, `) : '',
-        due: request.totals.due,
-        paid: request.totals.paid,
-        location: request.location.address.location,
-    };
-}
 export function requestMarkerObject(request) {
     console.log(request)
     return {

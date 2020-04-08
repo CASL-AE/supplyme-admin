@@ -62,18 +62,10 @@ function MenuItemCard(props) {
   return (
     <Card className={classes.root}>
       <CardHeader
-        title={`Funded: ${row.paid || 0}`}
-        subheader={`Req. By: ${formatDateNoTime(row.isStatusTime)}`}
+        title={row.itemName}
+        subheader={row.brandName}
       />
-      <MiniDetailMap
-          isMarkerShown={true}
-          googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}`}
-          loadingElement={<div style={{ height: `100%` }} />}
-          containerElement={<div style={{ width: 400, height: 200 }} />}
-          mapElement={<div style={{ height: `100%` }} />}
-          id={row.id}
-          location={row.location}
-      />
+      <img src={row.thumbnail ? row.thumbnail : '/src/containers/App/styles/img/broken.png'} style={{height: 200, width: 'auto'}} />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
           {'Requested: '}

@@ -50,7 +50,7 @@ const styles = (theme) => ({
 });
 
 function LocationCard(props) {
-  const { classes, row } = props;
+  const { classes, row, handleLink } = props;
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpandClick = () => {
@@ -62,8 +62,10 @@ function LocationCard(props) {
   return (
     <Card className={classes.root}>
       <CardHeader
-        title={row.name}
-        subheader={row.locationType}
+          title={row.name}
+          subheader={row.locationType}
+          onClick={e => handleLink(e, row.id)}
+          style={{cursor: 'pointer'}}
       />
       <MiniDetailMap
           isMarkerShown={true}
@@ -84,7 +86,7 @@ function LocationCard(props) {
       </CardContent>
       <CardActions disableSpacing>
         <span style={{fontSize: 12, color: 'gray', padding: 12}}>{`Created: ${formatDateNoTime(row.isStatusTime)}`}</span>
-        <IconButton className={classes.expand} aria-label="delete">
+        <IconButton onClick={e => handleDelete(e, location)} className={classes.expand} aria-label="delete">
           <DeleteForeverIcon />
         </IconButton>
       </CardActions>
@@ -94,6 +96,7 @@ function LocationCard(props) {
 
 LocationCard.propTypes = {
   row: PropTypes.object.isRequired,
+  handleLink: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(LocationCard);

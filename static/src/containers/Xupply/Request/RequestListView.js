@@ -84,9 +84,7 @@ class RequestListView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            request: {},
-            showRequestDialog: false,
-            rows: [],
+            requests: [],
         };
     }
 
@@ -134,9 +132,8 @@ class RequestListView extends React.Component {
 
     receiveRequests = (requests) => {
         console.warn('Received Requests');
-        const rows = requests.map(e => requestRowObject(e));
         this.setState({
-            rows,
+            requests,
         });
     }
 
@@ -152,10 +149,42 @@ class RequestListView extends React.Component {
         dispatchNewRoute(route);
     }
 
-    renderRequestCard = (row) => {
+    deleteActiveRequest = (e, request) => {
+        const {
+            actions,
+            idToken,
+            employeeID,
+            accountID,
+        } = this.props;
+        const { redirectRoute } = this.state;
+        e.preventDefault();
+        swal({
+            title: `Delete this Request?`,
+            text: `Doing so will permanently delete the data for this Request?.`,
+            icon: 'warning',
+            buttons: {
+                cancel: 'Cancel',
+                request: {
+                    text: 'Delete',
+                    value: 'delete',
+                },
+            },
+        }).then((value) => {
+            switch (value) {
+                case 'delete':
+                    console.log(`Delete Request`);
+                    actions.deleteRequest(employeeID, accountID, request, redirectRoute);
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    renderRequestCard = (request) => {
         return (
-            <Grid item xs={isMobileAndTablet() ? 12 : 3}>
-              <RequestCard row={row} />
+            <Grid key={request.requestID} item xs={isMobileAndTablet() ? 12 : 4}>
+                <RequestCard request={request} handleLink={this.dispatchNewRequest} handleDelete={this.deleteActiveRequest} />
             </Grid>
         )
     }
@@ -163,12 +192,12 @@ class RequestListView extends React.Component {
     render() {
         const { classes, accountID } = this.props;
         const {
-            rows,
+            requests,
         } = this.state;
 
-        console.error(rows)
+        console.error(requests)
 
-        return rows.length > 0
+        return requests.length > 0
         ? (
           <section>
               <div className={classes.headerCell}>
@@ -182,7 +211,7 @@ class RequestListView extends React.Component {
                   </Fab>
               </div>
               <Grid container className={classes.root} spacing={2}>
-                  {rows.map(this.renderRequestCard, this)}
+                  {requests.map(this.renderRequestCard, this)}
               </Grid>
           </section>
         ) : (
@@ -218,13 +247,3 @@ RequestListView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(RequestListView);
-
-// <Grid item xs={isMobileAndTablet() ? 12 : 3}>
-//     <div className={classes.headerCell}>
-//         {GeneralContainer}
-//     </div>
-//     <RequestResultsTable
-//         rows={rows}
-//         handleLink={this.dispatchNewRequest}
-//     />
-// </Grid>

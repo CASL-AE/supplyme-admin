@@ -25,9 +25,8 @@ import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        display: 'inline-block',
-        width: '100%',
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
@@ -150,7 +149,7 @@ class LocationListView extends React.Component {
     renderLocationCard = (row) => {
         return (
             <Grid item xs={isMobileAndTablet() ? 12 : 4}>
-              <LocationCard row={row} />
+              <LocationCard row={row} handleLink={this.dispatchNewLocation} />
             </Grid>
         )
     }
@@ -169,7 +168,7 @@ class LocationListView extends React.Component {
                       aria-label={'Add'}
                       className={isMobileAndTablet() ? classes.fab : null}
                       color={'primary'}
-                      onClick={e => dispatchNewRoute(`/accounts/${accountID}/employees/codes/create`)}
+                      onClick={e => dispatchNewRoute(`/accounts/${accountID}/locations/create`)}
                   >
                     <AddIcon />
                   </Fab>

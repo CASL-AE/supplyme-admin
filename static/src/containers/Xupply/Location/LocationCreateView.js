@@ -24,6 +24,7 @@ import {
     validateDatePick,
     roundUp,
 } from '../../../utils/misc';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 import AutoCompletePlaces from '../../../components/Xupply/AutoCompletes/AutoCompletePlaces';
 import PhoneTextInput from '../../../components/Xupply/Misc/PhoneTextInput';
@@ -38,14 +39,16 @@ function renderLocationType() {
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        backgroundColor: theme.palette.primary.background,
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
         paddingBottom: 42,
         paddingLeft: 80,
         paddingRight: 80,
+        backgroundColor: '#eee',
+        borderRadius: 8,
     },
     outerCell: {
         marginBottom: 40,
@@ -58,7 +61,6 @@ const styles = (theme) => ({
         display: 'inline-block',
         fontWeight: 500,
         fontSize: 28,
-        // fontFamily: 'AvenirNext-DemiBold',
     },
     subHeaderCell: {
         marginBottom: 24,
@@ -68,7 +70,6 @@ const styles = (theme) => ({
         display: 'inline-block',
         fontWeight: 500,
         fontSize: 20,
-        // fontFamily: 'AvenirNext-DemiBold',
     },
     childHeaderCell: {
         marginTop: 16,
@@ -87,7 +88,6 @@ const styles = (theme) => ({
     },
     inputLabel: {
         fontSize: 13,
-        fontFamily: 'AvenirNext',
         paddingBottom: 5,
         display: 'inline-block',
     },
@@ -356,6 +356,7 @@ class LocationCreateView extends React.Component {
             name_error_text,
             email_error_text,
             phoneNumber_error_text,
+            licenseID_error_text,
             disabled,
         } = this.state;
 

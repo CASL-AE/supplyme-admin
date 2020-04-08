@@ -9,18 +9,20 @@ import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
 
 import EmployeeCodeResultsTable from '../../../components/Xupply/Employee/EmployeeCodeResultsTable';
 
 import { validateString, dispatchNewRoute } from '../../../utils/misc';
 import { fetchEmployeeCodes, sendEmployeeCodeEmail, deleteEmployeeCode } from '../../../services/employee/actions';
 import { employeeCodeRowObject } from '../../../services/employee/model';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        display: 'inline-block',
-        width: '100%',
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
@@ -50,6 +52,11 @@ const styles = (theme) => ({
         color: '#656565',
         backgroundColor: '#d4d4d4',
         textTransform: 'none',
+    },
+    fab: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
     },
 });
 
@@ -181,35 +188,19 @@ class EmployeeCodeListView extends React.Component {
             employeeCodes,
         } = this.state;
 
-        const GeneralContainer = (
-            <div className={classes.outerCell}>
-            <Button
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              className={classes.secondButton}
-              classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/employees`)}
-            >
-                {'List Employees'}
-            </Button>
-            </div>
-        );
         return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
-                    <EmployeeCodeResultsTable
-                        type={'employee_code'}
-                        employeeCodes={employeeCodes}
-                        handleLink={this.dispatchNewEmployeeCode}
-                        handleEmailAction={this.handleEmailAction}
-                        handleDeleteAction={this.handleDeleteAction}
-                    />
+            <section>
+                <div className={classes.headerCell}>
+                    <Fab
+                        aria-label={'List'}
+                        className={isMobileAndTablet() ? classes.fab : null}
+                        color={'primary'}
+                        onClick={e => dispatchNewRoute(`/accounts/${accountID}/employees`)}
+                    >
+                      <ClearAllIcon />
+                    </Fab>
                 </div>
-            </div>
+            </section>
         );
     }
 }
