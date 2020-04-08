@@ -137,7 +137,7 @@ class RegisterView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            stepIndex: 0,
+            stepIndex: -1,
             loading: false,
             redirectRoute: '/',
 
@@ -172,6 +172,7 @@ class RegisterView extends Component {
 
     componentDidMount() {
         const { actions, search } = this.props;
+        dispatchNewRoute('/login')
         const keys = getRegistrationSearch(search)
         if (keys.type === 'employee' && keys.code !== null) {
             this.setState({stepIndex: 2, activationCode: keys.code});
