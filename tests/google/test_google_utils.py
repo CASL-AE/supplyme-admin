@@ -20,7 +20,7 @@ class TestGoogleUtils(BaseTestConfig):
         get_google_directions(origin, destination, [])
         print(e)
 
-    # @pytest.mark.skip(reason="Using Prod Cert")
+    @pytest.mark.skip(reason="Using Prod Cert")
     def test_google_hospital_rank(self):
         address = '501 6th Avenue South, St. Petersburg, FL'
         rank = get_hospital_rank(address)
