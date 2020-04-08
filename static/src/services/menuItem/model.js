@@ -168,6 +168,7 @@ export function toNewQuantity() {
         },
         weight: 0,
         moq: 0,
+        leadQuantity: 0,
         leadTime: 0,
     };
 }

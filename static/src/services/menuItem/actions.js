@@ -134,8 +134,8 @@ export const saveMenuItemMedia = (image, ref) => {
 // Save New MenuItem
 //
 // [START Save New MenuItem]
-export const saveNewMenuItemMenuItem = () => ({
-    type: 'SAVE_NEW_MENUITEM_MENUITEM',
+export const saveNewMenuItemRequest = () => ({
+    type: 'SAVE_NEW_MENUITEM_REQUEST',
 });
 
 
@@ -151,7 +151,7 @@ export const saveNewMenuItemFailure = error => ({
     },
 });
 export const saveNewMenuItem = (token, employeeID, accountID, menuItem, redirectRoute) => async (dispatch) => {
-    dispatch(saveNewMenuItemMenuItem());
+    dispatch(saveNewMenuItemRequest());
 
     const createdDate = new Date();
 
@@ -206,11 +206,67 @@ export const saveNewMenuItem = (token, employeeID, accountID, menuItem, redirect
 };
 // [END Save New MenuItem]
 
+// Save Beta MenuItem
+// TODO: None
+// [START Save Beta MenuItem]
+export const saveBetaMenuItemRequest = () => ({
+    type: 'SAVE_NEW_MENUITEM_MENUITEM',
+});
+
+
+export const saveBetaMenuItemSuccess = () => ({
+    type: 'SAVE_NEW_MENUITEM_SUCCESS',
+});
+
+export const saveBetaMenuItemFailure = error => ({
+    type: 'SAVE_NEW_MENUITEM_FAILURE',
+    payload: {
+        status: error.response.status,
+        statusText: error.response.statusText,
+    },
+});
+export const saveBetaMenuItem = (token, employeeID, accountID, menuItems, redirectRoute) => async (dispatch) => {
+    dispatch(saveBetaMenuItemRequest());
+
+    var batch = db().batch();
+
+    const createdDate = new Date();
+
+    const accountRef = db().collection("Accounts").doc(accountID);
+
+    menuItems.forEach((menuItem) => {
+          const newAccountMenuItemRef = accountRef.collection("MenuItems").doc(menuItem.itemID);
+          const menuItemInfo = menuItem;
+          menuItemInfo.active = true;
+          menuItemInfo.deleted = false;
+          menuItemInfo.createdDate = createdDate;
+          batch.set(newAccountMenuItemRef, getMenuItemFromSnapshot(menuItemInfo));
+    });
+
+    return batch.commit().then(() => {
+        console.log("Batch successfully committed!");
+        dispatch(saveBetaMenuItemSuccess());
+        // dispatch(addMenuItem(menuItem))
+        xupplyAnalytic('beta_menu_items_success');
+        history.push(redirectRoute)
+    }).catch((error) => {
+        console.log("Batch failed: ", error);
+        xupplyAnalytic('beta_menu_items_failure');
+        dispatch(saveBetaMenuItemFailure({
+            response: {
+                status: 999,
+                statusText: error.message,
+            },
+        }));
+    });
+};
+// [END Save Beta MenuItem]
+
 // Update MenuItem
 // TODO: None
 // [START Update MenuItem]
-export const updateMenuItemMenuItem = () => ({
-    type: 'UPDATE_MENUITEM_MENUITEM',
+export const updateMenuItemRequest = () => ({
+    type: 'UPDATE_MENUITEM_REQUEST',
 });
 
 
@@ -230,7 +286,7 @@ export const updateMenuItemFailure = error => ({
 });
 
 export const updateMenuItem = (employeeID, accountID, menuItem, redirectRoute) => (dispatch) => {
-    dispatch(updateMenuItemMenuItem());
+    dispatch(updateMenuItemRequest());
     const menuItemID = menuItem.menuItemID;
     if (!validateKey(menuItemID)) {
         errorAlert('Invalid MenuItem ID');
@@ -297,8 +353,8 @@ export const updateMenuItem = (employeeID, accountID, menuItem, redirectRoute) =
 // Delete MenuItem
 // TODO: None
 // [START Delete MenuItem]
-export const deleteMenuItemMenuItem = () => ({
-    type: 'DELETE_MENUITEM_MENUITEM',
+export const deleteMenuItemRequest = () => ({
+    type: 'DELETE_MENUITEM_REQUEST',
 });
 
 
@@ -319,7 +375,7 @@ export const deleteMenuItemFailure = error => ({
 
 export const deleteMenuItem = (employeeID, accountID, menuItem, redirectRoute) => (dispatch) => {
 
-    dispatch(deleteMenuItemMenuItem());
+    dispatch(deleteMenuItemRequest());
 
     const menuItemID = menuItem.menuItemID;
     if (!validateKey(menuItemID)) {

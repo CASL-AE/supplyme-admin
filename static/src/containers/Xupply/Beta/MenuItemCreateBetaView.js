@@ -25,9 +25,10 @@ import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletChecko
 
 import { filterBy } from '../../../utils/misc';
 import { validateAddress, validateString } from '../../../utils/validate';
-import { toNewRequest } from '../../../services/request/model';
-import { saveNewRequest } from '../../../services/request/actions';
-import { fetchPublicMenuItems } from '../../../services/menuItem/actions';
+import { toNewLocation } from '../../../services/location/model';
+import { toNewQuantity } from '../../../services/menuItem/model';
+import { toNewTotals } from '../../../services/request/model';
+import { fetchPublicMenuItems, saveBetaMenuItem } from '../../../services/menuItem/actions';
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = theme => ({
@@ -101,7 +102,7 @@ function mapDispatchToProps(dispatch) {
     return {
         actions: {
             fetchPublicMenuItems: bindActionCreators(fetchPublicMenuItems, dispatch),
-            saveNewRequest: bindActionCreators(saveNewRequest, dispatch)
+            saveBetaMenuItem: bindActionCreators(saveBetaMenuItem, dispatch)
         },
     };
 }
@@ -112,13 +113,15 @@ class MenuItemCreateBetaView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            request: toNewRequest(),
+            location: toNewLocation(),
+            totals: toNewTotals(),
             searchLocation: false,
-            menuItemOpen: false,
             menuItems: [],
+            approvedMenuItems: [],
+            stockPerItem: {},
             isCheckout: false,
             disabled: false,
-            loading: true,
+            loading: false,
         };
     }
 
@@ -154,7 +157,7 @@ class MenuItemCreateBetaView extends Component {
     receiveMenuItems = (menuItems) => {
         console.warn('Received Search MenuItems');
         const _menuItems = filterBy(menuItems);
-        this.setState({menuItems: _menuItems});
+        this.setState({ menuItems: _menuItems });
     }
 
     loadCompData = () => {
@@ -164,36 +167,40 @@ class MenuItemCreateBetaView extends Component {
     }
 
     loadLocationData = (location) => {
-        var { request } = this.state;
-        request.location = location
-        this.setState({request});
+        this.setState({location});
     }
 
     handleChange = (e, name, itemID) => {
         const { value } = e.target;
         const next_state = this.state;
-        next_state.request.stockPerItem[itemID][name] = value;
-        this.setState(next_state, () => {});
+        if (!next_state.stockPerItem[itemID]) {
+            next_state.stockPerItem[itemID] = {};
+        }
+        next_state.stockPerItem[itemID][name] = value;
+        this.setState(next_state, () => {
+            this.isRequestDisabled();
+        });
     }
 
     handleCheckBox = (e, menuItem) => {
         const next_state = this.state;
         const itemID = menuItem.itemID;
-        const found = this.state.request.items.some(o => o.itemID === itemID);
+        const found = this.state.approvedMenuItems.some(o => o.itemID === itemID);
         if (found) {
-            next_state.request.items = this.state.request.items.filter(o => o.itemID !== itemID);
-            delete next_state.request.stockPerItem[menuItem.itemID];
+            next_state.approvedMenuItems = this.state.approvedMenuItems.filter(o => o.itemID !== itemID);
+            delete next_state.stockPerItem[menuItem.itemID];
         } else {
-            next_state.request.items = [...this.state.request.items, menuItem];
-            next_state.request.stockPerItem[itemID] = {itemName: menuItem.itemName};
+            next_state.approvedMenuItems = [...this.state.approvedMenuItems, menuItem];
         }
-        this.setState(next_state, () => {});
+        this.setState(next_state, () => {
+            this.isRequestDisabled();
+        });
     }
 
     handleLocationSelected = (location) => {
         const next_state = this.state;
         console.log(location)
-        next_state.request.location = location;
+        next_state.location = location;
         next_state.searchLocation = false;
         this.setState(next_state, () => {});
     }
@@ -201,16 +208,29 @@ class MenuItemCreateBetaView extends Component {
     requestCheckout = (e) => {
         e.preventDefault();
         const next_state = this.state;
-        Object.entries(next_state.request.stockPerItem).forEach((s) => {
-            next_state.request.totals.items += s[1].quantity * s[1].pricePerUnit;
+        Object.entries(next_state.stockPerItem).forEach((s) => {
+            next_state.totals.items += s[1].quantity * s[1].pricePerUnit;
         });
-        next_state.request.totals.serviceCharges = (next_state.request.totals.items * 0.025) + .30;
-        next_state.request.totals.subTotal = next_state.request.totals.items + next_state.request.totals.serviceCharges;
-        next_state.request.totals.tax = next_state.request.totals.subTotal * 0.085;
-        next_state.request.totals.total = next_state.request.totals.subTotal + next_state.request.totals.tax;
-        next_state.request.totals.due = next_state.request.totals.total;
+        next_state.totals.serviceCharges = (next_state.totals.items * 0.025) + .30;
+        next_state.totals.subTotal = next_state.totals.items + next_state.totals.serviceCharges;
+        next_state.totals.tax = next_state.totals.subTotal * 0.085;
+        next_state.totals.total = next_state.totals.subTotal + next_state.totals.tax;
+        next_state.totals.due = next_state.totals.total;
         next_state.isCheckout = true;
-        this.setState(next_state, () => {});
+        next_state.approvedMenuItems.forEach((i, index) => {
+            const itemStock = next_state.stockPerItem[i.itemID];
+            const quantityInfo = toNewQuantity();
+            quantityInfo.stock = itemStock.quantity;
+            quantityInfo.pricePerUnit = itemStock.pricePerUnit;
+            quantityInfo.leadQuantity = itemStock.leadQuantity;
+            quantityInfo.leadTime = itemStock.leadTime;
+            quantityInfo.location = next_state.location;
+            next_state.approvedMenuItems[index].quantities = [quantityInfo];
+        });
+
+        this.setState(next_state, () => {
+            this.createNewMenuItems();
+        });
     }
 
     handleClose = (e) => {
@@ -228,19 +248,17 @@ class MenuItemCreateBetaView extends Component {
             disabled: true,
         });
         let location_is_valid = false;
-        let priority_is_valid = false;
-        let requestedBy_is_valid = false;
         let items_is_valid = false;
         let stock_is_valid = false;
 
-        console.log(this.state.request)
+        console.log(this.state.location)
 
         // Validate Request Name
-        if (this.state.request.location.address.active === false && this.state.request.location.address.street1 === null) {
+        if (this.state.location.address.active === false && this.state.location.address.street1 === null) {
             this.setState({
                 location_error_text: null,
             });
-        } else if (validateAddress(this.state.request.location.address)) {
+        } else if (validateAddress(this.state.location.address)) {
             location_is_valid = true;
             this.setState({
                 location_error_text: null,
@@ -252,11 +270,11 @@ class MenuItemCreateBetaView extends Component {
         }
 
         // Validate Request Email
-        if (this.state.request.items === []) {
+        if (this.state.menuItems === []) {
             this.setState({
                 items_error_text: null,
             });
-        } else if (this.state.request.items.length > 0) {
+        } else if (this.state.menuItems.length > 0) {
             items_is_valid = true;
             this.setState({
                 items_error_text: null,
@@ -274,25 +292,31 @@ class MenuItemCreateBetaView extends Component {
         }
     }
 
-    // createNewRequest = () => {
-    //     const { actions, idToken, employeeID, accountID } = this.props;
-    //     const { request, redirectRoute } = this.state;
-    //     actions.saveNewRequest(idToken, employeeID, accountID, request, redirectRoute);
-    // }
+    createNewMenuItems = () => {
+        const { actions, idToken, employeeID, accountID } = this.props;
+        const { approvedMenuItems, redirectRoute } = this.state;
+        this.setState({loading: true});
+        actions.saveBetaMenuItem(idToken, employeeID, accountID, approvedMenuItems, redirectRoute);
+    }
 
     render() {
         const { classes } = this.props;
         const {
-          request,
+          location,
           searchLocation,
           menuItems,
+          approvedMenuItems,
+          stockPerItem,
           isCheckout,
           disabled,
           loading,
         } = this.state;
 
-        console.error(request)
-        console.error(isCheckout)
+        // console.error(location)
+        // console.error(menuItems)
+        // console.error(approvedMenuItems)
+        // console.error(stockPerItem)
+        // console.error(isCheckout)
 
         return (
           <Grid container alignItems="center" justify="center" className={classes.root} spacing={isMobileAndTablet() ? 0 : 2}>
@@ -306,7 +330,7 @@ class MenuItemCreateBetaView extends Component {
                               </div>
                               <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
                                   <HomeIcon className={classes.iconButton} />
-                                  <span style={{ fontSize: 16, paddingLeft: 10 }}>{`${request.location.name}`}</span>
+                                  <span style={{ fontSize: 16, paddingLeft: 10 }}>{`${location.name}`}</span>
                                   <span onClick={e => this.toggleLocation(e)} style={{ fontSize: 14, paddingLeft: 10, color: 'blue', cursor: 'pointer' }}>Change Location</span>
                               </div>
                               {
@@ -314,7 +338,7 @@ class MenuItemCreateBetaView extends Component {
                                 ? (
                                   <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
                                       <AutoCompleteLocations
-                                          name={request.location.name}
+                                          name={location.name}
                                           onFinishedSelecting={this.handleLocationSelected}
                                       />
                                   </div>
@@ -322,8 +346,8 @@ class MenuItemCreateBetaView extends Component {
                               }
                               <BetaMenuItemFormTable
                                   menuItems={menuItems}
-                                  approvedMenuItems={request.items}
-                                  stockPerItem={request.stockPerItem}
+                                  approvedMenuItems={approvedMenuItems}
+                                  stockPerItem={stockPerItem}
                                   handleCheckBox={this.handleCheckBox}
                                   handleChange={this.handleChange}
                               />
@@ -347,18 +371,6 @@ class MenuItemCreateBetaView extends Component {
                           </div>
                       </div>
                   </Paper>
-                  {
-                    isCheckout
-                    ? (
-                      <WalletCheckoutDialog
-                          open={isCheckout}
-                          loading={loading}
-                          request={request}
-                          handleClose={this.handleClose}
-                          handleSubmit={this.createNewRequest}
-                      />
-                    ) : null
-                  }
               </Grid>
           </Grid>
         );
@@ -366,12 +378,12 @@ class MenuItemCreateBetaView extends Component {
 }
 
 MenuItemCreateBetaView.defaultProps = {
-    saveNewRequest: f => f,
+    saveBetaMenuItem: f => f,
     fetchPublicMenuItems: f => f,
 };
 
 MenuItemCreateBetaView.propTypes = {
-    saveNewRequest: PropTypes.func.isRequired,
+    saveBetaMenuItem: PropTypes.func.isRequired,
     fetchPublicMenuItems: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
 };
