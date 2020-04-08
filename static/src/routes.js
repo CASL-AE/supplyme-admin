@@ -8,7 +8,6 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import App from './containers/App';
 import NotFoundView from './containers/Global/NotFoundView';
 import LoginView from './containers/NotAuth/Register/LoginView';
-import XupplyAlgoView from './containers/NotAuth/Register/XupplyAlgoView';
 import RegisterView from './containers/NotAuth/Register/RegisterView';
 import ValorListView from './containers/NotAuth/Valor/ValorListView';
 import ValorCreateView from './containers/NotAuth/Valor/ValorCreateView';
@@ -56,7 +55,6 @@ export default (
             <Route exact path="/" component={requireAuthentication(LocationListView)} />
             <Route exact path="/register" component={requireNoAuthentication(RegisterView)} />
             <Route exact path="/login" component={requireNoAuthentication(LoginView)} />
-            <Route exact path="/algo" component={requireNoAuthentication(XupplyAlgoView)} />
 
             // Determine Auth Views
             <Route exact path="/verify/email" component={requireNoAuthentication(VerifyEmailView)} />

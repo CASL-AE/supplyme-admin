@@ -66,6 +66,8 @@ export const registerAccount = (accountType, email, firstName, lastName, locatio
               const locationInfo = location;
               locationInfo.active = true;
               locationInfo.deleted = false;
+              locationInfo.contactInfo.name = `${firstName} ${lastName}`;
+              locationInfo.contactInfo.email = email;
               locationInfo.createdDate = createdDate;
               locationInfo.locationID = locationRef.id;
 

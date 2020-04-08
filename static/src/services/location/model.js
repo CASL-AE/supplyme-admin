@@ -30,7 +30,7 @@ export function toNewLocation() {
             geohash: null,
             placeID: null,
         },
-        name: null,
+        name: 'Hospital 1',
         licenseID: null,
         locationType: 'medical',
         contactInfo: {

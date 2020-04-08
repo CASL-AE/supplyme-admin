@@ -159,7 +159,8 @@ class RegisterView extends Component {
             firstName_error_text: null,
             lastName_error_text: null,
             location: toNewLocation(),
-            street_error_text: null,
+            locationName_error_text: null,
+            street1_error_text: null,
             locality_error_text: null,
             region_error_text: null,
             postalCode_error_text: null,
@@ -213,10 +214,14 @@ class RegisterView extends Component {
         });
     }
 
-    handleLocationChange(e, name) {
+    handleLocationChange(e, parent, name) {
         const value = e.target.value;
         const next_state = this.state;
-        next_state.location.address[name] = value;
+        if (parent !== null) {
+            next_state.location[parent][name] = value;
+        } else {
+            next_state.location[name] = value;
+        }
         this.setState(next_state, () => {
               this.isLocationDisabled();
         });
@@ -236,6 +241,7 @@ class RegisterView extends Component {
         let firstName_is_valid = false;
         let lastName_is_valid = false;
         let placeID_is_valid = false;
+        let locationName_is_valid = false;
         let street1_is_valid = false;
         let locality_is_valid = false;
         let region_is_valid = false;
@@ -273,18 +279,18 @@ class RegisterView extends Component {
             });
         }
 
-        if (this.state.location.address.placeID === null) {
+        if (this.state.location.name === null) {
             this.setState({
-                placeID_error_text: null,
+                locationName_error_text: null,
             });
-        } else if (validateVarChar(this.state.location.address.placeID)) {
-            placeID_is_valid = true;
+        } else if (validateVarChar(this.state.location.name)) {
+            locationName_is_valid = true;
             this.setState({
-                placeID_error_text: null,
+                locationName_error_text: null,
             });
         } else {
             this.setState({
-                placeID_error_text: 'Please fill out this field.',
+                locationName_error_text: 'Please fill out this field.',
             });
         }
 
@@ -363,9 +369,14 @@ class RegisterView extends Component {
             });
         }
 
+        if (this.state.location.address.placeID !== null) {
+            placeID_is_valid = true;
+        }
+
         console.log(firstName_is_valid)
         console.log(lastName_is_valid)
         console.log(placeID_is_valid)
+        console.log(locationName_is_valid)
         console.log(street1_is_valid)
         console.log(locality_is_valid)
         console.log(region_is_valid)
@@ -374,12 +385,14 @@ class RegisterView extends Component {
         if (
           firstName_is_valid &&
           lastName_is_valid &&
+          locationName_is_valid &&
           placeID_is_valid
         ) {
             locationDisabled = false;
         } else if (
           firstName_is_valid &&
           lastName_is_valid &&
+          locationName_is_valid &&
           street1_is_valid &&
           locality_is_valid &&
           region_is_valid &&
@@ -662,6 +675,7 @@ class RegisterView extends Component {
           lastName,
           lastName_error_text,
           location,
+          locationName_error_text,
           street1_error_text,
           locality_error_text,
           region_error_text,
@@ -869,6 +883,17 @@ class RegisterView extends Component {
                       <Divider />
                   </div>
                   <div>
+                      <TextField
+                          placeholder="Location Name"
+                          label="Location Name"
+                          variant="outlined"
+                          margin="dense"
+                          helperText={locationName_error_text}
+                          value={location.name || ''}
+                          style={{width: '100%'}}
+                          onChange={e => this.handleLocationChange(e, null, 'name')}
+                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                      />
                       <AutoCompletePlaces name={location.name} onFinishedSelecting={this.handleLocationSelected}/>
                       <TextField
                           placeholder="Street Address"
@@ -878,7 +903,7 @@ class RegisterView extends Component {
                           helperText={street1_error_text}
                           value={location.address.street1 || ''}
                           style={{paddingRight: 20, width: '67%'}}
-                          onChange={e => this.handleLocationChange(e, 'street1')}
+                          onChange={e => this.handleLocationChange(e, 'address', 'street1')}
                           FormHelperTextProps={{ classes: { root: classes.helperText } }}
                       />
                       <TextField
@@ -888,7 +913,7 @@ class RegisterView extends Component {
                           margin="dense"
                           value={location.address.street2 || ''}
                           style={{width: '33%'}}
-                          onChange={e => this.handleLocationChange(e, 'street2')}
+                          onChange={e => this.handleLocationChange(e, 'address', 'street2')}
                       />
                   </div>
                   <div style={{paddingTop: 10}}>
@@ -901,7 +926,7 @@ class RegisterView extends Component {
                           helperText={locality_error_text}
                           value={location.address.locality || ''}
                           style={{paddingRight: 20, width: '33%'}}
-                          onChange={e => this.handleLocationChange(e, 'locality')}
+                          onChange={e => this.handleLocationChange(e, 'address', 'locality')}
                           FormHelperTextProps={{ classes: { root: classes.helperText } }}
                       />
                       <TextField
@@ -913,7 +938,7 @@ class RegisterView extends Component {
                           helperText={region_error_text}
                           value={location.address.region || ''}
                           style={{paddingRight: 20, width: '33%'}}
-                          onChange={e => this.handleLocationChange(e, 'region')}
+                          onChange={e => this.handleLocationChange(e, 'address', 'region')}
                           FormHelperTextProps={{ classes: { root: classes.helperText } }}
                       />
                       <TextField
@@ -925,7 +950,7 @@ class RegisterView extends Component {
                           helperText={postal_error_text}
                           value={location.address.postal || ''}
                           style={{float: 'right', width: '33%'}}
-                          onChange={e => this.handleLocationChange(e, 'postal')}
+                          onChange={e => this.handleLocationChange(e, 'address', 'postal')}
                           FormHelperTextProps={{ classes: { root: classes.helperText } }}
                       />
                   </div>
