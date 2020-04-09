@@ -33,7 +33,7 @@ class XupplyBraintreeWebhook(object):
         return self.gateway.transaction.sale(params)
 
     # For Submitting to Braintree TODO: Need to void all other payments
-    def submit(self, transactionId=None, amount=None):
+    def submit(self, transactionID=None, amount=None):
         params = {
             "amount": amount,
             "payment_method_token": self.paymentHash,
@@ -41,13 +41,13 @@ class XupplyBraintreeWebhook(object):
                 "submit_for_settlement": True,
             }
         }
-        return self.gateway.transaction.sale(transactionId, params)
+        return self.gateway.transaction.sale(transactionID, params)
 
-    def void(self, transactionId=None):
-        return self.gateway.transaction.void(transactionId)
+    def void(self, transactionID=None):
+        return self.gateway.transaction.void(transactionID)
 
-    def refund(self, transactionId=None):
-        return self.gateway.transaction.refund(transactionId)
+    def refund(self, transactionID=None):
+        return self.gateway.transaction.refund(transactionID)
 
-    def get(self, transactionId=None):
-        return self.gateway.transaction.find(transactionId)
+    def get(self, transactionID=None):
+        return self.gateway.transaction.find(transactionID)

@@ -416,12 +416,12 @@ class BraintreeTransaction(MethodView):
             print(incoming)
             accountID = incoming['accountID']
             paymentHash = incoming['paymentHash']
-            transactionId = incoming['transactionId']
+            transactionID = incoming['transactionID']
 
             delta_server = XupplyReferences()
             transaction = delta_server.transaction_ref
             account_ref = XupplyReferences().accounts_ref.document(accountID)
-            transaction_ref = account_ref.collection('Transactions').document(transactionId)
+            transaction_ref = account_ref.collection('Transactions').document(transactionID)
             transaction_doc = transaction_ref.get()
             transaction_object = XupplyTransaction().dict_snapshot(snapshot=transaction_doc.to_dict())
 

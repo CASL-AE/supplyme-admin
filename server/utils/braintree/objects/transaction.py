@@ -98,5 +98,5 @@ class XupplyBraintreeTransaction(object):
             braintree.TransactionSearch.order_id == self.objectID
         )
 
-    # def get(self, transactionId=None):
-    #     return self.gateway.transaction.find(transactionId)
+    # def get(self, transactionID=None):
+    #     return self.gateway.transaction.find(transactionID)

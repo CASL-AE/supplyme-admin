@@ -416,12 +416,12 @@ class DwollaTransaction(MethodView):
             print(incoming)
             accountID = incoming['accountID']
             paymentHash = incoming['paymentHash']
-            transactionId = incoming['transactionId']
+            transactionID = incoming['transactionID']
 
             delta_server = XupplyReferences()
             transaction = delta_server.transaction_ref
             account_ref = XupplyReferences().accounts_ref.document(accountID)
-            transaction_ref = account_ref.collection('Transactions').document(transactionId)
+            transaction_ref = account_ref.collection('Transactions').document(transactionID)
             transaction_doc = transaction_ref.get()
             transaction_object = XupplyTransaction().dict_snapshot(snapshot=transaction_doc.to_dict())
 
@@ -515,19 +515,19 @@ class DwollaAsyncTab(MethodView):
             merchant_result = merchant_object.search(
                 merchantHash=merchantHash
             )
-            bt_transactionIds = []
+            bt_transactionIDs = []
             for transaction in merchant_result.items:
                 print(transaction)
                 print(error)
-                bt_transactionIds.append(transaction.id)
+                bt_transactionIDs.append(transaction.id)
 
-            print(bt_transactionIds)
+            print(bt_transactionIDs)
 
             for transaction in tab.transactions:
-                if transaction.hash in bt_transactionIds:
-                    bt_transactionIds.remove(transaction.hash)
+                if transaction.hash in bt_transactionIDs:
+                    bt_transactionIDs.remove(transaction.hash)
 
-            print(bt_transactionIds)
+            print(bt_transactionIDs)
 
             # pay_tab_items(
             #     transaction=None,
