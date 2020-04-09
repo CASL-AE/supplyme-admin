@@ -6,18 +6,14 @@ import PropTypes from "prop-types";
 
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import algoliasearch from "algoliasearch/lite";
-import { InstantSearch, SearchBox, Configure } from "react-instantsearch-dom";
-
-import MenuItemResultsTable from "../../../components/Xupply/MenuItem/MenuItemResultsTable";
-import HitComponent from "../../../components/Xupply/MenuItem/MenuItemResultsRow";
-
 import {
     dispatchNewRoute,
     filterBy,
 } from "../../../utils/misc";
 import { fetchMenuItems } from "../../../services/menuItem/actions";
 import { menuItemRowObject } from "../../../services/menuItem/model";
+import Search from "../../../components/Xupply/AlgoliaSearch";
+import MenuTable from "../../../components/Xupply/MenuItem/MenuItemResultsTable";
 
 const styles = (theme) => ({
     root: {
@@ -77,11 +73,6 @@ class MenuItemListView extends React.Component {
             hitsPerPage: 5,
         };
     }
-
-    searchClient = algoliasearch(
-        "5EIN2BYQ8O",
-        "db2234eba37bde834ae2504e6c6bbeca"
-    );
 
     componentDidMount() {
         console.log("MenuItems View Mounted");
@@ -155,7 +146,6 @@ class MenuItemListView extends React.Component {
 
     render() {
         const { classes, accountID } = this.props;
-        const { rows, hitsPerPage } = this.state;
 
         const GeneralContainer = (
             <div className={classes.outerCell}>
@@ -179,21 +169,11 @@ class MenuItemListView extends React.Component {
             <div className={classes.root}>
                 <div className={classes.content}>
                     <div className={classes.headerCell}>{GeneralContainer}</div>
-                    <InstantSearch
+                    <Search
                         indexName="MenuItems"
-                        searchClient={this.searchClient}
                     >
-                        <SearchBox />
-                        <Configure hitsPerPage={hitsPerPage} />
-                        <MenuItemResultsTable
-                            rows={rows}
-                            handleLink={this.dispatchNewMenuItem}
-                            setHitsPerPage = {this.setHitsPerPage}
-                            hitsPerPage = {hitsPerPage}
-                        >
-                            <HitComponent />
-                        </MenuItemResultsTable>
-                    </InstantSearch>
+                        <MenuTable />
+                    </Search>
                 </div>
             </div>
         );

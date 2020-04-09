@@ -1,8 +1,6 @@
 import React from "react";
-import { connectHits } from "react-instantsearch-dom";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -28,8 +26,7 @@ const LocationTooltip = withStyles((theme) => ({
     },
 }))(Tooltip);
 
-const HitComponent = (props) => {
-    const { classes, hit } = props;
+const Row = ({ classes, hit }) => {
     return (
         <TableRow key={hit.id}>
             <TableCell>
@@ -80,23 +77,8 @@ const HitComponent = (props) => {
     );
 };
 
-HitComponent.propTypes = {
+Row.propTypes = {
     props: PropTypes.shape().isRequired,
 };
 
-const Hits = ({ hits }) => {
-    const Hit = withStyles(styles)(HitComponent);
-    return (
-        <>
-            {hits.map((hit) => (
-                <Hit {...{ hit }} />
-            ))}
-        </>
-    );
-};
-
-Hits.propTypes = {
-    hits: PropTypes.arrayOf().isRequired,
-};
-
-export default connectHits(Hits);
+export default withStyles(styles)(Row);
