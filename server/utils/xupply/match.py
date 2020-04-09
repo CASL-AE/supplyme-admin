@@ -7,7 +7,7 @@ logger = logging.getLogger('xupply.utils.xupply.match.py')
 from datetime import datetime
 from server.config import Config
 
-from server.xupply.models import XupplyReferences
+from server.models import XupplyReferences
 
 def get_all_menu_item_stock():
     all_menu_item_stock = {}
