@@ -2,7 +2,7 @@
 import logging
 
 # Create Logger
-logger = logging.getLogger('tabs.utils.google.places.utils.py')
+logger = logging.getLogger('xupply.utils.google.places.utils.py')
 
 from datetime import datetime
 import time

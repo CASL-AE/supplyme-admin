@@ -1,8 +1,8 @@
-# tabs-admin/server/google/api.py
+# xupply-admin/server/google/api.py
 
 import logging
 
-logger = logging.getLogger('tabs.google.api.py')
+logger = logging.getLogger('xupply.google.api.py')
 
 from flask import Blueprint, request, make_response, jsonify, json
 from flask.views import MethodView

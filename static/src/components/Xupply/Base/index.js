@@ -497,6 +497,15 @@ class Base extends Component {
                           </ListItem>
                         ))}
                       </List>
+                      <Divider style={{backgroundColor: '#eeeeee54'}} />
+                      <List>
+                        {['opportunities'].map((text, index) => (
+                          <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
+                            <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                          </ListItem>
+                        ))}
+                      </List>
                     </Drawer>
                     {showAccount && isAuthenticated ? Account : null}
                     <div className={classes.content}>

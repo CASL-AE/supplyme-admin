@@ -11,7 +11,7 @@ import googleData from './google/reducer';
 import requestData from './request/reducer';
 import menuItemData from './menuItem/reducer';
 import orderData from './order/reducer';
-import opportnuityData from './opportunity/reducer';
+import opportunityData from './opportunity/reducer';
 
 /* Public Reducer Files */
 import valorData from './valor/reducer';
@@ -30,7 +30,7 @@ const appReducer = history => {
         requestData,
         menuItemData,
         orderData,
-        opportnuityData,
+        opportunityData,
     });
 }
 
