@@ -38,6 +38,12 @@ bcrypt = Bcrypt(app)
 from server.google.api import google_blueprint
 app.register_blueprint(google_blueprint)
 
+from server.braintree.api import braintree_blueprint
+app.register_blueprint(braintree_blueprint)
+
+from server.dwolla.api import dwolla_blueprint
+app.register_blueprint(dwolla_blueprint)
+
 # Main Flask App Run
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8081)

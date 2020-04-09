@@ -46,6 +46,10 @@ class Config(object):
     CELERY_RESULT_SERIALIZER = 'json'
     CELERY_TASK_RESULT_EXPIRES = 3600
 
+    BRAINTREE_MERCHANT_ID = get_env_var('BRAINTREE_MERCHANT_ID')
+    BRAINTREE_XUPPLY_MERCHANT_ID = get_env_var('BRAINTREE_XUPPLY_MERCHANT_ID')
+    DWOLLA_XUPPLY_MERCHANT_ID = get_env_var('DWOLLA_XUPPLY_MERCHANT_ID')
+
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
@@ -88,6 +92,14 @@ class ProductionConfig(Config):
     credential_path = os.path.join(CREDENTIAL_DIR, 'gmail-adminsdk.json')
     GMAIL_CRED = ServiceAccountCredentials.from_json_keyfile_name(credential_path, scopes=Config.GMAIL_SCOPES)
 
+    BRAINTREE_MERCHANT_ENV = Config.get_env_var('BRAINTREE_MERCHANT_ENV')
+    BRAINTREE_PUBLIC_KEY = Config.get_env_var('BRAINTREE_PUBLIC_KEY')
+    BRAINTREE_PRIVATE_KEY = Config.get_env_var('BRAINTREE_PRIVATE_KEY')
+
+    DWOLLA_MERCHANT_ENV = Config.get_env_var('DWOLLA_MERCHANT_ENV')
+    DWOLLA_MERCHANT_KEY = Config.get_env_var('DWOLLA_MERCHANT_KEY')
+    DWOLLA_MERCHANT_SECRET = Config.get_env_var('DWOLLA_MERCHANT_SECRET')
+
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
@@ -122,6 +134,14 @@ class DevelopmentConfig(Config):
     credential_path = None
     credential_path = os.path.join(CREDENTIAL_DIR, 'gmail-adminsdk.json')
     GMAIL_CRED = ServiceAccountCredentials.from_json_keyfile_name(credential_path, scopes=Config.GMAIL_SCOPES)
+
+    BRAINTREE_MERCHANT_ENV = Config.get_env_var('BRAINTREE_MERCHANT_ENV')
+    BRAINTREE_PUBLIC_KEY = Config.get_env_var('BRAINTREE_PUBLIC_KEY')
+    BRAINTREE_PRIVATE_KEY = Config.get_env_var('BRAINTREE_PRIVATE_KEY')
+
+    DWOLLA_MERCHANT_ENV = Config.get_env_var('DWOLLA_MERCHANT_ENV')
+    DWOLLA_MERCHANT_KEY = Config.get_env_var('DWOLLA_MERCHANT_KEY')
+    DWOLLA_MERCHANT_SECRET = Config.get_env_var('DWOLLA_MERCHANT_SECRET')
 
 class StageConfig(Config):
     DEBUG = False
@@ -161,3 +181,11 @@ class StageConfig(Config):
     credential_path = None
     credential_path = os.path.join(CREDENTIAL_DIR, 'gmail-adminsdk.json')
     GMAIL_CRED = ServiceAccountCredentials.from_json_keyfile_name(credential_path, scopes=Config.GMAIL_SCOPES)
+
+    BRAINTREE_MERCHANT_ENV = Config.get_env_var('BRAINTREE_MERCHANT_ENV')
+    BRAINTREE_PUBLIC_KEY = Config.get_env_var('BRAINTREE_PUBLIC_KEY')
+    BRAINTREE_PRIVATE_KEY = Config.get_env_var('BRAINTREE_PRIVATE_KEY')
+
+    DWOLLA_MERCHANT_ENV = Config.get_env_var('DWOLLA_MERCHANT_ENV')
+    DWOLLA_MERCHANT_KEY = Config.get_env_var('DWOLLA_MERCHANT_KEY')
+    DWOLLA_MERCHANT_SECRET = Config.get_env_var('DWOLLA_MERCHANT_SECRET')
