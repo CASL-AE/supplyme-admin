@@ -25,6 +25,7 @@ const styles = (theme) => ({
         paddingBottom: 42,
         paddingLeft: 80,
         paddingRight: 80,
+        backgroundColor: theme.palette.primary.appBar,
     },
     display: {
         display: 'flex',

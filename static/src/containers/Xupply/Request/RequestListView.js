@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -13,6 +14,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import RequestResultsTable from '../../../components/Xupply/Request/RequestResultsTable';
 import RequestCard from '../../../components/Xupply/Request/RequestCard';
@@ -199,6 +201,11 @@ class RequestListView extends React.Component {
 
         return requests.length > 0
         ? (
+          <Fade
+              in={true}
+              style={{ transformOrigin: '0 0 0' }}
+              {...(true ? { timeout: 1000 } : {})}
+          >
           <section>
               <div className={classes.headerCell}>
                   <Fab
@@ -207,13 +214,14 @@ class RequestListView extends React.Component {
                       color={'primary'}
                       onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
                   >
-                    <AddIcon />
+                    <CloudUploadIcon />
                   </Fab>
               </div>
               <Grid container className={classes.root} spacing={2}>
-                  {requests.map(this.renderRequestCard, this)}
+                  <RequestResultsTable requests={requests} />
               </Grid>
           </section>
+          </Fade>
         ) : (
             <div className={classes.headerCell}>
                 <Fab
@@ -222,7 +230,7 @@ class RequestListView extends React.Component {
                     color={'primary'}
                     onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
                 >
-                  <AddIcon />
+                  <CloudUploadIcon />
                 </Fab>
                 <EmptyResults
                     title={`You haven't created any requests...`}
@@ -232,6 +240,8 @@ class RequestListView extends React.Component {
         )
     }
 }
+
+// {requests.map(this.renderRequestCard, this)}
 
 RequestListView.defaultProps = {
     accountID: '',

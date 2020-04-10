@@ -19,9 +19,9 @@ const theme = createMuiTheme({
             main: '#79bac1',
             secondary: '#82a4bc',
             background: '#eeeeee',
-            appBar: '#eeebe9',
+            appBar: '#fff',
             black: '#000000',
-        }
+        },
     },
 });
 

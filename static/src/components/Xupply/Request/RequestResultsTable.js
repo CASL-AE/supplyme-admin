@@ -28,10 +28,9 @@ import {
 const styles = (theme) => ({
   root: {
     width: '100%',
-    marginTop: 40,
     boxShadow: 'none',
     borderRadius: 8,
-    padding: 30,
+    backgroundColor: theme.palette.primary.background,
   },
   table: {},
   tableHeaders: {
@@ -59,13 +58,18 @@ const styles = (theme) => ({
     margin: 0,
     padding: 0,
   },
+  tableRow: {
+      backgroundColor: theme.palette.primary.appBar,
+      height: 50,
+      boxShadow: '0 8px 64px rgba(32, 32, 32, 0.08), 0 4px 16px rgba(32, 32, 32, 0.02)',
+  },
 });
 
 function RequestResultsTable(props) {
-  const { classes, type, rows, handleLink, handleAction } = props;
+  const { classes, requests, handleLink } = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, requests.length - page * rowsPerPage);
   const handleChangePage = (e, newPage) => {
     setPage(newPage);
   };
@@ -80,36 +84,38 @@ function RequestResultsTable(props) {
         <TableHead>
           <TableRow>
             <TableCell className={classes.tableHeaders} >Delivery Location</TableCell>
+            <TableCell className={classes.tableHeaders} >Item</TableCell>
             <TableCell className={classes.tableHeaders} >Priority</TableCell>
             <TableCell className={classes.tableHeaders} >Required By</TableCell>
-            <TableCell className={classes.tableHeaders} >Items</TableCell>
-            <TableCell className={classes.tableHeaders} >% Funded</TableCell>
-            <TableCell className={classes.tableHeaders} >% Completed</TableCell>
+            <TableCell className={classes.tableHeaders} >$ Funded</TableCell>
+            <TableCell className={classes.tableHeaders} ># Filled</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map(row => (
-            <TableRow key={row.id}>
+            ? requests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : requests
+          ).map(request => (
+            <TableRow className={classes.tableRow} key={request.requestID}>
               <TableCell>
-                  <a onClick={e => handleLink(e, row.id)} className={classes.linkText}>{row.locationName || 'Unkown Name'}</a>
+                  <a onClick={e => handleLink(e, request.requestID)} className={classes.linkText}>{request.location.name || 'Unkown Name'}</a>
               </TableCell>
               <TableCell>
-                  {row.priority}
+                  {request.priority}
               </TableCell>
               <TableCell>
-                  {formatDateNoTime(row.requiredBy)}
+                  {formatDateNoTime(request.requiredBy)}
               </TableCell>
               <TableCell>
-                  {row.items}
+                  {'request.items'}
               </TableCell>
               <TableCell>
-                  <LinearProgress variant="determinate" value={50} style={{backgroundColor: 'black'}} color="primary" />
+                  <LinearProgress variant="determinate" value={(34/120)*100} style={{backgroundColor: 'black'}} color="primary" />
+                  {'$ 34 of 120'}
               </TableCell>
               <TableCell>
-                  <LinearProgress variant="determinate" value={50} style={{backgroundColor: 'black'}} color="primary" />
+                  <LinearProgress variant="determinate" value={(3/12)*100} style={{backgroundColor: 'black'}} color="primary" />
+                  {'# 3 of 12'}
               </TableCell>
             </TableRow>
           ))}
@@ -122,18 +128,18 @@ function RequestResultsTable(props) {
         <TableFooter>
           <TableRow>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={7}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              selectProps={{
-                inputProps: { 'aria-label': 'rows per page' },
-                native: true,
-              }}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              actionsComponent={TablePaginationActions}
+                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                colSpan={7}
+                count={requests.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                selectProps={{
+                  inputProps: { 'aria-label': 'rows per page' },
+                  native: true,
+                }}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+                actionsComponent={TablePaginationActions}
             />
           </TableRow>
         </TableFooter>
@@ -145,10 +151,8 @@ function RequestResultsTable(props) {
 
 
 RequestResultsTable.propTypes = {
-  type: PropTypes.string.isRequired,
-  rows: PropTypes.array.isRequired,
+  requests: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
-  handleAction: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(RequestResultsTable);

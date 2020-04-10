@@ -13,29 +13,24 @@ import Button from '@material-ui/core/Button';
 import { toNewMenuItem } from '../../../services/menuItem/model';
 import { getKeys, formatDateWTime, dispatchNewObject } from '../../../utils/misc';
 
-const styles = {
+const styles = (theme) => ({
     root: {
         flex: 1,
         height: '100vh'
-    },
-    content: {
-        paddingTop: 42,
-        paddingBottom: 42,
-        paddingLeft: 80,
-        paddingRight: 80,
     },
     display: {
         display: 'flex',
     },
     leftDetail: {
-      paddingRight: '8rem',
       flexBasis: 0,
       flexGrow: 1,
+      marginRight: 30,
     },
     detailCard: {
       padding: '2.0rem',
       boxShadow: '0 8px 64px rgba(32, 32, 32, 0.08), 0 4px 16px rgba(32, 32, 32, 0.02)',
-      bmenuItemRadius: 16,
+      backgroundColor: theme.palette.primary.appBar,
+      borderRadius: 8,
     },
     detailTop: {
       marginBottom: 30,
@@ -76,14 +71,15 @@ const styles = {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: 15,
       paddingBottom: 15,
       margin: 0,
     },
     detailList: {
-      bmenuItemTop: '1px solid #e6e6e6',
-      paddingTop: 15,
+      blocationTop: '1px solid #e6e6e6',
       display: 'block',
+      backgroundColor: theme.palette.primary.appBar,
+      borderRadius: 8,
+      padding: 30,
     },
     editButton: {
         float: 'right',
@@ -91,13 +87,13 @@ const styles = {
     },
     detailListDt: {
       minWidth: '30%',
-      bmenuItem: 0,
+      borderm: 0,
       padding: '.5rem 0',
       margin: 0,
     },
     detailListDd: {
       minWidth: '70%',
-      bmenuItem: 0,
+      borderm: 0,
       fontWeight: 500,
       padding: '.5rem 0',
       margin: 0,
@@ -106,10 +102,10 @@ const styles = {
         display: 'flex',
     },
     img: {
-        bmenuItemRadius: '50%',
-        paddingRight: 10,
+        borderRadius: '50%',
+        marginRight: 10,
     }
-};
+});
 
 function mapStateToProps(state) {
     return {
@@ -210,73 +206,71 @@ class MenuItemDetailView extends React.Component {
         console.log(menuItem)
         return (
           <div className={classes.root}>
-              <div className={classes.content}>
-                  <div className={classes.display}>
-                      <div className={classes.leftDetail}>
-                          <div className={classes.detailCard}>
-                              <div className={classes.detailTop}>
-                                <img height='200' width='200' className={classes.img} src='/src/containers/App/styles/img/broken.png' />
-                              </div>
-                              <div className={classes.detailTitle}>
-                                <span className={classes.detailTitleText}>{`${menuItem.brandName} - ${menuItem.itemName}`}</span>
-                                <br />
-                                <span>{`${menuItem.description}`}</span>
-                                <br />
-                                <span>{`${menuItem.itemType}`}</span>
-                              </div>
+              <div className={classes.display}>
+                  <div className={classes.leftDetail}>
+                      <div className={classes.detailCard}>
+                          <div className={classes.detailTop}>
+                            <img height='200' width='200' className={classes.img} src='/src/containers/App/styles/img/broken.png' />
+                          </div>
+                          <div className={classes.detailTitle}>
+                            <span className={classes.detailTitleText}>{`${menuItem.brandName} - ${menuItem.itemName}`}</span>
+                            <br />
+                            <span>{`${menuItem.description}`}</span>
+                            <br />
+                            <span>{`${menuItem.itemType}`}</span>
                           </div>
                       </div>
-                      <div className={classes.rightDetail}>
-                          <div className={classes.block}>
-                              <div className={classes.section}>
-                                  <span className={classes.detailTitleText}>Details</span>
-                                  <Button
-                                    variant="contained"
-                                    disableRipple
-                                    disableFocusRipple
-                                    onClick={(e) => dispatchNewObject(e, accountID, 'menuItem', menuItem.itemID, 'edit')}
-                                    className={classes.editButton}
-                                  >
-                                      {'Edit'}
-                                  </Button>
-                              </div>
-                              <dl className={classes.detailList}>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      ID
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {menuItem.itemID}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Created
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {`${formatDateWTime(menuItem.createdDate)}`}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      UPC ID
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {menuItem.upcID}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Made In Country
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {menuItem.madeInCountry}
-                                  </dd>
-                                  </div>
-                              </dl>
+                  </div>
+                  <div className={classes.rightDetail}>
+                      <div className={classes.block}>
+                          <div className={classes.section}>
+                              <span className={classes.detailTitleText}>Details</span>
+                              <Button
+                                variant="contained"
+                                disableRipple
+                                disableFocusRipple
+                                onClick={(e) => dispatchNewObject(e, accountID, 'menuItem', menuItem.itemID, 'edit')}
+                                className={classes.editButton}
+                              >
+                                  {'Edit'}
+                              </Button>
                           </div>
-                          {menuItem.quantities.map(this.renderItemQuantites, this)}
+                          <dl className={classes.detailList}>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  ID
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {menuItem.itemID}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Created
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {`${formatDateWTime(menuItem.createdDate)}`}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  UPC ID
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {menuItem.upcID}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Made In Country
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {menuItem.madeInCountry}
+                              </dd>
+                              </div>
+                          </dl>
                       </div>
+                      {menuItem.quantities.map(this.renderItemQuantites, this)}
                   </div>
               </div>
           </div>

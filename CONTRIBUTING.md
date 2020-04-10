@@ -2,13 +2,19 @@
 
 ## Getting Started
 
+First you need to email the repository owner and ask for the `.env` file for the keys to the application.
+
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See production for notes on how to deploy the project on a live system.
 
 **For Designers** Please note you do NOT need to setup the python backend server to run the frontend react application.
 
+**Also** The functions below get the environment setup ASSUMING that your have updated python and node installed. You will also need to have nginx running over HTTPS to use the server functions.
+
+If you didn't understand that, please skip "Launch Development API Python" and "Launch Development Node Server" and go right to "Install Development Environment on New Machine" 
+
 ## Clone Project Repo
 ```
-git clone https://github.com/CASL-AE/supplyme-admin.git
+git clone https://github.com/dangell7/supplyme-admin.git
 ```
 
 ### Launch Development API Python

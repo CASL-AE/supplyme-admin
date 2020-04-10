@@ -1,9 +1,9 @@
-# tabs/server/utils/misc.py
+# xupply/server/utils/misc.py
 
 import logging
 
 # Create Logger
-logger = logging.getLogger('tabs.server.utils.misc.py')
+logger = logging.getLogger('xupply.server.utils.misc.py')
 
 
 from datetime import datetime

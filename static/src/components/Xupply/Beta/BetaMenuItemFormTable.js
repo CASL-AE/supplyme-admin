@@ -43,7 +43,7 @@ const styles = (theme) => ({
     boxShadow: 'none',
     borderRadius: 8,
     padding: isMobileAndTablet() ? 0 : 30,
-    backgroundColor: theme.palette.primary.background,
+    backgroundColor: theme.palette.primary.appBar,
     overflow: 'scroll',
   },
   table: {},
@@ -107,8 +107,8 @@ function BetaMenuItemFormTable(props) {
       <Table size="small" className={classes.table}>
         <TableHead>
           <TableRow>
-            <TableCell className={classes.tableHeaders} >Have Item</TableCell>
-            <TableCell className={classes.tableHeaders} >Quantity</TableCell>
+            <TableCell className={classes.tableHeaders} >Item</TableCell>
+            <TableCell className={classes.tableHeaders} >On Hand</TableCell>
             <TableCell className={classes.tableHeaders} >Max Price</TableCell>
             <TableCell className={classes.tableHeaders} >Resupply</TableCell>
             <TableCell className={classes.tableHeaders} >Total Value</TableCell>

@@ -394,7 +394,7 @@ class XupplyGoogleClient(object):
                 <tr>
                   <!-- ICON 1 -->
                   <td align="center" valign="middle" style="margin: 0; padding: 0; padding-left: 10px; padding-right: 10px; border-collapse: collapse; border-spacing: 0;"><a target="_blank"
-                    href="https://facebook.com/virtualtabs/"
+                    href="https://facebook.com/virtualxupply/"
                   style="text-decoration: none;"><img border="0" vspace="0" hspace="0" style="padding: 0; margin: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; border: none; display: inline-block;
                     color: #000000;"
                     alt="F" title="Facebook"
@@ -402,7 +402,7 @@ class XupplyGoogleClient(object):
                     src="https://raw.githubusercontent.com/konsav/email-templates/master/images/social-icons/facebook.png"></a></td>
                   <!-- ICON 2 -->
                   <td align="center" valign="middle" style="margin: 0; padding: 0; padding-left: 10px; padding-right: 10px; border-collapse: collapse; border-spacing: 0;"><a target="_blank"
-                    href="https://twitter.com/virtualtabs"
+                    href="https://twitter.com/virtualxupply"
                   style="text-decoration: none;"><img border="0" vspace="0" hspace="0" style="padding: 0; margin: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; border: none; display: inline-block;
                     color: #000000;"
                     alt="T" title="Twitter"
@@ -410,7 +410,7 @@ class XupplyGoogleClient(object):
                     src="https://raw.githubusercontent.com/konsav/email-templates/master/images/social-icons/twitter.png"></a></td>
                   <!-- ICON 4 -->
                   <td align="center" valign="middle" style="margin: 0; padding: 0; padding-left: 10px; padding-right: 10px; border-collapse: collapse; border-spacing: 0;"><a target="_blank"
-                    href="https://instagram.com/virtualtabs"
+                    href="https://instagram.com/virtualxupply"
                   style="text-decoration: none;"><img border="0" vspace="0" hspace="0" style="padding: 0; margin: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; border: none; display: inline-block;
                     color: #000000;"
                     alt="I" title="Instagram"

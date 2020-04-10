@@ -19,6 +19,7 @@ import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchPublicRequests } from '../../../services/request/actions';
 import { requestRowObject } from '../../../services/request/model';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
     root: {
@@ -76,7 +77,7 @@ class PublicRequestListView extends React.Component {
         this.state = {
             request: {},
             showRequest: false,
-            rows: [],
+            requests: [],
         };
     }
 
@@ -121,10 +122,8 @@ class PublicRequestListView extends React.Component {
 
     receiveRequests = (requests) => {
         console.warn('Received Requests');
-        const rows = filterBy(requests).map(e => requestRowObject(e));
-
         this.setState({
-            rows,
+            requests: filterBy(requests),
         });
     }
 
@@ -140,10 +139,10 @@ class PublicRequestListView extends React.Component {
         dispatchNewRoute(route);
     }
 
-    renderRequestCard = (row) => {
+    renderRequestCard = (request) => {
         return (
-            <Grid item xs={isMobileAndTablet() ? 12 : 3}>
-              <RequestCard row={row} />
+            <Grid item xs={isMobileAndTablet() ? 12 : 4}>
+              <RequestCard request={request} />
             </Grid>
         )
     }
@@ -151,13 +150,15 @@ class PublicRequestListView extends React.Component {
     render() {
         const { classes, accountID } = this.props;
         const {
-            rows,
+            requests,
         } = this.state;
 
-        return rows.length > 0
+        console.log(requests)
+
+        return requests.length > 0
         ? (
           <Grid container className={classes.root} spacing={2}>
-            {rows.map(this.renderRequestCard, this)}
+              <PublicRequestResultsTable requests={requests} />
           </Grid>
         ) : (
             <EmptyResults

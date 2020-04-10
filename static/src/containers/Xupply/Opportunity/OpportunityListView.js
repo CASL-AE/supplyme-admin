@@ -5,51 +5,71 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 import OpportunityResultsTable from '../../../components/Xupply/Opportunity/OpportunityResultsTable';
+import OpportunityCard from '../../../components/Xupply/Opportunity/OpportunityCard';
+import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 
-// Request Functions
-import { fetchPublicRequests } from '../../../services/request/actions';
-import { requestRowObject } from '../../../services/request/model';
+// Opportunity Functions
+import { fetchOpportunities } from '../../../services/opportunity/actions';
+import { opportunityRowObject } from '../../../services/opportunity/model';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
-    root: {
-        flexGrow: 1,
-        padding: isMobileAndTablet() ? 0 : 30,
-    },
-    content: {
-        paddingTop: 42,
-        paddingBottom: 42,
-        paddingLeft: 80,
-        paddingRight: 80,
-    },
-    outerCell: {
-        marginBottom: 80,
-    },
-    headerCell: {
-        marginBottom: 40,
-        display: 'block',
-    },
+      root: {
+          flexGrow: 1,
+          padding: isMobileAndTablet() ? 0 : 30,
+      },
+      content: {
+          paddingTop: 42,
+          paddingBottom: 42,
+          paddingLeft: 80,
+          paddingRight: 80,
+      },
+      outerCell: {
+          marginBottom: 80,
+      },
+      headerCell: {
+          marginBottom: 40,
+          display: 'block',
+      },
+      firstButton: {
+          marginTop: 28,
+          color: '#ffffff',
+          backgroundColor: theme.palette.primary.main,
+          textTransform: 'none',
+      },
+      buttonLabel: {
+          padding: 3,
+      },
+      fab: {
+          position: 'absolute',
+          bottom: theme.spacing(2),
+          right: theme.spacing(2),
+      },
 });
 
 function mapStateToProps(state) {
     return {
-        requests: state.requestData.publicRequests,
-        receivedAt: state.requestData.receivedPublicRequestsAt,
+        opportunities: state.opportunityData.opportunities,
+        receivedAt: state.opportunityData.receivedAt,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: {
-            fetchPublicRequests: bindActionCreators(fetchPublicRequests, dispatch),
+            fetchOpportunities: bindActionCreators(fetchOpportunities, dispatch),
         },
     };
 }
@@ -60,24 +80,24 @@ class OpportunityListView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            rows: [],
+            opportunities: [],
         };
     }
 
     componentDidMount() {
         console.log('Opportunity List View Mounted');
-        const { receivedAt, requests } = this.props;
+        const { receivedAt, opportunities } = this.props;
         if (receivedAt === null) {
-            this.loadRequestCompData();
+            this.loadOpportunityCompData();
         } else {
-            this.receiveRequests(requests);
+            this.receiveOpportunitys(opportunities);
         }
     }
 
     componentWillReceiveProps(nextProps) {
         console.warn('Opportunity List View Recieved Props');
         if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
-            this.receiveRequests(nextProps.requests);
+            this.receiveOpportunitys(nextProps.opportunities);
         }
     }
 
@@ -95,65 +115,87 @@ class OpportunityListView extends React.Component {
 
     componentWillUnmount() {
         console.warn('Opportunity List View UnMounted');
-        this.loadRequestCompData = undefined;
-        this.receiveRequests = undefined;
+        this.loadOpportunityCompData = undefined;
+        this.receiveOpportunitys = undefined;
         this.render = undefined;
     }
 
 
-    loadRequestCompData = () => {
+    loadOpportunityCompData = () => {
         const { actions } = this.props;
-        actions.fetchPublicRequests();
+        // actions.fetchOpportunities();
     }
 
-    receiveRequests = (requests) => {
-        console.warn('Received Requests');
-        const rows = filterBy(requests).map(e => requestRowObject(e));
+    receiveOpportunitys = (opportunities) => {
+        console.warn('Received Opportunitys');
         this.setState({
-            rows,
+            opportunities: filterBy(opportunities),
         });
     }
 
-    dispatchNewRequest = (e, requestID) => {
+    dispatchNewOpportunity = (e, opportunityID) => {
         e.preventDefault();
         const { accountID } = this.props;
-        const route = `/accounts/${accountID}/opportunities/create/requests/${requestID}`;
+        const route = `/accounts/${accountID}/opportunities/create/opportunities/${opportunityID}`;
         dispatchNewRoute(route);
+    }
+
+    renderOpportunityCard = (opportunity) => {
+        return (
+            <Grid item xs={isMobileAndTablet() ? 12 : 4}>
+                <OpportunityCard opportunity={opportunity} />
+            </Grid>
+        )
     }
 
     render() {
         const { classes, accountID } = this.props;
         const {
-            rows,
+            opportunities,
         } = this.state;
 
-        const GeneralContainer = (
-            <div className={classes.outerCell}><h1>Search Requests</h1>
+        return opportunities.length > 0
+        ? (
+            <section>
+            <div className={classes.headerCell}>
+                <Fab
+                    aria-label={'Add'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/search`)}
+                >
+                  <AddIcon />
+                </Fab>
             </div>
-        );
+            <Grid container className={classes.root} spacing={3}>
+                {rows.map(this.renderOpportunityCard, this)}
+            </Grid>
+            </section>
+        ) : (
+          <div className={classes.headerCell}>
+                <Fab
+                    aria-label={'Add'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/search`)}
+                >
+                  <AddIcon />
+                </Fab>
+                <EmptyResults
+                    title={`You haven't created any opportunities...`}
+                    message={`You will see active opportunities appear here. Create one to get started...`}
+                />
+            </div>
+        )
 
-        return (
-            <div className={classes.root}>
-                <div className={classes.content}>
-                    <div className={classes.headerCell}>
-                        {GeneralContainer}
-                    </div>
-                    <OpportunityResultsTable
-                        rows={rows}
-                        handleLink={this.dispatchNewRequest}
-                        handleAction={this.dispatchNewRequest}
-                    />
-                </div>
-            </div>
-        );
     }
 }
 
 OpportunityListView.defaultProps = {
-    fetchPublicRequests: f => f,
+    fetchOpportunities: f => f,
 };
 OpportunityListView.propTypes = {
-    fetchPublicRequests: PropTypes.func,
+    fetchOpportunities: PropTypes.func,
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(OpportunityListView);

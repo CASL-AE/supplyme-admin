@@ -28,7 +28,7 @@ import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 const styles = (theme) => ({
   root: {
     maxWidth: isMobileAndTablet() ? '100%' : 345,
-    backgroundColor: theme.palette.primary.background,
+    backgroundColor: theme.palette.primary.appBar,
   },
   media: {
     height: 0,
@@ -55,7 +55,7 @@ function LocationCard(props) {
   console.log(employee)
 
   return (
-    <Card className={classes.root}>
+    <Card raised={true} className={classes.root}>
       <CardHeader
           title={`${employee.firstName} ${employee.lastName}`}
           subheader={employee.permissionLevel}

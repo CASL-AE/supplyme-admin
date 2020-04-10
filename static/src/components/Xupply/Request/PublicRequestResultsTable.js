@@ -23,14 +23,14 @@ import {
 import {
   formatRequestStatus
 } from '../../../utils/events';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
   root: {
     width: '100%',
-    marginTop: 40,
     boxShadow: 'none',
     borderRadius: 8,
-    padding: 30,
+    backgroundColor: theme.palette.primary.background,
   },
   table: {},
   tableHeaders: {
@@ -58,15 +58,20 @@ const styles = (theme) => ({
     margin: 0,
     padding: 0,
   },
+  tableRow: {
+      backgroundColor: theme.palette.primary.appBar,
+      height: 50,
+      boxShadow: '0 8px 64px rgba(32, 32, 32, 0.08), 0 4px 16px rgba(32, 32, 32, 0.02)',
+  },
 });
 
 
 
 function PublicRequestResultsTable(props) {
-  const { classes, rows, handleLink } = props;
+  const { classes, requests, handleLink } = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, requests.length - page * rowsPerPage);
   const handleChangePage = (e, newPage) => {
     setPage(newPage);
   };
@@ -85,30 +90,28 @@ function PublicRequestResultsTable(props) {
             <TableCell className={classes.tableHeaders} >Required By</TableCell>
             <TableCell className={classes.tableHeaders} >Status</TableCell>
             <TableCell className={classes.tableHeaders} >Updated Date</TableCell>
-            <TableCell style={{textAlign: 'center'}} className={classes.tableHeaders} >Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map(row => (
-            <TableRow key={row.id}>
-              <TableCell><a onClick={e => handleLink(e, row.id)} className={classes.linkText}>{row.locationName || 'Unkown Name'}</a></TableCell>
+            ? requests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : requests
+          ).map(request => (
+            <TableRow className={classes.tableRow} key={request.requestID}>
+              <TableCell><a onClick={e => handleLink(e, request.requestID)} className={classes.linkText}>{request.location.name || 'Unkown Name'}</a></TableCell>
               <TableCell>
-                {row.priority}
+                {request.priority}
               </TableCell>
               <TableCell>
-                {row.items}
+                {request.items[0].itemName}
               </TableCell>
               <TableCell>
-                {formatDateNoTime(row.requiredBy)}
+                {formatDateNoTime(request.requiredBy)}
               </TableCell>
               <TableCell>
-                {formatRequestStatus(row.isStatus)}
+                {formatRequestStatus(request.isStatus)}
               </TableCell>
-              <TableCell>{formatDateNoTime(row.isStatusTime)}</TableCell>
-              <TableCell><div style={{textAlign: 'center'}} onClick={e => handleLink(e, row.id)} className={classes.linkText}>{'Create Order'}</div></TableCell>
+              <TableCell>{formatDateNoTime(request.isStatusTime)}</TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
@@ -122,7 +125,7 @@ function PublicRequestResultsTable(props) {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
               colSpan={7}
-              count={rows.length}
+              count={requests.length}
               rowsPerPage={rowsPerPage}
               page={page}
               selectProps={{
@@ -143,7 +146,7 @@ function PublicRequestResultsTable(props) {
 
 
 PublicRequestResultsTable.propTypes = {
-  rows: PropTypes.array.isRequired,
+  requests: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };

@@ -11,6 +11,7 @@ import Select from '@material-ui/core/Select';
 import Switch from '@material-ui/core/Switch';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
 import IconButton from '@material-ui/core/IconButton';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -31,6 +32,8 @@ import {
     validateDatePick,
     roundUp,
 } from '../../../utils/misc';
+
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 function renderItemType() {
     const array = [];
@@ -61,14 +64,16 @@ function renderWeightType() {
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        backgroundColor: theme.palette.primary.background,
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
         paddingBottom: 42,
         paddingLeft: 80,
         paddingRight: 80,
+        backgroundColor: theme.palette.primary.appBar,
+        borderRadius: 8,
     },
     outerCell: {
         marginBottom: 40,
@@ -81,7 +86,6 @@ const styles = (theme) => ({
         display: 'inline-block',
         fontWeight: 500,
         fontSize: 28,
-        // fontFamily: 'AvenirNext-DemiBold',
     },
     subHeaderCell: {
         marginBottom: 24,
@@ -91,7 +95,6 @@ const styles = (theme) => ({
         display: 'inline-block',
         fontWeight: 500,
         fontSize: 20,
-        // fontFamily: 'AvenirNext-DemiBold',
     },
     childHeaderCell: {
         marginTop: 16,
@@ -471,19 +474,20 @@ class MenuItemCreateView extends React.Component {
                     </div>
                 </div>
                 <label className={classes.inputLabel}>Item Type</label>
-                <div style={{paddingBottom: 20}} className={classes.textCell}>
-                    <Select
-                        onChange={e => this.handleChange(e, 'itemType')}
-                        value={menuItem.itemType}
-                        variant="outlined"
-                        margin="dense"
-                        inputProps={{
-                            name: 'itemType',
-                            id: 'itemType',
-                        }}
-                    >
-                        {itemTypes}
-                    </Select>
+                <div className={classes.textCell}>
+                    <FormControl margin="dense" className={classes.textField}>
+                        <Select
+                            onChange={e => this.handleChange(e, 'itemType')}
+                            value={menuItem.itemType}
+                            variant="outlined"
+                            inputProps={{
+                                name: 'itemType',
+                                id: 'itemType',
+                            }}
+                        >
+                            {itemTypes}
+                        </Select>
+                    </FormControl>
                 </div>
                 <label className={classes.inputLabel}>Item Name</label>
                 <div className={classes.textCell}>

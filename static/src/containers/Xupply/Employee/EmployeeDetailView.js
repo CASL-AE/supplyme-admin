@@ -6,8 +6,9 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 import { deleteEmployee } from '../../../services/employee/actions';
 import { toNewEmployee } from '../../../services/employee/model';
@@ -18,24 +19,19 @@ const styles = (theme) => ({
         flex: 1,
         height: '100vh'
     },
-    content: {
-        paddingTop: 42,
-        paddingBottom: 42,
-        paddingLeft: 80,
-        paddingRight: 80,
-    },
     display: {
         display: 'flex',
     },
     leftDetail: {
-      paddingRight: '8rem',
       flexBasis: 0,
       flexGrow: 1,
+      marginRight: 30,
     },
     detailCard: {
       padding: '2.0rem',
       boxShadow: '0 8px 64px rgba(32, 32, 32, 0.08), 0 4px 16px rgba(32, 32, 32, 0.02)',
-      bemployeeRadius: 16,
+      backgroundColor: theme.palette.primary.appBar,
+      borderRadius: 8,
     },
     detailTop: {
       marginBottom: 30,
@@ -76,14 +72,15 @@ const styles = (theme) => ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: 15,
       paddingBottom: 15,
       margin: 0,
     },
     detailList: {
-      bemployeeTop: '1px solid #e6e6e6',
-      paddingTop: 15,
+      blocationTop: '1px solid #e6e6e6',
       display: 'block',
+      backgroundColor: theme.palette.primary.appBar,
+      borderRadius: 8,
+      padding: 30,
     },
     editButton: {
         float: 'right',
@@ -91,13 +88,13 @@ const styles = (theme) => ({
     },
     detailListDt: {
       minWidth: '30%',
-      bemployee: 0,
+      border: 0,
       padding: '.5rem 0',
       margin: 0,
     },
     detailListDd: {
       minWidth: '70%',
-      bemployee: 0,
+      border: 0,
       fontWeight: 500,
       padding: '.5rem 0',
       margin: 0,
@@ -106,8 +103,8 @@ const styles = (theme) => ({
         display: 'flex',
     },
     img: {
-        bemployeeRadius: '50%',
-        paddingRight: 10,
+        borderRadius: '50%',
+        marginRight: 10,
     }
 });
 
@@ -212,87 +209,83 @@ class EmployeeDetailView extends React.Component {
         const { employee } = this.state;
         return (
           <div className={classes.root}>
-              <div className={classes.content}>
-                  <div className={classes.display}>
-                      <div className={classes.leftDetail}>
-                          <div className={classes.detailCard}>
-                              <div className={classes.detailTop}>
-                                <img height='20' width='20' className={classes.img} src='/src/containers/App/styles/img/temp_anon.jpg' />
-                                <span>{employee.permissionLevel && employee.permissionLevel.charAt(0).toUpperCase() + employee.permissionLevel.slice(1)}</span>
-                              </div>
-                              <div className={classes.detailTitle}>
-                                <span className={classes.detailTitleText}>{`${employee.name}`}</span>
-                              </div>
-                              <div className={classes.detailActions}>
-                                  <Button
-                                    variant="contained"
-                                    disableRipple
-                                    disableFocusRipple
-                                    onClick={(e) => this.deleteActiveEmployee(e)}
-                                    className={classes.deleteButton}
-                                  >
-                                      {'Delete'}
-                                  </Button>
-                              </div>
+              <div className={classes.display}>
+                  <div className={classes.leftDetail}>
+                      <div className={classes.detailCard}>
+                          <div className={classes.detailTop}>
+                            <img height='50' width='50' className={classes.img} src='/src/containers/App/styles/img/temp_anon.jpg' />
+                            <span>{employee.permissionLevel && employee.permissionLevel.charAt(0).toUpperCase() + employee.permissionLevel.slice(1)}</span>
+                          </div>
+                          <div className={classes.detailTitle}>
+                            <span className={classes.detailTitleText}>{`${employee.firstName} ${employee.lastName}`}</span>
+                          </div>
+                          <div className={classes.detailActions}>
+                              <Fab
+                                  aria-label={'Edit'}
+                                  className={classes.deleteButton}
+                                  color={'primary'}
+                                  onClick={(e) => this.deleteActiveEmployee(e)}
+                              >
+                                <DeleteForeverIcon />
+                              </Fab>
                           </div>
                       </div>
-                      <div className={classes.rightDetail}>
-                          <div className={classes.block}>
-                              <div className={classes.section}>
-                                  <span className={classes.detailTitleText}>Details</span>
-                                  <Button
-                                    variant="contained"
-                                    disableRipple
-                                    disableFocusRipple
-                                    onClick={(e) => dispatchNewObject(e, accountID, 'employee', employee.employeeID, 'edit')}
-                                    className={classes.editButton}
-                                  >
-                                      {'Edit'}
-                                  </Button>
-                              </div>
-                              <dl className={classes.detailList}>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      ID
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {employee.employeeID}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Created
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {`${formatDateWTime(employee.creationDate)}`}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Email
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {employee.email}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Phone
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {employee.phoneNumber}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Employment Date
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {`${formatDateWTime(employee.employmentDate)}`}
-                                  </dd>
-                                  </div>
-                              </dl>
+                  </div>
+                  <div className={classes.rightDetail}>
+                      <div className={classes.block}>
+                          <div className={classes.section}>
+                              <span className={classes.detailTitleText}>Details</span>
+                              <Fab
+                                  aria-label={'Edit'}
+                                  className={classes.editButton}
+                                  color={'primary'}
+                                  onClick={(e) => dispatchNewObject(e, accountID, 'employee', employee.employeeID, 'edit')}
+                              >
+                                <EditIcon />
+                              </Fab>
                           </div>
+                          <dl className={classes.detailList}>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  ID
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {employee.employeeID}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Created
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {`${formatDateWTime(employee.creationDate)}`}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Email
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {employee.email}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Phone
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {employee.phoneNumber}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Employment Date
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {`${formatDateWTime(employee.employmentDate)}`}
+                              </dd>
+                              </div>
+                          </dl>
                       </div>
                   </div>
               </div>
