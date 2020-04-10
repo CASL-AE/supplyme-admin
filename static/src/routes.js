@@ -17,6 +17,7 @@ import PublicRequestMapView from './containers/Xupply/Request/PublicRequestMapVi
 import VerifyEmailView from './containers/NotAuth/Register/VerifyEmailView';
 
 /* Private Containers */
+import DashboardView from './containers/Xupply/Dashboard/DashboardView';
 import EmployeeListView from './containers/Xupply/Employee/EmployeeListView';
 import EmployeeDetailView from './containers/Xupply/Employee/EmployeeDetailView';
 import EmployeeCreateView from './containers/Xupply/Employee/EmployeeCreateView';
@@ -52,7 +53,6 @@ export default (
     <App>
         <Switch>
             // NOT Auth Views
-            <Route exact path="/" component={requireAuthentication(LocationListView)} />
             <Route exact path="/register" component={requireNoAuthentication(RegisterView)} />
             <Route exact path="/login" component={requireNoAuthentication(LoginView)} />
 
@@ -60,7 +60,8 @@ export default (
             <Route exact path="/verify/email" component={requireNoAuthentication(VerifyEmailView)} />
 
             // Auth Views
-            <Route exact path="/accounts/:id/account" component={requireAuthentication(LocationListView)} />
+            <Route exact path="/" component={requireAuthentication(DashboardView)} />
+            <Route exact path="/accounts/:id/dashboard" component={requireAuthentication(DashboardView)} />
             <Route exact path="/accounts/:id/employees" component={requireAuthentication(EmployeeListView)} />
             <Route exact path="/accounts/:id/employees/codes" component={requireAuthentication(EmployeeCodeListView)} />
             <Route exact path="/accounts/:id/employees/:id" component={requireAuthentication(EmployeeDetailView)} />
