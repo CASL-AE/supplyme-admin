@@ -76,22 +76,10 @@ export function requireAuthentication(Component) {
                 }
             } else {
                 if (next === '/') {
-                    if (props.accountID === process.env.PRIVALGO_ADMIN_KEY) {
-                        history.push(`/admin/locations`);
+                    if (props.accountID === process.env.XUPPLY_ADMIN_KEY) {
+                        history.push(`/admin/dashboard`);
                     } else {
-                        switch(props.accountType) {
-                            case 'retailer':
-                                history.push(`/accounts/${props.accountID}/requests`);
-                                break;
-                            case 'manufacturer':
-                                history.push(`/accounts/${props.accountID}/orders`);
-                                break;
-                            case 'financier':
-                                history.push(`/accounts/${props.accountID}/opportunities`);
-                                break;
-
-                        }
-
+                        history.push(`/accounts/${props.accountID}/dashboard`);
                     }
                 } else {
                     console.log('A4');
