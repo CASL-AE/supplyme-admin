@@ -41,7 +41,7 @@ function mapDispatchToProps(dispatch) {
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+        background: theme.palette.primary.background,
     },
     appFrame: {
         zIndex: 1,
@@ -53,7 +53,7 @@ const styles = theme => ({
     },
     content: {
         padding: theme.spacing(2),
-        backgroundColor: theme.palette.primary.background,
+        backgroundColor: theme.palette.primary.appBar,
         borderRadius: 8,
     },
     gridItemBoxInner: {

@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
+import EditIcon from '@material-ui/icons/Edit';
 
 // import { getLocation } from '../../../services/location/actions';
 import { toNewLocation } from '../../../services/location/model';
@@ -15,7 +15,7 @@ import { getKeys, formatDateWTime, dispatchNewObject } from '../../../utils/misc
 
 import MiniDetailMap from '../../../components/Xupply/Misc/MiniDetailMap';
 
-const styles = {
+const styles = (theme) => ({
     root: {
         flex: 1,
         height: '100vh'
@@ -31,7 +31,7 @@ const styles = {
     detailCard: {
       padding: '2.0rem',
       boxShadow: '0 8px 64px rgba(32, 32, 32, 0.08), 0 4px 16px rgba(32, 32, 32, 0.02)',
-      backgroundColor: '#eee',
+      backgroundColor: theme.palette.primary.appBar,
       borderRadius: 8,
     },
     detailTop: {
@@ -65,9 +65,6 @@ const styles = {
     rightDetail: {
       flexGrow: 2,
       flexBasis: 0,
-      backgroundColor: '#eee',
-      padding: 30,
-      borderRadius: 8,
     },
     block: {
         marginBottom: 40,
@@ -76,14 +73,15 @@ const styles = {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: 15,
       paddingBottom: 15,
       margin: 0,
     },
     detailList: {
-      blocationTop: '1px solid #e6e6e6',
-      paddingTop: 15,
+      borderTop: '1px solid #e6e6e6',
       display: 'block',
+      backgroundColor: theme.palette.primary.appBar,
+      borderRadius: 8,
+      padding: 30,
     },
     editButton: {
         float: 'right',
@@ -91,13 +89,13 @@ const styles = {
     },
     detailListDt: {
       minWidth: '30%',
-      blocation: 0,
+      border: 0,
       padding: '.5rem 0',
       margin: 0,
     },
     detailListDd: {
       minWidth: '70%',
-      blocation: 0,
+      border: 0,
       fontWeight: 500,
       padding: '.5rem 0',
       margin: 0,
@@ -106,10 +104,10 @@ const styles = {
         display: 'flex',
     },
     img: {
-        blocationRadius: '50%',
-        paddingRight: 10,
+        borderRadius: '50%',
+        marginRight: 10,
     }
-};
+});
 
 function mapStateToProps(state) {
     return {
@@ -234,15 +232,14 @@ class LocationDetailView extends React.Component {
                       <div className={classes.block}>
                           <div className={classes.section}>
                               <span className={classes.detailTitleText}>Details</span>
-                              <Button
-                                variant="contained"
-                                disableRipple
-                                disableFocusRipple
-                                onClick={(e) => dispatchNewObject(e, accountID, 'location', location.locationID, 'edit')}
-                                className={classes.editButton}
+                              <Fab
+                                  aria-label={'Edit'}
+                                  className={classes.editButton}
+                                  color={'primary'}
+                                  onClick={(e) => dispatchNewObject(e, accountID, 'location', location.locationID, 'edit')}
                               >
-                                  {'Edit'}
-                              </Button>
+                                <EditIcon />
+                              </Fab>
                           </div>
                           <dl className={classes.detailList}>
                               <div className={classes.detailListFlex}>

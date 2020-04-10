@@ -25,6 +25,7 @@ import {
   validatePhone,
   roundUp,
 } from '../../../utils/misc';
+import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 function renderPermissionLevel() {
     const array = [];
@@ -36,14 +37,16 @@ function renderPermissionLevel() {
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        backgroundColor: theme.palette.primary.background,
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
         paddingBottom: 42,
         paddingLeft: 80,
         paddingRight: 80,
+        backgroundColor: theme.palette.primary.appBar,
+        borderRadius: 8,
     },
     outerCell: {
         marginBottom: 40,
@@ -56,7 +59,6 @@ const styles = (theme) => ({
         display: 'inline-block',
         fontWeight: 500,
         fontSize: 28,
-        // fontFamily: 'AvenirNext-DemiBold',
     },
     subHeaderCell: {
         marginBottom: 24,
@@ -66,7 +68,6 @@ const styles = (theme) => ({
         display: 'inline-block',
         fontWeight: 500,
         fontSize: 20,
-        // fontFamily: 'AvenirNext-DemiBold',
     },
     childHeaderCell: {
         marginTop: 16,

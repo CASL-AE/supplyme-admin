@@ -47,7 +47,7 @@ const styles = (theme) => ({
         paddingBottom: 42,
         paddingLeft: 80,
         paddingRight: 80,
-        backgroundColor: '#eee',
+        backgroundColor: theme.palette.primary.appBar,
         borderRadius: 8,
     },
     outerCell: {

@@ -28,7 +28,7 @@ import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 const styles = (theme) => ({
   root: {
     maxWidth: isMobileAndTablet() ? '100%' : 345,
-    backgroundColor: theme.palette.primary.background,
+    backgroundColor: theme.palette.primary.appBar,
   },
   media: {
     height: 0,
@@ -60,7 +60,7 @@ function OrderCard(props) {
   console.log(row)
 
   return (
-    <Card className={classes.root}>
+    <Card raised={true} className={classes.root}>
       <CardHeader
         title={`Funded: ${row.paid || 0}`}
         subheader={`Req. By: ${formatDateNoTime(row.isStatusTime)}`}

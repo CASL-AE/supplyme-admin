@@ -29,7 +29,7 @@ import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 const styles = (theme) => ({
   root: {
     maxWidth: isMobileAndTablet() ? '100%' : 345,
-    backgroundColor: theme.palette.primary.background,
+    backgroundColor: theme.palette.primary.appBar,
   },
   media: {
     height: 0,
@@ -56,7 +56,7 @@ function RequestCard(props) {
   console.log(request)
 
   return (
-    <Card className={classes.root}>
+    <Card raised={true} className={classes.root}>
       <CardHeader
           title={`Funded: ${request.totals.paid || 0}`}
           subheader={`Req. By: ${formatDateNoTime(request.requiredBy)}`}

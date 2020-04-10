@@ -37,7 +37,7 @@ const styles = theme => ({
     },
     content: {
         padding: isMobileAndTablet() ? 0 : theme.spacing(2),
-        backgroundColor: theme.palette.primary.background,
+        backgroundColor: theme.palette.primary.appBar,
         borderRadius: 8,
     },
     gridItemBoxInner: {

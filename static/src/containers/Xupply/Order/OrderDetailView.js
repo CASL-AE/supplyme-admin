@@ -19,28 +19,24 @@ import OrderMenuItemsTable from '../../../components/Xupply/Order/OrderMenuItems
 
 import { withScriptjs, withGoogleMap } from "react-google-maps";
 
-const styles = {
+const styles = (theme) => ({
     root: {
         flex: 1,
-    },
-    content: {
-        paddingTop: 42,
-        paddingBottom: 42,
-        paddingLeft: 80,
-        paddingRight: 80,
+        height: '100vh'
     },
     display: {
         display: 'flex',
     },
     leftDetail: {
-      paddingRight: '8rem',
       flexBasis: 0,
       flexGrow: 1,
+      marginRight: 30,
     },
     detailCard: {
       padding: '2.0rem',
       boxShadow: '0 8px 64px rgba(32, 32, 32, 0.08), 0 4px 16px rgba(32, 32, 32, 0.02)',
-      borderRadius: 16,
+      backgroundColor: theme.palette.primary.appBar,
+      borderRadius: 8,
     },
     detailTop: {
       marginBottom: 30,
@@ -81,14 +77,15 @@ const styles = {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: 15,
       paddingBottom: 15,
       margin: 0,
     },
     detailList: {
-      borderTop: '1px solid #e6e6e6',
-      paddingTop: 15,
+      blocationTop: '1px solid #e6e6e6',
       display: 'block',
+      backgroundColor: theme.palette.primary.appBar,
+      borderRadius: 8,
+      padding: 30,
     },
     editButton: {
         float: 'right',
@@ -112,9 +109,9 @@ const styles = {
     },
     img: {
         borderRadius: '50%',
-        paddingRight: 10,
+        marginRight: 10,
     }
-};
+});
 
 function mapStateToProps(state) {
     return {
@@ -232,97 +229,95 @@ class OrderDetailView extends React.Component {
         console.log(directions)
         return (
           <div className={classes.root}>
-              <div className={classes.content}>
-                  <div className={classes.display}>
-                      <div className={classes.leftDetail}>
-                          <div className={classes.detailCard}>
-                              <div className={classes.detailTop}>
-                              {
-                                order.active && directions !== null && directions.status === 'OK'
-                                ? (
-                                  <MiniDirectionsMap
-                                      googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}`}
-                                      loadingElement={<div style={{ height: `100%` }} />}
-                                      containerElement={<div style={{ width: 400, height: 200 }} />}
-                                      mapElement={<div style={{ height: `100%` }} />}
-                                      centerCoord={centerCoord}
-                                      directions={directions}
-                                  />
-                                ) : null
-                              }
-                              </div>
-                              <div className={classes.detailTitle}>
-                                <span className={classes.detailTitleText}>{`${formatOrderStatus(order.status.isStatus)}`}</span>
-                                <br />
-                                <span>{`Priority: ${order.request.priority}`}</span>
-                                <br />
-                                <span>{`Deliver By: ${formatDateWTime(order.request.requiredBy)}`}</span>
-                              </div>
+              <div className={classes.display}>
+                  <div className={classes.leftDetail}>
+                      <div className={classes.detailCard}>
+                          <div className={classes.detailTop}>
+                          {
+                            order.active && directions !== null && directions.status === 'OK'
+                            ? (
+                              <MiniDirectionsMap
+                                  googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_API_KEY}`}
+                                  loadingElement={<div style={{ height: `100%` }} />}
+                                  containerElement={<div style={{ width: 400, height: 200 }} />}
+                                  mapElement={<div style={{ height: `100%` }} />}
+                                  centerCoord={centerCoord}
+                                  directions={directions}
+                              />
+                            ) : null
+                          }
+                          </div>
+                          <div className={classes.detailTitle}>
+                            <span className={classes.detailTitleText}>{`${formatOrderStatus(order.status.isStatus)}`}</span>
+                            <br />
+                            <span>{`Priority: ${order.request.priority}`}</span>
+                            <br />
+                            <span>{`Deliver By: ${formatDateWTime(order.request.requiredBy)}`}</span>
                           </div>
                       </div>
-                      <div className={classes.rightDetail}>
-                          <div className={classes.block}>
-                              <div className={classes.section}>
-                                  <span className={classes.detailTitleText}>Details</span>
-                                  <Button
-                                    variant="contained"
-                                    disableRipple
-                                    disableFocusRipple
-                                    onClick={(e) => dispatchNewObject(e, accountID, 'order', order.orderID, 'edit')}
-                                    className={classes.editButton}
-                                  >
-                                      {'Edit'}
-                                  </Button>
-                              </div>
-                              <dl className={classes.detailList}>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      ID
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {order.orderID}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Created
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {'`${formatDateWTime(order.createdDate)}`'}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Request Contact Name
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {order.request.location.contactInfo.name}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Request Contact Email
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {order.request.location.contactInfo.email}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Request Contact Phone
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {order.request.location.contactInfo.phoneNumber}
-                                  </dd>
-                                  </div>
-                              </dl>
+                  </div>
+                  <div className={classes.rightDetail}>
+                      <div className={classes.block}>
+                          <div className={classes.section}>
+                              <span className={classes.detailTitleText}>Details</span>
+                              <Button
+                                variant="contained"
+                                disableRipple
+                                disableFocusRipple
+                                onClick={(e) => dispatchNewObject(e, accountID, 'order', order.orderID, 'edit')}
+                                className={classes.editButton}
+                              >
+                                  {'Edit'}
+                              </Button>
                           </div>
-                          <div className={classes.block}>
-                              <div className={classes.section}>
-                                  <span className={classes.detailTitleText}>{'Order Menu Items'}</span>
+                          <dl className={classes.detailList}>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  ID
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {order.orderID}
+                              </dd>
                               </div>
-                              <OrderMenuItemsTable menuItems={order.menuItems} />
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Created
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {'`${formatDateWTime(order.createdDate)}`'}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Request Contact Name
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {order.request.location.contactInfo.name}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Request Contact Email
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {order.request.location.contactInfo.email}
+                              </dd>
+                              </div>
+                              <div className={classes.detailListFlex}>
+                              <dt className={classes.detailListDt}>
+                                  Request Contact Phone
+                              </dt>
+                              <dd className={classes.detailListDd}>
+                                  {order.request.location.contactInfo.phoneNumber}
+                              </dd>
+                              </div>
+                          </dl>
+                      </div>
+                      <div className={classes.block}>
+                          <div className={classes.section}>
+                              <span className={classes.detailTitleText}>{'Order Menu Items'}</span>
                           </div>
+                          <OrderMenuItemsTable menuItems={order.menuItems} />
                       </div>
                   </div>
               </div>

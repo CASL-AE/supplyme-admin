@@ -24,14 +24,15 @@ import OrderMenuItemsTable from '../../../components/Xupply/Order/OrderMenuItems
 
 const styles = (theme) => ({
     root: {
-        flex: 1,
-        height: '100vh'
+        flexGrow: 1,
+        padding: isMobileAndTablet() ? 0 : 30,
     },
     content: {
         paddingTop: 42,
         paddingBottom: 42,
         paddingLeft: 80,
         paddingRight: 80,
+        backgroundColor: theme.palette.primary.appBar,
     },
     display: {
         display: 'flex',

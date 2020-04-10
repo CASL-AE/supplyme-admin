@@ -30,7 +30,7 @@ const styles = (theme) => ({
     boxShadow: 'none',
     borderRadius: 8,
     padding: isMobileAndTablet() ? 0 : 30,
-    backgroundColor: theme.palette.primary.background,
+    backgroundColor: theme.palette.primary.appBar,
     overflow: 'scroll',
   },
   table: {},

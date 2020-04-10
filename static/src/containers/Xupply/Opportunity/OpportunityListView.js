@@ -162,7 +162,7 @@ class OpportunityListView extends React.Component {
                     aria-label={'Add'}
                     className={isMobileAndTablet() ? classes.fab : null}
                     color={'primary'}
-                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/opportunities/create/beta`)}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/search`)}
                 >
                   <AddIcon />
                 </Fab>
@@ -177,7 +177,7 @@ class OpportunityListView extends React.Component {
                     aria-label={'Add'}
                     className={isMobileAndTablet() ? classes.fab : null}
                     color={'primary'}
-                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/opportunities/create/beta`)}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/search`)}
                 >
                   <AddIcon />
                 </Fab>

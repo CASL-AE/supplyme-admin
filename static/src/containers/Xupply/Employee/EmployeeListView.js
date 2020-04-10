@@ -147,6 +147,7 @@ class EmployeeListView extends React.Component {
 
     dispatchNewEmployee = (e, employeeID) => {
         e.preventDefault();
+        console.log(employeeID)
         const { accountID } = this.props;
         const route = `/accounts/${accountID}/employees/${employeeID}`
         dispatchNewRoute(route);
@@ -174,30 +175,6 @@ class EmployeeListView extends React.Component {
             employees,
         } = this.state;
 
-        const GeneralContainer = (
-            <div className={classes.outerCell}>
-            <Button
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              className={classes.firstButton}
-              classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/employees/codes/create`)}
-            >
-                {'+ New Activation Code'}
-            </Button>
-            <Button
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              className={classes.secondButton}
-              classes={{ label: classes.buttonLabel }}
-              onClick={e => dispatchNewRoute(`/accounts/${accountID}/employees/codes`)}
-            >
-                {'List Active Codes'}
-            </Button>
-            </div>
-        );
         return (
             <section>
                 <div className={classes.headerCell}>

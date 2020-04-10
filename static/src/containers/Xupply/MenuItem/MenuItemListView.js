@@ -13,6 +13,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import MenuItemResultsTable from '../../../components/Xupply/MenuItem/MenuItemResultsTable';
 import MenuItemCard from '../../../components/Xupply/MenuItem/MenuItemCard';
@@ -102,11 +103,6 @@ class MenuItemListView extends React.Component {
         if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
             this.receiveMenuItems(nextProps.menuItems);
         }
-        const { accountID } = nextProps;
-        if (nextProps.receivedAt !== null && nextProps.menuItems.length === 0) {
-            const route = `/accounts/${accountID}/menuItems/create/beta`;
-            dispatchNewRoute(route);
-        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -176,9 +172,18 @@ class MenuItemListView extends React.Component {
                     aria-label={'Add'}
                     className={isMobileAndTablet() ? classes.fab : null}
                     color={'primary'}
-                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create`)}
                 >
                   <AddIcon />
+                </Fab>
+                <Fab
+                    aria-label={'Beta'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
+                    style={{marginLeft: 20}}
+                >
+                    <CloudUploadIcon />
                 </Fab>
             </div>
             <Grid container className={classes.root} spacing={3}>
@@ -187,13 +192,15 @@ class MenuItemListView extends React.Component {
             </section>
         ) : (
           <div className={classes.headerCell}>
+
                 <Fab
-                    aria-label={'Add'}
+                    aria-label={'Beta'}
                     className={isMobileAndTablet() ? classes.fab : null}
                     color={'primary'}
                     onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
+                    style={{marginLeft: 20}}
                 >
-                  <AddIcon />
+                  <CloudUploadIcon />
                 </Fab>
                 <EmptyResults
                     title={`You haven't created any menu items...`}
@@ -216,3 +223,13 @@ MenuItemListView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(MenuItemListView);
+
+/* For Prod App */
+// <Fab
+//     aria-label={'Add'}
+//     className={isMobileAndTablet() ? classes.fab : null}
+//     color={'primary'}
+//     onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create`)}
+// >
+//   <AddIcon />
+// </Fab>
