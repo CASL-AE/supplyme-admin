@@ -9,6 +9,8 @@ import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
@@ -22,14 +24,23 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ClearAllIcon from '@material-ui/icons/ClearAll';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import Collapse from '@material-ui/core/Collapse';
+import ShopTwoIcon from '@material-ui/icons/ShopTwo';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import LockIcon from '@material-ui/icons/Lock';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 
 import history from '../../../history';
 
 import { logoutAndRedirect } from '../../../services/app/actions';
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
-import { dispatchNewRoute, parseLabel } from '../../../utils/misc';
+import { dispatchNewRoute, parseLabel, validateVarChar } from '../../../utils/misc';
 
 import { version } from '../../../../package.json';
 
@@ -49,8 +60,7 @@ const styles = theme => ({
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
-        backgroundColor: '#333333',
-        // background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+        backgroundColor: theme.palette.primary.appBar,
     },
     appBarShift: {
       marginLeft: drawerWidth,
@@ -65,8 +75,7 @@ const styles = theme => ({
     content: {
         flexGrow: 1,
         overflow: 'scroll',
-        backgroundColor: '#202020',
-        // background: 'linear-gradient(to right, #000000 0%, #79bac1 100%, #79bac1 100%, #79bac1 100%)',
+        backgroundColor: theme.palette.primary.background,
         padding: isMobileAndTablet() ? 0 : theme.spacing(3),
     },
     sectionDesktop: {
@@ -161,17 +170,16 @@ const styles = theme => ({
       whiteSpace: 'nowrap',
     },
     drawerOpen: {
-      backgroundColor: '#202020',
+      backgroundColor: theme.palette.primary.appBar,
       color: theme.palette.primary.main,
       width: drawerWidth,
-      borderColor: '#eeeeee54',
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
       }),
     },
     drawerClose: {
-      backgroundColor: '#202020',
+      backgroundColor: theme.palette.primary.appBar,
       color: theme.palette.primary.main,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
@@ -184,8 +192,16 @@ const styles = theme => ({
       },
     },
     icon: {
-        color: theme.palette.primary.main,
-    }
+        // color: theme.palette.primary.main,
+    },
+    breadCont: {
+        marginBottom: 15,
+        display: 'inline-block'
+    },
+    breadLink: {
+        // color: '#eee !important',
+        cursor: 'pointer',
+    },
 });
 
 function mapStateToProps(state) {
@@ -216,8 +232,10 @@ class Base extends Component {
             baseDomain: '/accounts/',
             breadcrumb: 'account',
             listItems: [],
+            locationNames: [],
             showDrawer: true,
             showAccount: false,
+            showManage: true,
         };
     }
 
@@ -233,46 +251,55 @@ class Base extends Component {
         const { pathname, accountType } = this.props;
         if (pathname) {
             const vars = pathname.split('/');
-            let locationName = [];
+            let locationNames = [];
             for (let i = 0; i < vars.length; i++) {
                 if (vars[i] !== '' && vars[i] !== '/' && vars[i].charAt(0) !== '-') {
-                    locationName.push(vars[i]);
+                    locationNames.push(vars[i]);
                 }
             }
             var listItems = [];
             switch (accountType) {
                 case 'retailer':
                     listItems = [
+                        'dashboard',
                         'requests',
+                        'menuItems',
+                        'manage',
                     ]
                     break;
                 case 'manufacturer':
                     listItems = [
+                        'dashboard',
                         'orders',
                         'menuItems',
                         'requests',
+                        'manage',
                     ]
                     break;
                 case 'financier':
                     listItems = [
+                        'dashboard',
                         'opportunities',
+                        'manage',
                     ]
                     break;
                 default:
                     listItems = [
-                        'locations',
                         'requests',
                         'orders',
                         'menuItems',
-                        'employees',
+                        'manage',
                     ]
                     break;
             }
+            console.log(listItems)
+            console.log(locationNames)
             this.setState({
                 listItems: listItems,
-                breadcrumb: locationName[2],
-                childBreadcrumb: locationName[3],
-                baseDomain: `/accounts/${locationName[1]}`,
+                breadcrumb: locationNames[2],
+                breadcrumbChild: locationNames[3],
+                locationNames,
+                baseDomain: `/accounts/${locationNames[1]}`,
             });
         }
     }
@@ -281,22 +308,45 @@ class Base extends Component {
     parseURL = (item) => {
         const { baseDomain } = this.state;
         switch (item) {
+        case 'dashboard':
+            return `${baseDomain}/dashboard`;
         case 'requests':
             return `${baseDomain}/requests`;
-        case 'create_request':
-            return `${baseDomain}/requests/create/beta`;
-        case 'search_requests':
-            return `${baseDomain}/requests/search`;
         case 'orders':
             return `${baseDomain}/orders`;
         case 'menuItems':
             return `${baseDomain}/menuItems`;
-        case 'create_menuItem':
-            return `${baseDomain}/menuItems/create/beta`;
         case 'opportunities':
             return `${baseDomain}/opportunities`;
+        case 'locations':
+            return `${baseDomain}/locations`;
+        case 'employees':
+            return `${baseDomain}/employees`;
         }
         return baseDomain;
+    }
+
+    // REFACTOR FOR PROD
+    parseLinkIcon = (item) => {
+        switch (item) {
+        case 'dashboard':
+            return <DashboardIcon />;
+        case 'requests':
+            return <LocalOfferIcon />;
+        case 'orders':
+            return <ShopTwoIcon />;
+        case 'menuItems':
+            return <MenuBookIcon />;
+        case 'opportunities':
+            return <AttachMoneyIcon />;
+        case 'manage':
+            return <LockIcon />;
+        case 'locations':
+            return <LocationOnIcon />;
+        case 'employees':
+            return <SupervisedUserCircleIcon />;
+        }
+        return <AttachMoneyIcon />;
     }
 
     dispatchNewRoute(e, route) {
@@ -325,6 +375,134 @@ class Base extends Component {
         this.setState({showDrawer: true});
     }
 
+    toggleListItem = () => {
+        const { showManage } = this.state;
+        this.setState({showManage: !showManage});
+    }
+
+    renderBreadcrumb = (currentBC) => {
+        const {
+            classes,
+        } = this.props;
+        const {
+            breadcrumb,
+            breadcrumbChild,
+            baseDomain,
+        } = this.state;
+        switch (currentBC) {
+          case 'accounts':
+            return (
+                <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/dashboard`)}>
+                    Dashboard
+                </Link>
+            );
+            break;
+          case 'requests':
+            return (
+              <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}`)}>
+                  Requests
+              </Link>
+            )
+            break;
+          case 'orders':
+            return (
+              <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}`)}>
+                  Orders
+              </Link>
+            )
+            break;
+          case 'opportunities':
+            return (
+              <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}`)}>
+                  opportunities
+              </Link>
+            )
+            break;
+          case 'menuItems':
+            return (
+              <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}`)}>
+                  Menu Items
+              </Link>
+            )
+            break;
+          case 'locations':
+            return (
+              <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}`)}>
+                  Locations
+              </Link>
+            )
+            break;
+          case 'employees':
+            return (
+              <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}`)}>
+                  Employees
+              </Link>
+            )
+            break;
+          case 'create':
+            return (
+                <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}/create`)}>
+                    Create
+                </Link>
+            );
+            break;
+          default:
+            if (breadcrumbChild === currentBC) {
+                return (
+                    <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}/${breadcrumbChild}`)}>
+                        Details
+                    </Link>
+                );
+            }
+            break;
+        }
+    }
+
+    renderListItem = (item) => {
+        const { classes } = this.props;
+        const { showManage } = this.state;
+        if (item === 'manage') {
+            return (
+                <section>
+                    <Divider style={{backgroundColor: '#dadada'}} />
+                    <List>
+                        <ListItem onClick={e => this.toggleListItem(e)} button key={item}>
+                          <ListItemText primary={item} />
+                          {showManage ? <ExpandLess /> : <ExpandMore />}
+                        </ListItem>
+                        <Collapse in={showManage} timeout="auto" unmountOnExit>
+                          <List component="div" disablePadding>
+                            <ListItem button key={'locations'} onClick={e => this.dispatchNewRoute(e, this.parseURL('locations'))}>
+                              <ListItemIcon>
+                                <ListItemIcon className={classes.icon}>{this.parseLinkIcon('locations')}</ListItemIcon>
+                              </ListItemIcon>
+                              <ListItemText primary={'locations'} />
+                            </ListItem>
+                            <ListItem button key={'employees'} onClick={e => this.dispatchNewRoute(e, this.parseURL('employees'))}>
+                              <ListItemIcon>
+                                <ListItemIcon className={classes.icon}>{this.parseLinkIcon('employees')}</ListItemIcon>
+                              </ListItemIcon>
+                              <ListItemText primary={'employees'} />
+                            </ListItem>
+                          </List>
+                        </Collapse>
+                    </List>
+                </section>
+            );
+        }
+        return (
+            <section>
+                <Divider style={{backgroundColor: '#dadada'}} />
+                <List>
+                    <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(item))} button key={item}>
+                      <ListItemIcon className={classes.icon}>{this.parseLinkIcon(item)}</ListItemIcon>
+                      <ListItemText primary={item} />
+                    </ListItem>
+                </List>
+            </section>
+        );
+    }
+
     render() {
         const {
             classes,
@@ -337,6 +515,8 @@ class Base extends Component {
         const {
             listItems,
             isMobileAndTablet,
+            locationNames,
+            breadcrumb,
             baseDomain,
             showDrawer,
             showAccount,
@@ -364,31 +544,16 @@ class Base extends Component {
                     </IconButton>
                     {!showDrawer
                     ? (
-                      <a><img alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-light-named.png" /></a>
+                      <a><img alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-named.png" /></a>
                     ) : null}
-                    <div className={classes.sectionDesktop}></div>
+                    <div className={classes.sectionDesktop} />
                     <div className={classes.root} />
                     <div className={classes.sectionDesktop}>
-                    <IconButton
-                      onClick={e => dispatchNewRoute(`${baseDomain}/locations`)}
-                    >
-                        <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
-                            Locations
-                      </div>
-                    </IconButton>
-                    <IconButton
-                      onClick={e => dispatchNewRoute(`${baseDomain}/employees`)}
-                    >
-                        <div style={{ paddingLeft: 10, fontWeight: 500, fontSize: 16, color: '#fff' }}>
-                            Employees
-                      </div>
-                    </IconButton>
-                    </div>
-                    <div className={classes.sectionDesktop}>
                         <IconButton
+                            style={{backgroundColor: '#fff' }}
                             onClick={e => this.toggleAccount(!showAccount)}
                         >
-                            <div style={{ fontSize: 14, color: '#fff' }}>
+                            <div style={{ fontSize: 14 }}>
                                 <i class="fa fa-globe"></i>
                                 <span style={{ marginLeft: 8 }}>EN</span>
                             </div>
@@ -396,9 +561,10 @@ class Base extends Component {
                     </div>
                     <div className={classes.sectionDesktop}>
                         <IconButton
+                            style={{backgroundColor: '#fff' }}
                             onClick={isAuthenticated ? e => this.logout(e) : e => dispatchNewRoute('/login')}
                         >
-                            <div style={{ fontSize: 14, color: '#fff' }}>
+                            <div style={{ fontSize: 14 }}>
                                 <i class="fa fa-user"></i>
                                 <span style={{ marginLeft: 8 }}>{!isAuthenticated ? 'Log In' : 'Log Out'}</span>
                             </div>
@@ -452,6 +618,7 @@ class Base extends Component {
                 <div className={classes.appFrame}>
                     {MainAppBar}
                     <Drawer
+                      elevation={5}
                       variant="permanent"
                       className={clsx(classes.drawer, {
                         [classes.drawerOpen]: showDrawer,
@@ -467,49 +634,20 @@ class Base extends Component {
                       <div className={classes.toolbar}>
                         <IconButton className={classes.icon} onClick={this.handleDrawerClose}>
                           {showDrawer ? <ChevronLeftIcon /> : null}
-                          {showDrawer ? <img style={{paddingLeft: 20}} alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-light-named.png" /> : null}
+                          {showDrawer ? <img style={{paddingLeft: 20}} alt="ae_logo" height="40px" width="auto" src="/src/containers/App/styles/img/logo-named.png" /> : null}
                         </IconButton>
                       </div>
-                      <Divider style={{backgroundColor: '#eeeeee54'}} />
-                      <List>
-                        {['requests'].map((text, index) => (
-                          <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
-                            <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                          </ListItem>
-                        ))}
-                      </List>
-                      <Divider style={{backgroundColor: '#eeeeee54'}} />
-                      <List>
-                        {['orders'].map((text, index) => (
-                          <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
-                            <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                          </ListItem>
-                        ))}
-                      </List>
-                      <Divider style={{backgroundColor: '#eeeeee54'}} />
-                      <List>
-                        {['menuItems'].map((text, index) => (
-                          <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
-                            <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                          </ListItem>
-                        ))}
-                      </List>
-                      <Divider style={{backgroundColor: '#eeeeee54'}} />
-                      <List>
-                        {['opportunities'].map((text, index) => (
-                          <ListItem onClick={e => this.dispatchNewRoute(e, this.parseURL(text))} button key={text}>
-                            <ListItemIcon className={classes.icon}>{index % 2 === 0 ? <ClearAllIcon /> : <AddCircleOutlineIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                          </ListItem>
-                        ))}
-                      </List>
+                      {listItems.map(this.renderListItem, this)}
                     </Drawer>
                     {showAccount && isAuthenticated ? Account : null}
                     <div className={classes.content}>
                         <div className={classes.toolbar} />
+                        <div className={classes.breadCont}>
+                        <Typography color="primary" style={{fontSize: 24}}>{breadcrumb}</Typography>
+                        <Breadcrumbs aria-label="breadcrumb">
+                            {locationNames.map(this.renderBreadcrumb, this)}
+                        </Breadcrumbs>
+                        </div>
                         {this.props.children}
                     </div>
                 </div>
