@@ -218,7 +218,7 @@ class MenuItemCreateBetaView extends Component {
         this.setState(next_state, () => {});
     }
 
-    requestCheckout = (e) => {
+    requestRetailerCheckout = (e) => {
         e.preventDefault();
         const next_state = this.state;
         Object.entries(next_state.stockPerItem).forEach((s) => {
@@ -234,9 +234,11 @@ class MenuItemCreateBetaView extends Component {
             const itemStock = next_state.stockPerItem[i.itemID];
             const quantityInfo = toNewQuantity();
             quantityInfo.stock = itemStock.quantity;
+            quantityInfo.packageType = 'box';
             quantityInfo.pricePerUnit = itemStock.pricePerUnit;
-            quantityInfo.leadQuantity = itemStock.leadQuantity;
-            quantityInfo.leadTime = itemStock.leadTime;
+            quantityInfo.burnTime = itemStock.burnTime;
+            quantityInfo.burnQuantity = itemStock.burnQuantity;
+            quantityInfo.burnVariable = next_state.burnVariable;
             quantityInfo.location = next_state.location;
             next_state.approvedMenuItems[index].quantities = [quantityInfo];
         });
@@ -309,7 +311,9 @@ class MenuItemCreateBetaView extends Component {
         const { actions, idToken, employeeID, accountID } = this.props;
         const { approvedMenuItems, redirectRoute } = this.state;
         this.setState({loading: true});
-        console.log(approvedMenuItems)
+        approvedMenuItems.forEach((menuItem) => {
+            console.log(menuItem)
+        })
         // actions.saveBetaMenuItem(idToken, employeeID, accountID, approvedMenuItems, redirectRoute);
     }
 
@@ -388,7 +392,7 @@ class MenuItemCreateBetaView extends Component {
                                 disableRipple
                                 disableFocusRipple
                                 disabled={disabled}
-                                onClick={e => this.requestCheckout(e)}
+                                onClick={e => this.requestRetailerCheckout(e)}
                                 className={classes.continueButton}
                                 variant="outlined"
                             >
