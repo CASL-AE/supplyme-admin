@@ -159,6 +159,7 @@ export function toNewQuantity() {
         packageQuantity: 1,
         packageType: 'piece',
         weightType: null,
+        weight: 0,
         pricePerUnit: 0,
         stock: 0,
         size: {
@@ -166,10 +167,12 @@ export function toNewQuantity() {
             width: 0,
             depth: 0,
         },
-        weight: 0,
-        moq: 0,
         leadQuantity: 0,
         leadTime: 0,
+        moq: 0,
+        burnQuantity: 0,
+        burnTime: 0,
+        burnVariable: 0
     };
 }
 

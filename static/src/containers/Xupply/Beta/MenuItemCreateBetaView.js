@@ -20,6 +20,7 @@ import HomeIcon from '@material-ui/icons/Home';
 // Components
 import AutoCompleteLocations from '../../../components/Xupply/AutoCompletes/AutoCompleteLocations';
 import BetaMenuItemFormTable from '../../../components/Xupply/Beta/BetaMenuItemFormTable';
+import BetaRetailerMenuItemFormTable from '../../../components/Xupply/Beta/BetaRetailerMenuItemFormTable';
 import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletCheckoutDialog';
 
 
@@ -91,6 +92,7 @@ function mapStateToProps(state) {
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
+        accountType: state.app.accountType,
         menuItems: state.menuItemData.publicMenuItems,
         receivedAt: state.menuItemData.receivedPublicMenuItemsAt,
         locations: state.locationData.locations,
@@ -122,6 +124,7 @@ class MenuItemCreateBetaView extends Component {
             isCheckout: false,
             disabled: false,
             loading: false,
+            burnVariable: '', // Is saved to each menu item on submit. burn.variable
         };
     }
 
@@ -168,6 +171,16 @@ class MenuItemCreateBetaView extends Component {
 
     loadLocationData = (location) => {
         this.setState({location});
+    }
+
+    handleBurnVariable = (e) => {
+        const { value } = e.target;
+        console.log(value)
+        const next_state = this.state;
+        next_state.burnVariable = value;
+        this.setState(next_state, () => {
+            this.isRequestDisabled();
+        });
     }
 
     handleChange = (e, name, itemID) => {
@@ -251,7 +264,7 @@ class MenuItemCreateBetaView extends Component {
         let items_is_valid = false;
         let stock_is_valid = false;
 
-        console.log(this.state.location)
+        // console.log(this.state.location)
 
         // Validate Request Name
         if (this.state.location.address.active === false && this.state.location.address.street1 === null) {
@@ -296,11 +309,12 @@ class MenuItemCreateBetaView extends Component {
         const { actions, idToken, employeeID, accountID } = this.props;
         const { approvedMenuItems, redirectRoute } = this.state;
         this.setState({loading: true});
-        actions.saveBetaMenuItem(idToken, employeeID, accountID, approvedMenuItems, redirectRoute);
+        console.log(approvedMenuItems)
+        // actions.saveBetaMenuItem(idToken, employeeID, accountID, approvedMenuItems, redirectRoute);
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, accountType } = this.props;
         const {
           location,
           searchLocation,
@@ -310,69 +324,144 @@ class MenuItemCreateBetaView extends Component {
           isCheckout,
           disabled,
           loading,
+          burnVariable
         } = this.state;
 
-        // console.error(location)
+        console.error(this.state)
         // console.error(menuItems)
         // console.error(approvedMenuItems)
         // console.error(stockPerItem)
         // console.error(isCheckout)
 
-        return (
-          <Grid container alignItems="center" justify="center" className={classes.root} spacing={isMobileAndTablet() ? 0 : 2}>
-              <Grid item xs={isMobileAndTablet() ? 12 : 10}>
-                  <Paper className={classes.content}>
-                      <div className={classes.gridItemBoxInner}>
-                          <div>
-                              <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Menu Items'}</h4>
-                              <div className={classes.divider} >
-                                  <div className={classes.dividerLine} />
-                              </div>
-                              <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
-                                  <HomeIcon className={classes.iconButton} />
-                                  <span style={{ fontSize: 16, paddingLeft: 10 }}>{`${location.name}`}</span>
-                                  <span onClick={e => this.toggleLocation(e)} style={{ fontSize: 14, paddingLeft: 10, color: 'blue', cursor: 'pointer' }}>Change Location</span>
-                              </div>
-                              {
-                                searchLocation
-                                ? (
-                                  <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
-                                      <AutoCompleteLocations
-                                          name={location.name}
-                                          onFinishedSelecting={this.handleLocationSelected}
-                                      />
-                                  </div>
-                                ) : null
-                              }
-                              <BetaMenuItemFormTable
-                                  menuItems={menuItems}
-                                  approvedMenuItems={approvedMenuItems}
-                                  stockPerItem={stockPerItem}
-                                  handleCheckBox={this.handleCheckBox}
-                                  handleChange={this.handleChange}
-                              />
-                              {
-                                !searchLocation
-                                ? (
-                                    <div style={{width: '50%', margin: 'auto'}}>
-                                        <Button
-                                            disableRipple
-                                            disableFocusRipple
-                                            disabled={disabled}
-                                            onClick={e => this.requestCheckout(e)}
-                                            className={classes.continueButton}
-                                            variant="outlined"
-                                        >
-                                            {'Agree & Continue'}
-                                        </Button>
-                                    </div>
-                                ) : null
-                              }
-                          </div>
+        const RetailerView = (
+          <div className={classes.gridItemBoxInner}>
+              <div>
+                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Menu Items'}</h4>
+                  <div className={classes.divider} >
+                      <div className={classes.dividerLine} />
+                  </div>
+                  <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
+                      <HomeIcon className={classes.iconButton} />
+                      <span style={{ fontSize: 16, paddingLeft: 10 }}>{`${location.name}`}</span>
+                      <span onClick={e => this.toggleLocation(e)} style={{ fontSize: 14, paddingLeft: 10, color: 'blue', cursor: 'pointer' }}>Change Location</span>
+                  </div>
+                  {
+                    searchLocation
+                    ? (
+                      <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
+                          <AutoCompleteLocations
+                              name={location.name}
+                              onFinishedSelecting={this.handleLocationSelected}
+                          />
                       </div>
-                  </Paper>
-              </Grid>
-          </Grid>
+                    ) : null
+                  }
+                  <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
+                      <label className={classes.inputLabel}>Confirmed & Suspected Cases</label>
+                      <div className={classes.textCell}>
+                          <TextField
+                            placeholder="# Cases"
+                            label="# Cases"
+                            margin="dense"
+                            variant="outlined"
+                            type="number"
+                            // helperText={'password_error_text'}
+                            value={burnVariable}
+                            className={classes.textField}
+                            onChange={e => this.handleBurnVariable(e)}
+                            // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                          />
+                      </div>
+                  </div>
+                  <BetaRetailerMenuItemFormTable
+                      menuItems={menuItems}
+                      approvedMenuItems={approvedMenuItems}
+                      stockPerItem={stockPerItem}
+                      handleCheckBox={this.handleCheckBox}
+                      handleChange={this.handleChange}
+                  />
+                  {
+                    !searchLocation
+                    ? (
+                        <div style={{width: '50%', margin: 'auto'}}>
+                            <Button
+                                disableRipple
+                                disableFocusRipple
+                                disabled={disabled}
+                                onClick={e => this.requestCheckout(e)}
+                                className={classes.continueButton}
+                                variant="outlined"
+                            >
+                                {'Upload Menu Items'}
+                            </Button>
+                        </div>
+                    ) : null
+                  }
+              </div>
+          </div>
+        );
+
+        const ManufacturerView = (
+          <div className={classes.gridItemBoxInner}>
+              <div>
+                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Menu Items'}</h4>
+                  <div className={classes.divider} >
+                      <div className={classes.dividerLine} />
+                  </div>
+                  <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
+                      <HomeIcon className={classes.iconButton} />
+                      <span style={{ fontSize: 16, paddingLeft: 10 }}>{`${location.name}`}</span>
+                      <span onClick={e => this.toggleLocation(e)} style={{ fontSize: 14, paddingLeft: 10, color: 'blue', cursor: 'pointer' }}>Change Location</span>
+                  </div>
+                  {
+                    searchLocation
+                    ? (
+                      <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
+                          <AutoCompleteLocations
+                              name={location.name}
+                              onFinishedSelecting={this.handleLocationSelected}
+                          />
+                      </div>
+                    ) : null
+                  }
+                  <BetaRetailerMenuItemFormTable
+                      menuItems={menuItems}
+                      approvedMenuItems={approvedMenuItems}
+                      stockPerItem={stockPerItem}
+                      handleCheckBox={this.handleCheckBox}
+                      handleChange={this.handleChange}
+                  />
+                  {
+                    !searchLocation
+                    ? (
+                        <div style={{width: '50%', margin: 'auto'}}>
+                            <Button
+                                disableRipple
+                                disableFocusRipple
+                                disabled={disabled}
+                                onClick={e => this.requestCheckout(e)}
+                                className={classes.continueButton}
+                                variant="outlined"
+                            >
+                                {'Upload Menu Items'}
+                            </Button>
+                        </div>
+                    ) : null
+                  }
+              </div>
+          </div>
+
+        );
+
+        return (
+            <Grid container alignItems="center" justify="center" className={classes.root} spacing={isMobileAndTablet() ? 0 : 2}>
+                <Grid item xs={12}>
+                    <Paper className={classes.content}>
+                          {accountType === 'retailer' && RetailerView}
+                          {accountType === 'manufacturer' && ManufacturerView}
+                    </Paper>
+                </Grid>
+            </Grid>
         );
     }
 }

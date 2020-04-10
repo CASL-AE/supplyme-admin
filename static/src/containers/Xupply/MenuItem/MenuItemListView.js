@@ -13,6 +13,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import LineStyleIcon from '@material-ui/icons/LineStyle';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import MenuItemResultsTable from '../../../components/Xupply/MenuItem/MenuItemResultsTable';
@@ -184,6 +185,14 @@ class MenuItemListView extends React.Component {
                     style={{marginLeft: 20}}
                 >
                     <CloudUploadIcon />
+                </Fab>
+                <Fab
+                    aria-label={'Logs'}
+                    className={isMobileAndTablet() ? classes.fab : null}
+                    color={'primary'}
+                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/logs`)}
+                >
+                  <LineStyleIcon />
                 </Fab>
             </div>
             <Grid container className={classes.root} spacing={3}>

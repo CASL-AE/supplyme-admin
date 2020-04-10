@@ -15,8 +15,6 @@ import Paper from '@material-ui/core/Paper';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Checkbox from '@material-ui/core/Checkbox';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 
 import {
     formatDateWTime,
@@ -26,15 +24,6 @@ import {
 } from '../../../utils/misc';
 
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
-
-function renderPriorityType() {
-    const array = [];
-    array.push(<MenuItem key={'default'} value={'default'}>Select Priority</MenuItem>);
-    array.push(<MenuItem key={'high'} value={'high'}>High</MenuItem>);
-    array.push(<MenuItem key={'med'} value={'med'}>Medium</MenuItem>);
-    array.push(<MenuItem key={'low'} value={'low'}>Low</MenuItem>);
-    return array;
-}
 
 const styles = (theme) => ({
   root: {
@@ -96,20 +85,18 @@ const LocationTooltip = withStyles((theme) => ({
 }))(Tooltip);
 
 
-function BetaRequestFormTable(props) {
+function BetaMenuItemFormTable(props) {
   const { classes, menuItems, approvedMenuItems, stockPerItem, handleCheckBox, handleChange } = props;
-  console.warn(menuItems)
-  const priorityTypes = renderPriorityType();
   return (
     <Paper className={classes.root}>
       <Table size="small" className={classes.table}>
         <TableHead>
           <TableRow>
             <TableCell className={classes.tableHeaders} >Item</TableCell>
-            <TableCell className={classes.tableHeaders} >Needed #</TableCell>
+            <TableCell className={classes.tableHeaders} >On Hand</TableCell>
             <TableCell className={classes.tableHeaders} >Max Price</TableCell>
-            <TableCell className={classes.tableHeaders} >Fill Priority</TableCell>
-            <TableCell className={classes.tableHeaders} >Will Fund</TableCell>
+            <TableCell className={classes.tableHeaders} >Burn</TableCell>
+            <TableCell className={classes.tableHeaders} >Total Value</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -133,13 +120,14 @@ function BetaRequestFormTable(props) {
               </TableCell>
               <TableCell>
                   <TextField
-                      placeholder="#/units"
+                      placeholder="#/boxes"
+                      label="#/boxes"
                       margin="dense"
                       type="number"
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].quantity : ''}
-                      style={{width: 75}}
+                      style={{width: 100}}
                       onChange={e => handleChange(e, 'quantity', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
@@ -147,43 +135,45 @@ function BetaRequestFormTable(props) {
               <TableCell>
                   <TextField
                       placeholder="$/unit"
+                      label="$/unit"
                       margin="dense"
                       type="number"
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
-                      style={{width: 75}}
+                      style={{width: 100}}
                       onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
               <TableCell>
-                <Select
-                    // onChange={e => this.handleChange(e, 'priority')}
-                    value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].priority : 'default'}
-                    // margin="dense"
-                    style={{margin: 0, padding: 0}}
-                    disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                    inputProps={{
-                        name: 'priority',
-                        id: 'priority',
-                    }}
-                >
-                    {priorityTypes}
-                </Select>
+                  <TextField
+                      placeholder="#/boxes"
+                      label="#/boxes"
+                      margin="dense"
+                      type="number"
+                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      // helperText={name_error_text}
+                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].burnQuantity : ''}
+                      style={{width: 75, paddingRight: 10}}
+                      onChange={e => handleChange(e, 'burnQuantity', menuItem.itemID)}
+                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                  />
+                  <TextField
+                      placeholder="#/days"
+                      label="#/days"
+                      margin="dense"
+                      type="number"
+                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      // helperText={name_error_text}
+                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].burnTime : ''}
+                      style={{width: 75}}
+                      onChange={e => handleChange(e, 'burnTime', menuItem.itemID)}
+                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                  />
               </TableCell>
               <TableCell>
-                <TextField
-                    placeholder="$/budget"
-                    margin="dense"
-                    type="number"
-                    disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                    // helperText={name_error_text}
-                    value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].quantity : ''}
-                    style={{width: 75}}
-                    // onChange={e => handleChange(e, 'leadTime', menuItem.itemID)}
-                    // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                />
+                {stockPerItem[menuItem.itemID] ? formatNumbersWithCommas(stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].quantity) : 'N/A'}
               </TableCell>
             </TableRow>
           ))}
@@ -193,7 +183,9 @@ function BetaRequestFormTable(props) {
   );
 }
 
-BetaRequestFormTable.propTypes = {
+
+
+BetaMenuItemFormTable.propTypes = {
   menuItems: PropTypes.array.isRequired,
   approvedMenuItems: PropTypes.array.isRequired,
   stockPerItem: PropTypes.object.isRequired,
@@ -201,4 +193,4 @@ BetaRequestFormTable.propTypes = {
   handleChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(BetaRequestFormTable);
+export default withStyles(styles)(BetaMenuItemFormTable);

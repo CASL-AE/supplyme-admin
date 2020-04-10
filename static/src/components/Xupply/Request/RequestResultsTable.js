@@ -84,11 +84,11 @@ function RequestResultsTable(props) {
         <TableHead>
           <TableRow>
             <TableCell className={classes.tableHeaders} >Delivery Location</TableCell>
+            <TableCell className={classes.tableHeaders} >Item</TableCell>
             <TableCell className={classes.tableHeaders} >Priority</TableCell>
             <TableCell className={classes.tableHeaders} >Required By</TableCell>
-            <TableCell className={classes.tableHeaders} >Items</TableCell>
-            <TableCell className={classes.tableHeaders} >% Funded</TableCell>
-            <TableCell className={classes.tableHeaders} >% Completed</TableCell>
+            <TableCell className={classes.tableHeaders} >$ Funded</TableCell>
+            <TableCell className={classes.tableHeaders} ># Filled</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -110,10 +110,12 @@ function RequestResultsTable(props) {
                   {'request.items'}
               </TableCell>
               <TableCell>
-                  <LinearProgress variant="determinate" value={50} style={{backgroundColor: 'black'}} color="primary" />
+                  <LinearProgress variant="determinate" value={(34/120)*100} style={{backgroundColor: 'black'}} color="primary" />
+                  {'$ 34 of 120'}
               </TableCell>
               <TableCell>
-                  <LinearProgress variant="determinate" value={50} style={{backgroundColor: 'black'}} color="primary" />
+                  <LinearProgress variant="determinate" value={(3/12)*100} style={{backgroundColor: 'black'}} color="primary" />
+                  {'# 3 of 12'}
               </TableCell>
             </TableRow>
           ))}

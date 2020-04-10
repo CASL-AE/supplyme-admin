@@ -309,7 +309,7 @@ class RequestCreateBetaView extends Component {
 
         return (
             <Grid container alignItems="center" justify="center" className={classes.root} spacing={isMobileAndTablet() ? 0 : 2}>
-                <Grid item xs={isMobileAndTablet() ? 12 : 10}>
+                <Grid item xs={12}>
                     <Paper className={classes.content}>
                         <div className={classes.gridItemBoxInner}>
                             <div>

@@ -218,7 +218,7 @@ class RequestListView extends React.Component {
                   </Fab>
               </div>
               <Grid container className={classes.root} spacing={2}>
-                  {requests.map(this.renderRequestCard, this)}
+                  <RequestResultsTable requests={requests} />
               </Grid>
           </section>
           </Fade>
@@ -240,6 +240,8 @@ class RequestListView extends React.Component {
         )
     }
 }
+
+// {requests.map(this.renderRequestCard, this)}
 
 RequestListView.defaultProps = {
     accountID: '',
