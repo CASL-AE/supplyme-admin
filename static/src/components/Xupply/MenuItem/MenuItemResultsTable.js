@@ -24,14 +24,16 @@ import {
     formatDateNoTime,
     formatNumbersWithCommas
 } from '../../../utils/misc';
+import {
+    calculateOverBurnRequiredBy,
+} from '../../../utils/inventory';
 
 const styles = (theme) => ({
   root: {
     width: '100%',
-    marginTop: 40,
     boxShadow: 'none',
     borderRadius: 8,
-    padding: 30,
+    backgroundColor: theme.palette.primary.background,
   },
   table: {},
   tableHeaders: {
@@ -59,7 +61,11 @@ const styles = (theme) => ({
     margin: 0,
     padding: 0,
   },
-
+  tableRow: {
+      backgroundColor: theme.palette.primary.appBar,
+      height: 50,
+      boxShadow: '0 8px 64px rgba(32, 32, 32, 0.08), 0 4px 16px rgba(32, 32, 32, 0.02)',
+  },
 });
 
 const ImageTooltip = withStyles((theme) => ({
@@ -83,10 +89,10 @@ const LocationTooltip = withStyles((theme) => ({
 }))(Tooltip);
 
 function MenuItemResultsTable(props) {
-  const { classes, rows, handleLink, handleAction } = props;
+  const { classes, menuItems, handleLink, handleAction } = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, menuItems.length - page * rowsPerPage);
   const handleChangePage = (e, newPage) => {
     setPage(newPage);
   };
@@ -100,53 +106,61 @@ function MenuItemResultsTable(props) {
         <TableHead>
           <TableRow>
             <TableCell className={classes.tableHeaders} >Name</TableCell>
+            <TableCell className={classes.tableHeaders} >On Hand</TableCell>
+            <TableCell className={classes.tableHeaders} >Burn</TableCell>
             <TableCell className={classes.tableHeaders} >Package Details</TableCell>
+            <TableCell className={classes.tableHeaders} >Measurement</TableCell>
             <TableCell className={classes.tableHeaders} >Package Price</TableCell>
             <TableCell className={classes.tableHeaders} >Brand Name</TableCell>
-            <TableCell className={classes.tableHeaders} >UPC ID</TableCell>
             <TableCell className={classes.tableHeaders} >DIY?</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map(row => (
-            <TableRow key={row.id}>
+            ? menuItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : menuItems
+          ).map(menuItem => (
+            <TableRow className={classes.tableRow} key={menuItem.itemID}>
               <TableCell>
                 <ImageTooltip
                   title={
                     <React.Fragment>
-                      <img src={row.thumbnail ? row.thumbnail : '/src/containers/App/styles/img/broken.png'} style={{height: 50, width: 50}} />
+                      <img src={menuItem.thumbnailSizeURL ? menuItem.thumbnailSizeURL : '/src/containers/App/styles/img/broken.png'} style={{height: 50, width: 50}} />
                     </React.Fragment>
                   }
                 >
-                  <a onClick={e => handleLink(e, row.id)} className={classes.linkText}>{row.itemName}</a>
+                  <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{menuItem.itemName}</a>
                 </ImageTooltip>
+              </TableCell>
+              <TableCell>
+                {`${menuItem.quantity.stock}`}
+              </TableCell>
+              <TableCell>
+                {`${calculateOverBurnRequiredBy(menuItem.quantity).daysToBurn} days away`}
               </TableCell>
               <TableCell>
                   <LocationTooltip
                     title={
                       <React.Fragment>
                       <em>
-                          {row.location}
+                          {`${menuItem.quantity.location.address.locality}, ${menuItem.quantity.location.address.region}`}
                       </em>
                       </React.Fragment>
                     }
                   >
-                    <span className={classes.linkText}>{`${row.packageQuantity} / ${row.packageType}`}</span>
+                    <span className={classes.linkText}>{`${menuItem.quantity.packageQuantity} / ${menuItem.quantity.packageType}`}</span>
                   </LocationTooltip>
               </TableCell>
               <TableCell>
-                {row.pricePerUnit > 0 ? `$ ${formatNumbersWithCommas(row.pricePerUnit)}` : 'donation'}
+                {`${menuItem.measurement.units} / ${menuItem.measurement.label} - ${menuItem.measurement.nickname}`}
               </TableCell>
               <TableCell>
-                {row.brandName}
+                {menuItem.quantity.pricePerUnit > 0 ? `$ ${formatNumbersWithCommas(menuItem.quantity.pricePerUnit)}` : 'donation'}
               </TableCell>
               <TableCell>
-                {row.upcID || 'None'}
+                {menuItem.brandName}
               </TableCell>
-              <TableCell>{row.isDIY ? 'True' : 'False'}</TableCell>
+              <TableCell>{menuItem.isDIY ? 'True' : 'False'}</TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
@@ -159,8 +173,8 @@ function MenuItemResultsTable(props) {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={6}
-              count={rows.length}
+              colSpan={8}
+              count={menuItems.length}
               rowsPerPage={rowsPerPage}
               page={page}
               selectProps={{
@@ -181,7 +195,7 @@ function MenuItemResultsTable(props) {
 
 
 MenuItemResultsTable.propTypes = {
-  rows: PropTypes.array.isRequired,
+  menuItems: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
   handleAction: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
