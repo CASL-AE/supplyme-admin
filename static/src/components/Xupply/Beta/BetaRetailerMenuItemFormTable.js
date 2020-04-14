@@ -22,6 +22,9 @@ import {
     formatDateNoTime,
     formatNumbersWithCommas
 } from '../../../utils/misc';
+import {
+  calculateOverBurnStock
+} from '../../../utils/inventory';
 
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
@@ -84,9 +87,8 @@ const LocationTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
-
 function BetaMenuItemFormTable(props) {
-  const { classes, menuItems, approvedMenuItems, stockPerItem, handleCheckBox, handleChange } = props;
+  const { classes, menuItems, approvedMenuItems, stockPerItem, handleChange } = props;
   return (
     <Paper className={classes.root}>
       <Table size="small" className={classes.table}>
@@ -94,20 +96,15 @@ function BetaMenuItemFormTable(props) {
           <TableRow>
             <TableCell className={classes.tableHeaders} >Item</TableCell>
             <TableCell className={classes.tableHeaders} >On Hand</TableCell>
-            <TableCell className={classes.tableHeaders} >Max Price</TableCell>
-            <TableCell className={classes.tableHeaders} >Burn</TableCell>
-            <TableCell className={classes.tableHeaders} >Total Value</TableCell>
+            <TableCell className={classes.tableHeaders} >Acceptable Price</TableCell>
+            <TableCell className={classes.tableHeaders} >Current Burn (Daily)</TableCell>
+            <TableCell className={classes.tableHeaders} >Over Burn</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {menuItems.map(menuItem => (
             <TableRow key={menuItem.itemID}>
               <TableCell>
-                  <Checkbox
-                      checked={approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                      onChange={e => handleCheckBox(e, menuItem)}
-                      color="primary"
-                  />
                   <ImageTooltip
                     title={
                       <React.Fragment>
@@ -115,7 +112,7 @@ function BetaMenuItemFormTable(props) {
                       </React.Fragment>
                     }
                   >
-                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{menuItem.itemName}</a>
+                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName} - ${menuItem.measurement.nickname}`}</a>
                   </ImageTooltip>
               </TableCell>
               <TableCell>
@@ -126,9 +123,9 @@ function BetaMenuItemFormTable(props) {
                       type="number"
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].quantity : ''}
+                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].stock !== 0 ? stockPerItem[menuItem.itemID].stock : ''}
                       style={{width: 100}}
-                      onChange={e => handleChange(e, 'quantity', menuItem.itemID)}
+                      onChange={e => handleChange(e, 'stock', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
@@ -140,7 +137,7 @@ function BetaMenuItemFormTable(props) {
                       type="number"
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
+                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
                       style={{width: 100}}
                       onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
@@ -148,32 +145,32 @@ function BetaMenuItemFormTable(props) {
               </TableCell>
               <TableCell>
                   <TextField
-                      placeholder="#/boxes"
-                      label="#/boxes"
+                      placeholder={`#/boxes`}
+                      label={`#/boxes`}
                       margin="dense"
                       type="number"
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].burnQuantity : ''}
+                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].burnQuantity !== 0 ? stockPerItem[menuItem.itemID].burnQuantity : ''}
                       style={{width: 75, paddingRight: 10}}
                       onChange={e => handleChange(e, 'burnQuantity', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
+              </TableCell>
+              <TableCell>
                   <TextField
-                      placeholder="#/days"
-                      label="#/days"
+                      placeholder={`#/days`}
+                      label={`#/days`}
                       margin="dense"
                       type="number"
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].burnTime : ''}
-                      style={{width: 75}}
-                      onChange={e => handleChange(e, 'burnTime', menuItem.itemID)}
+                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].burnDays !== 0 ? stockPerItem[menuItem.itemID].burnDays : ''}
+                      style={{width: 75, marginRight: 10}}
+                      onChange={e => handleChange(e, 'burnDays', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
-              </TableCell>
-              <TableCell>
-                {stockPerItem[menuItem.itemID] ? formatNumbersWithCommas(stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].quantity) : 'N/A'}
+                  {stockPerItem[menuItem.itemID] ? formatNumbersWithCommas(calculateOverBurnStock(stockPerItem[menuItem.itemID])) : 'N/A'}
               </TableCell>
             </TableRow>
           ))}
@@ -189,7 +186,6 @@ BetaMenuItemFormTable.propTypes = {
   menuItems: PropTypes.array.isRequired,
   approvedMenuItems: PropTypes.array.isRequired,
   stockPerItem: PropTypes.object.isRequired,
-  handleCheckBox: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
