@@ -84,10 +84,10 @@ function RequestResultsTable(props) {
         <TableHead>
           <TableRow>
             <TableCell className={classes.tableHeaders} >Delivery Location</TableCell>
+            <TableCell className={classes.tableHeaders} >Requested</TableCell>
             <TableCell className={classes.tableHeaders} >Item</TableCell>
             <TableCell className={classes.tableHeaders} >Priority</TableCell>
             <TableCell className={classes.tableHeaders} >Required By</TableCell>
-            <TableCell className={classes.tableHeaders} >$ Funded</TableCell>
             <TableCell className={classes.tableHeaders} ># Filled</TableCell>
           </TableRow>
         </TableHead>
@@ -101,17 +101,16 @@ function RequestResultsTable(props) {
                   <a onClick={e => handleLink(e, request.requestID)} className={classes.linkText}>{request.location.name || 'Unkown Name'}</a>
               </TableCell>
               <TableCell>
-                  {request.priority}
+                  {`${request.stockPerItem[request.item.itemID].stock} / ${request.stockPerItem[request.item.itemID].packageType}`}
               </TableCell>
               <TableCell>
-                  {formatDateNoTime(request.requiredBy)}
+                  {`${request.item.itemName} - ${request.item.measurement.nickname}`}
               </TableCell>
               <TableCell>
-                  {'request.items'}
+                  {request.stockPerItem[request.item.itemID].priority}
               </TableCell>
               <TableCell>
-                  <LinearProgress variant="determinate" value={(34/120)*100} style={{backgroundColor: 'black'}} color="primary" />
-                  {'$ 34 of 120'}
+                  {formatDateNoTime(request.stockPerItem[request.item.itemID].requiredBy)}
               </TableCell>
               <TableCell>
                   <LinearProgress variant="determinate" value={(3/12)*100} style={{backgroundColor: 'black'}} color="primary" />

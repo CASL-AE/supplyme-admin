@@ -77,8 +77,7 @@ export function getMenuItemFromSnapshot(menuItem) {
         description: menuItem.description,
         oldItemRef: menuItem.oldItemRef,
         quantities: menuItem.quantities,
-        // measurement: menuItem.measurement,
-        // lwd: menuItem.lwd,
+        measurement: menuItem.measurement,
         thumbItemImageURL: menuItem.thumbItemImageURL,
         updatedDate: parseFirestoreTimeStamp(menuItem.updatedDate),
         createdDate: parseFirestoreTimeStamp(menuItem.createdDate),
@@ -105,6 +104,7 @@ export function getPublicMenuItemFromSnapshot(menuItem) {
         description: menuItem.description,
         oldItemRef: menuItem.oldItemRef,
         quantities: menuItem.quantities,
+        measurement: menuItem.measurement,
         thumbItemImageURL: menuItem.thumbItemImageURL,
         updatedDate: parseFirestoreTimeStamp(menuItem.updatedDate),
         createdDate: parseFirestoreTimeStamp(menuItem.createdDate),
@@ -131,10 +131,11 @@ export function toNewMenuItem() {
         description: null,
         oldItemRef: null,
         quantities: [],
-        // measurement: {
-        //     label: null,
-        //     units: 0,
-        // },
+        measurement: {
+            nickname: null,
+            label: null,
+            units: 0,
+        },
         thumbItemImageURL: null,
         updatedDate: null,
         createdDate: null,
@@ -171,7 +172,7 @@ export function toNewQuantity() {
         leadTime: 0,
         moq: 0,
         burnQuantity: 0,
-        burnTime: 0,
+        burnDays: 14, // Hold For Beta
         burnVariable: 0
     };
 }
@@ -191,28 +192,5 @@ export function toNewSupportingDoc() {
         docType: 'label',
         uploadDate: null,
         metaData: null,
-    };
-}
-export function menuItemRowObject(m, q) {
-    return {
-        index: m.itemID,
-        id: m.itemID,
-        active: m.active,
-        deleted: m.deleted,
-        brandName: m.brandName,
-        upcID: m.upcID,
-        skuID: m.skuID,
-        itemName: m.itemName,
-        itemType: m.itemType,
-        madeInCountry: m.madeInCountry,
-        isDIY: m.isDIY,
-        thumbnail: m.thumbItemImageURL,
-        updatedDate: m.updatedDate,
-        createdDate: m.createdDate,
-        // Quantity Details
-        location: `${q.location.address.locality}, ${q.location.address.region}`,
-        packageQuantity: q.packageQuantity,
-        packageType: q.packageType,
-        pricePerUnit: q.pricePerUnit,
     };
 }

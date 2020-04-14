@@ -20,7 +20,6 @@ import HomeIcon from '@material-ui/icons/Home';
 // Components
 import AutoCompleteLocations from '../../../components/Xupply/AutoCompletes/AutoCompleteLocations';
 import BetaRequestFormTable from '../../../components/Xupply/Beta/BetaRequestFormTable';
-import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletCheckoutDialog';
 import XupplyLoader from '../../../components/Xupply/Base/XupplyLoader';
 
 
@@ -28,8 +27,13 @@ import { filterBy } from '../../../utils/misc';
 import { validateAddress, validateString } from '../../../utils/validate';
 import { toNewRequest } from '../../../services/request/model';
 import { saveNewRequest } from '../../../services/request/actions';
-import { fetchPublicMenuItems } from '../../../services/menuItem/actions';
+import { fetchMenuItems } from '../../../services/menuItem/actions';
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
+import {
+  calculateOverBurnStock,
+  calculateOverBurnPriority,
+  calculateOverBurnRequiredBy,
+} from '../../../utils/inventory';
 
 const styles = theme => ({
     root: {
@@ -91,8 +95,8 @@ function mapStateToProps(state) {
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
-        menuItems: state.menuItemData.publicMenuItems,
-        receivedAt: state.menuItemData.receivedPublicMenuItemsAt,
+        menuItems: state.menuItemData.menuItems,
+        receivedAt: state.menuItemData.receivedAt,
         locations: state.locationData.locations,
         receivedLocationsAt: state.locationData.receivedAt,
     };
@@ -101,7 +105,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: {
-            fetchPublicMenuItems: bindActionCreators(fetchPublicMenuItems, dispatch),
+            fetchMenuItems: bindActionCreators(fetchMenuItems, dispatch),
             saveNewRequest: bindActionCreators(saveNewRequest, dispatch)
         },
     };
@@ -120,6 +124,7 @@ class RequestCreateBetaView extends Component {
             isCheckout: false,
             disabled: true,
             loading: false,
+            redirectRoute: `/accounts/${this.props.accountID}/requests`,
         };
     }
 
@@ -161,7 +166,7 @@ class RequestCreateBetaView extends Component {
     loadCompData = () => {
         const { actions, employeeID, accountID } = this.props;
         console.warn('Fetching Search MenuItems');
-        actions.fetchPublicMenuItems(employeeID, accountID);
+        actions.fetchMenuItems(employeeID, accountID);
     }
 
     loadLocationData = (location) => {
@@ -173,9 +178,6 @@ class RequestCreateBetaView extends Component {
     handleChange = (e, name, itemID) => {
         const { value } = e.target;
         const next_state = this.state;
-        if (!next_state.request.stockPerItem[itemID]) {
-            next_state.request.stockPerItem[itemID] = {};
-        }
         next_state.request.stockPerItem[itemID][name] = value;
         this.setState(next_state, () => {
             this.isRequestDisabled();
@@ -191,6 +193,17 @@ class RequestCreateBetaView extends Component {
             delete next_state.request.stockPerItem[menuItem.itemID];
         } else {
             next_state.request.items = [...this.state.request.items, menuItem];
+            next_state.request.stockPerItem[itemID] = {};
+            next_state.request.stockPerItem[itemID].priority = 'default';
+            const stock = calculateOverBurnStock(menuItem.quantities[0]);
+            const priority = calculateOverBurnPriority(stock);
+            const requiredBy = calculateOverBurnRequiredBy(menuItem.quantities[0]);
+            console.warn(stock)
+            console.warn(priority)
+            console.warn(requiredBy)
+            next_state.request.stockPerItem[itemID].stock = Math.abs(stock);
+            next_state.request.stockPerItem[itemID].priority = priority;
+            next_state.request.stockPerItem[itemID].requiredBy = requiredBy.burnDate;
         }
         this.setState(next_state, () => {
             this.isRequestDisabled();
@@ -211,7 +224,7 @@ class RequestCreateBetaView extends Component {
         e.preventDefault();
         const next_state = this.state;
         Object.entries(next_state.request.stockPerItem).forEach((s) => {
-            next_state.request.totals.items += s[1].quantity * s[1].pricePerUnit;
+            next_state.request.totals.items += s[1].stock * s[1].pricePerUnit;
         });
         next_state.request.totals.serviceCharges = (next_state.request.totals.items * 0.025) + .30;
         next_state.request.totals.subTotal = next_state.request.totals.items + next_state.request.totals.serviceCharges;
@@ -291,6 +304,8 @@ class RequestCreateBetaView extends Component {
     createNewRequest = () => {
         const { actions, idToken, employeeID, accountID } = this.props;
         const { request, redirectRoute } = this.state;
+        console.log(request)
+        console.log(redirectRoute)
         actions.saveNewRequest(idToken, employeeID, accountID, request, redirectRoute);
     }
 
@@ -341,37 +356,47 @@ class RequestCreateBetaView extends Component {
                                     handleChange={this.handleChange}
                                 />
                                 {
-                                  !searchLocation
-                                  ? (
-                                      <div style={{width: '50%', margin: 'auto'}}>
-                                          <Button
-                                              disableRipple
-                                              disableFocusRipple
-                                              disabled={disabled}
-                                              onClick={e => this.requestCheckout(e)}
-                                              className={classes.continueButton}
-                                              variant="outlined"
-                                          >
-                                              {'Agree & Continue'}
-                                          </Button>
-                                      </div>
-                                  ) : null
+                                  !searchLocation && loading
+                                  ? (<XupplyLoader open={loading} />)
+                                  : (
+                                    <section style={{ width: '50%', margin: 'auto'}}>
+                                    <div style={{ fontSize: 12, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>
+                                        <Checkbox
+                                          // checked={filter.isDIY}
+                                          // onChange={e => this.handleFilter(e, 'isDIY')}
+                                          color="primary"
+                                          className={classes.checkbox}
+                                        />
+                                        {'I understand and acknowledge the Liability & Open-Sourced Policy.'}
+                                    </div>
+
+                                    <div style={{ fontSize: 12, paddingLeft: 25, paddingRight: 25, marginBottom: 5 }}>
+                                        <Checkbox
+                                          // checked={filter.isDIY}
+                                          // onChange={e => this.handleFilter(e, 'isDIY')}
+                                          color="primary"
+                                          className={classes.checkbox}
+                                        />
+                                        {'I understand and acknowledge the Terms & Conditions. '}
+                                    </div>
+                                    <div style={{paddingTop: 10, paddingLeft: 25, paddingRight: 25, paddingBottom: 25}}>
+                                        <Button
+                                            disableRipple
+                                            disableFocusRipple
+                                            disabled={disabled}
+                                            onClick={e => this.createNewRequest(e)}
+                                            className={classes.continueButton}
+                                            variant="outlined"
+                                        >
+                                            {'Agree & Continue'}
+                                        </Button>
+                                    </div>
+                                    </section>
+                                  )
                                 }
                             </div>
                         </div>
                     </Paper>
-                    {
-                      isCheckout
-                      ? (
-                        <WalletCheckoutDialog
-                            open={isCheckout}
-                            loading={loading}
-                            request={request}
-                            handleClose={this.handleClose}
-                            handleSubmit={this.createNewRequest}
-                        />
-                      ) : null
-                    }
                 </Grid>
             </Grid>
         );
@@ -380,12 +405,12 @@ class RequestCreateBetaView extends Component {
 
 RequestCreateBetaView.defaultProps = {
     saveNewRequest: f => f,
-    fetchPublicMenuItems: f => f,
+    fetchMenuItems: f => f,
 };
 
 RequestCreateBetaView.propTypes = {
     saveNewRequest: PropTypes.func.isRequired,
-    fetchPublicMenuItems: PropTypes.func.isRequired,
+    fetchMenuItems: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
 };
 

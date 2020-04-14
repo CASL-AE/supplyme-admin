@@ -19,7 +19,7 @@ import HomeIcon from '@material-ui/icons/Home';
 
 // Components
 import AutoCompleteLocations from '../../../components/Xupply/AutoCompletes/AutoCompleteLocations';
-import BetaMenuItemFormTable from '../../../components/Xupply/Beta/BetaMenuItemFormTable';
+import BetaManuMenuItemFormTable from '../../../components/Xupply/Beta/BetaManuMenuItemFormTable';
 import BetaRetailerMenuItemFormTable from '../../../components/Xupply/Beta/BetaRetailerMenuItemFormTable';
 import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletCheckoutDialog';
 
@@ -160,7 +160,11 @@ class MenuItemCreateBetaView extends Component {
     receiveMenuItems = (menuItems) => {
         console.warn('Received Search MenuItems');
         const _menuItems = filterBy(menuItems);
-        this.setState({ menuItems: _menuItems });
+        var stockPerItem = {};
+        _menuItems.forEach((m) => {
+            stockPerItem[m.itemID] = toNewQuantity();
+        })
+        this.setState({ menuItems: _menuItems, approvedMenuItems:  _menuItems, stockPerItem});
     }
 
     loadCompData = () => {
@@ -186,25 +190,7 @@ class MenuItemCreateBetaView extends Component {
     handleChange = (e, name, itemID) => {
         const { value } = e.target;
         const next_state = this.state;
-        if (!next_state.stockPerItem[itemID]) {
-            next_state.stockPerItem[itemID] = {};
-        }
         next_state.stockPerItem[itemID][name] = value;
-        this.setState(next_state, () => {
-            this.isRequestDisabled();
-        });
-    }
-
-    handleCheckBox = (e, menuItem) => {
-        const next_state = this.state;
-        const itemID = menuItem.itemID;
-        const found = this.state.approvedMenuItems.some(o => o.itemID === itemID);
-        if (found) {
-            next_state.approvedMenuItems = this.state.approvedMenuItems.filter(o => o.itemID !== itemID);
-            delete next_state.stockPerItem[menuItem.itemID];
-        } else {
-            next_state.approvedMenuItems = [...this.state.approvedMenuItems, menuItem];
-        }
         this.setState(next_state, () => {
             this.isRequestDisabled();
         });
@@ -222,7 +208,7 @@ class MenuItemCreateBetaView extends Component {
         e.preventDefault();
         const next_state = this.state;
         Object.entries(next_state.stockPerItem).forEach((s) => {
-            next_state.totals.items += s[1].quantity * s[1].pricePerUnit;
+            next_state.totals.items += s[1].stock * s[1].pricePerUnit;
         });
         next_state.totals.serviceCharges = (next_state.totals.items * 0.025) + .30;
         next_state.totals.subTotal = next_state.totals.items + next_state.totals.serviceCharges;
@@ -233,13 +219,30 @@ class MenuItemCreateBetaView extends Component {
         next_state.approvedMenuItems.forEach((i, index) => {
             const itemStock = next_state.stockPerItem[i.itemID];
             const quantityInfo = toNewQuantity();
-            quantityInfo.stock = itemStock.quantity;
-            quantityInfo.packageType = 'box';
-            quantityInfo.pricePerUnit = itemStock.pricePerUnit;
-            quantityInfo.burnTime = itemStock.burnTime;
-            quantityInfo.burnQuantity = itemStock.burnQuantity;
-            quantityInfo.burnVariable = next_state.burnVariable;
-            quantityInfo.location = next_state.location;
+            quantityInfo.stock = itemStock.stock;
+            next_state.approvedMenuItems[index].quantities = [quantityInfo];
+        });
+
+        this.setState(next_state, () => {
+            this.createNewMenuItems();
+        });
+    }
+
+    requestManufacturerCheckout = (e) => {
+        e.preventDefault();
+        const next_state = this.state;
+        Object.entries(next_state.stockPerItem).forEach((s) => {
+            next_state.totals.items += s[1].stock * s[1].pricePerUnit;
+        });
+        next_state.totals.serviceCharges = (next_state.totals.items * 0.025) + .30;
+        next_state.totals.subTotal = next_state.totals.items + next_state.totals.serviceCharges;
+        next_state.totals.tax = next_state.totals.subTotal * 0.085;
+        next_state.totals.total = next_state.totals.subTotal + next_state.totals.tax;
+        next_state.totals.due = next_state.totals.total;
+        next_state.isCheckout = true;
+        next_state.approvedMenuItems.forEach((i, index) => {
+            const itemStock = next_state.stockPerItem[i.itemID];
+            const quantityInfo = toNewQuantity();
             next_state.approvedMenuItems[index].quantities = [quantityInfo];
         });
 
@@ -311,10 +314,7 @@ class MenuItemCreateBetaView extends Component {
         const { actions, idToken, employeeID, accountID } = this.props;
         const { approvedMenuItems, redirectRoute } = this.state;
         this.setState({loading: true});
-        approvedMenuItems.forEach((menuItem) => {
-            console.log(menuItem)
-        })
-        // actions.saveBetaMenuItem(idToken, employeeID, accountID, approvedMenuItems, redirectRoute);
+        actions.saveBetaMenuItem(idToken, employeeID, accountID, approvedMenuItems, redirectRoute);
     }
 
     render() {
@@ -340,7 +340,7 @@ class MenuItemCreateBetaView extends Component {
         const RetailerView = (
           <div className={classes.gridItemBoxInner}>
               <div>
-                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Menu Items'}</h4>
+                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Bulk Update Menu Items'}</h4>
                   <div className={classes.divider} >
                       <div className={classes.dividerLine} />
                   </div>
@@ -381,7 +381,6 @@ class MenuItemCreateBetaView extends Component {
                       menuItems={menuItems}
                       approvedMenuItems={approvedMenuItems}
                       stockPerItem={stockPerItem}
-                      handleCheckBox={this.handleCheckBox}
                       handleChange={this.handleChange}
                   />
                   {
@@ -428,11 +427,10 @@ class MenuItemCreateBetaView extends Component {
                       </div>
                     ) : null
                   }
-                  <BetaRetailerMenuItemFormTable
+                  <BetaManuMenuItemFormTable
                       menuItems={menuItems}
                       approvedMenuItems={approvedMenuItems}
                       stockPerItem={stockPerItem}
-                      handleCheckBox={this.handleCheckBox}
                       handleChange={this.handleChange}
                   />
                   {
@@ -443,7 +441,7 @@ class MenuItemCreateBetaView extends Component {
                                 disableRipple
                                 disableFocusRipple
                                 disabled={disabled}
-                                onClick={e => this.requestCheckout(e)}
+                                onClick={e => this.requestManufacturerCheckout(e)}
                                 className={classes.continueButton}
                                 variant="outlined"
                             >

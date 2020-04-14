@@ -110,7 +110,7 @@ function PublicMenuItemResultsTable(props) {
                       </React.Fragment>
                     }
                   >
-                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{menuItem.itemName}</a>
+                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName} - ${menuItem.measurement.nickname}`}</a>
                   </ImageTooltip>
               </TableCell>
               <TableCell>

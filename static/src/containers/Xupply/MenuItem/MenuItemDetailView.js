@@ -75,7 +75,7 @@ const styles = (theme) => ({
       margin: 0,
     },
     detailList: {
-      blocationTop: '1px solid #e6e6e6',
+      borderTop: '1px solid #e6e6e6',
       display: 'block',
       backgroundColor: theme.palette.primary.appBar,
       borderRadius: 8,

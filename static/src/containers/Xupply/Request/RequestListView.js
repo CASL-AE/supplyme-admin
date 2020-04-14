@@ -105,11 +105,6 @@ class RequestListView extends React.Component {
         if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
             this.receiveRequests(nextProps.requests);
         }
-        const { accountID } = nextProps;
-        if (nextProps.receivedAt !== null && nextProps.requests.length === 0) {
-            const route = `/accounts/${accountID}/requests/create/beta`;
-            dispatchNewRoute(route);
-        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -134,9 +129,14 @@ class RequestListView extends React.Component {
 
     receiveRequests = (requests) => {
         console.warn('Received Requests');
-        this.setState({
-            requests,
+        const _requests = [];
+        filterBy(requests).forEach((request) => {
+              request.items.forEach((i) => {
+                    request.item = i;
+                    _requests.push(request);
+              });
         });
+        this.setState({requests: _requests});
     }
 
     loadCompData = () => {
