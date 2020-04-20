@@ -122,7 +122,7 @@ class MenuItemCreateBetaView extends Component {
             approvedMenuItems: [],
             stockPerItem: {},
             isCheckout: false,
-            disabled: false,
+            disabled: true,
             loading: false,
             burnVariable: '', // Is saved to each menu item on submit. burn.variable
         };
@@ -162,7 +162,10 @@ class MenuItemCreateBetaView extends Component {
         const _menuItems = filterBy(menuItems);
         var stockPerItem = {};
         _menuItems.forEach((m) => {
-            stockPerItem[m.itemID] = toNewQuantity();
+            const newQuantity = toNewQuantity();
+            newQuantity.packageQuantity = m.quantities[0].packageQuantity;
+            newQuantity.packageType = m.quantities[0].packageType;
+            stockPerItem[m.itemID] = newQuantity;
         })
         this.setState({ menuItems: _menuItems, approvedMenuItems:  _menuItems, stockPerItem});
     }
@@ -218,9 +221,8 @@ class MenuItemCreateBetaView extends Component {
         next_state.isCheckout = true;
         next_state.approvedMenuItems.forEach((i, index) => {
             const itemStock = next_state.stockPerItem[i.itemID];
-            const quantityInfo = toNewQuantity();
-            quantityInfo.stock = itemStock.stock;
-            next_state.approvedMenuItems[index].quantities = [quantityInfo];
+            itemStock.location = next_state.location;
+            next_state.approvedMenuItems[index].quantities = [itemStock];
         });
 
         this.setState(next_state, () => {
@@ -241,9 +243,9 @@ class MenuItemCreateBetaView extends Component {
         next_state.totals.due = next_state.totals.total;
         next_state.isCheckout = true;
         next_state.approvedMenuItems.forEach((i, index) => {
-            const itemStock = next_state.stockPerItem[i.itemID];
-            const quantityInfo = toNewQuantity();
-            next_state.approvedMenuItems[index].quantities = [quantityInfo];
+            var itemStock = next_state.stockPerItem[i.itemID];
+            itemStock.location = next_state.location;
+            next_state.approvedMenuItems[index].quantities = [itemStock];
         });
 
         this.setState(next_state, () => {
@@ -287,7 +289,7 @@ class MenuItemCreateBetaView extends Component {
             });
         }
 
-        // Validate Request Email
+        // Validate Request Items
         if (this.state.menuItems === []) {
             this.setState({
                 items_error_text: null,
@@ -303,8 +305,26 @@ class MenuItemCreateBetaView extends Component {
             });
         }
 
+        // Validate Request Stock Per Item
+        if (this.state.stockPerItem === {}) {
+            this.setState({
+                stock_error_text: null,
+            });
+        } else if (Object.keys(this.state.stockPerItem).length > 0) {
+            stock_is_valid = true;
+            this.setState({
+                stock_error_text: null,
+            });
+        } else {
+            this.setState({
+                stock_error_text: `Please select a valid stock`,
+            });
+        }
+
         if (
-            location_is_valid && items_is_valid
+            location_is_valid &&
+            items_is_valid &&
+            stock_is_valid
         ) {
             this.setState({disabled: false})
         }
