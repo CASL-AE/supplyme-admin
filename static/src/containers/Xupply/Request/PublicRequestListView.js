@@ -158,7 +158,7 @@ class PublicRequestListView extends React.Component {
         return requests.length > 0
         ? (
           <Grid container className={classes.root} spacing={2}>
-              <PublicRequestResultsTable requests={requests} />
+              <PublicRequestResultsTable requests={requests} handleLink={this.dispatchNewRequest} />
           </Grid>
         ) : (
             <EmptyResults
