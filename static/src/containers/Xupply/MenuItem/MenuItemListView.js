@@ -16,7 +16,8 @@ import AddIcon from '@material-ui/icons/Add';
 import LineStyleIcon from '@material-ui/icons/LineStyle';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
-import MenuItemResultsTable from '../../../components/Xupply/MenuItem/MenuItemResultsTable';
+import RetailerMenuItemResultsTable from '../../../components/Xupply/MenuItem/RetailerMenuItemResultsTable';
+import ManuMenuItemResultsTable from '../../../components/Xupply/MenuItem/ManuMenuItemResultsTable';
 import MenuItemCard from '../../../components/Xupply/MenuItem/MenuItemCard';
 import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
@@ -64,6 +65,7 @@ function mapStateToProps(state) {
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
+        accountType: state.app.accountType,
         menuItems: state.menuItemData.menuItems,
         receivedAt: state.menuItemData.receivedAt,
     };
@@ -158,7 +160,7 @@ class MenuItemListView extends React.Component {
     }
 
     render() {
-        const { classes, accountID } = this.props;
+        const { classes, accountID, accountType } = this.props;
         const {
             menuItems,
         } = this.state;
@@ -180,7 +182,8 @@ class MenuItemListView extends React.Component {
                 </Fab>
             </div>
             <Grid container className={classes.root} spacing={3}>
-                <MenuItemResultsTable menuItems={menuItems} />
+                {accountType === 'retailer' && (<RetailerMenuItemResultsTable menuItems={menuItems} handleLink={this.dispatchNewMenuItem} />)}
+                {accountType === 'manufacturer' && (<ManuMenuItemResultsTable menuItems={menuItems} handleLink={this.dispatchNewMenuItem} />)}
             </Grid>
             </section>
         ) : (
