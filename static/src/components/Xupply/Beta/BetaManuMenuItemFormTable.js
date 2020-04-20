@@ -118,11 +118,6 @@ function BetaManuMenuItemFormTable(props) {
           {menuItems.map(menuItem => (
             <TableRow key={menuItem.itemID}>
               <TableCell>
-                  <Checkbox
-                      checked={approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                      onChange={e => handleCheckBox(e, menuItem)}
-                      color="primary"
-                  />
                   <ImageTooltip
                     title={
                       <React.Fragment>
@@ -139,9 +134,9 @@ function BetaManuMenuItemFormTable(props) {
                       label="#/qty"
                       margin="dense"
                       type="number"
-                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      // disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].stock : ''}
+                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].stock !== 0 ? stockPerItem[menuItem.itemID].stock : ''}
                       style={{width: 100}}
                       onChange={e => handleChange(e, 'stock', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
@@ -153,9 +148,9 @@ function BetaManuMenuItemFormTable(props) {
                       label="$/unit"
                       margin="dense"
                       type="number"
-                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      // disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
+                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
                       style={{width: 100}}
                       onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
@@ -169,7 +164,7 @@ function BetaManuMenuItemFormTable(props) {
                   type="number"
                   disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                   // helperText={name_error_text}
-                  value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].leadQuantity : ''}
+                  value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadQuantity !== 0 ? stockPerItem[menuItem.itemID].leadQuantity : ''}
                   style={{width: 75, paddingRight: 10}}
                   onChange={e => handleChange(e, 'leadQuantity', menuItem.itemID)}
                   // FormHelperTextProps={{ classes: { root: classes.helperText } }}
@@ -181,14 +176,14 @@ function BetaManuMenuItemFormTable(props) {
                   type="number"
                   disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                   // helperText={name_error_text}
-                  value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].leadDays : ''}
+                  value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadDays !== 0 ? stockPerItem[menuItem.itemID].leadDays : ''}
                   style={{width: 75}}
                   onChange={e => handleChange(e, 'leadTime', menuItem.itemID)}
                   // FormHelperTextProps={{ classes: { root: classes.helperText } }}
               />
               </TableCell>
               <TableCell>
-                {stockPerItem[menuItem.itemID] ? formatNumbersWithCommas(stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].stock) : 'N/A'}
+                {stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? formatNumbersWithCommas(stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].stock) : 'N/A'}
               </TableCell>
             </TableRow>
           ))}
