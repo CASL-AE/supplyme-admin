@@ -169,7 +169,8 @@ export function toNewQuantity() {
             depth: 0,
         },
         leadQuantity: 0,
-        leadTime: 0,
+        leadDays: 0,
+        leadStartTime: 0,
         moq: 0,
         burnQuantity: 0,
         burnDays: 14, // Hold For Beta
