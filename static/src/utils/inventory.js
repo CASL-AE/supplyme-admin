@@ -76,3 +76,28 @@ export function calculateOverBurnRequiredBy(quantity) {
     });
     return {daysToBurn, burnDate}
 }
+
+// Calculate Lead Available By Date
+export function calculateLeadAvailableBy(quantity) {
+    console.error(quantity)
+    console.error(range(quantity.leadDays))
+    var daysToLead = 0;
+    var leadStartTime = quantity.leadStartTime;
+    var leadFinishTime = quantity.leadStartTime;
+    var stock = quantity.stock;
+    range(quantity.leadDays).forEach((d) => {
+          var availLead = stock - (quantity.leadQuantity * d); // index + 1 = day
+          console.log(availLead)
+          if (availLead > 0) {
+              const today = new Date();
+              const priorSeconds = new Date().setDate(today.getDate() + d);
+              const leadDay = new Date(priorSeconds);
+              console.log(leadFinishTime)
+              daysToLead = d;
+              leadFinishTime = leadDay;
+          }
+    });
+    console.log(leadStartTime)
+    console.log(leadFinishTime)
+    return {leadStartTime, leadFinishTime}
+}
