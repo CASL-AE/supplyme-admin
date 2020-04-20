@@ -252,8 +252,6 @@ class RequestCreateBetaView extends Component {
             disabled: true,
         });
         let location_is_valid = false;
-        let priority_is_valid = false;
-        let requestedBy_is_valid = false;
         let items_is_valid = false;
         let stock_is_valid = false;
 
@@ -275,7 +273,7 @@ class RequestCreateBetaView extends Component {
             });
         }
 
-        // Validate Request Email
+        // Validate Request Items
         if (this.state.request.items === []) {
             this.setState({
                 items_error_text: null,
@@ -291,11 +289,29 @@ class RequestCreateBetaView extends Component {
             });
         }
 
+        // Validate Request Stock Per Item
+        if (this.state.request.stockPerItem === {}) {
+            this.setState({
+                stock_error_text: null,
+            });
+        } else if (Object.keys(this.state.request.stockPerItem).length > 0) {
+            stock_is_valid = true;
+            this.setState({
+                stock_error_text: null,
+            });
+        } else {
+            this.setState({
+                stock_error_text: `Please select a valid stock`,
+            });
+        }
+
         // console.warn(this.state.request)
         // console.warn(name_is_valid)
 
         if (
-            location_is_valid && items_is_valid
+            location_is_valid &&
+            items_is_valid &&
+            stock_is_valid
         ) {
             this.setState({disabled: false})
         }
