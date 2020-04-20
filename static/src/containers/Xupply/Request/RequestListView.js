@@ -218,7 +218,7 @@ class RequestListView extends React.Component {
                   </Fab>
               </div>
               <Grid container className={classes.root} spacing={2}>
-                  <RequestResultsTable requests={requests} />
+                  <RequestResultsTable requests={requests} handleLink={this.dispatchNewRequest} />
               </Grid>
           </section>
           </Fade>
