@@ -25,7 +25,7 @@ import {
     formatNumbersWithCommas
 } from '../../../utils/misc';
 import {
-    calculateOverBurnRequiredBy,
+    calculateLeadAvailableBy,
 } from '../../../utils/inventory';
 
 const styles = (theme) => ({
@@ -88,7 +88,7 @@ const LocationTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
-function MenuItemResultsTable(props) {
+function RetailerMenuItemResultsTable(props) {
   const { classes, menuItems, handleLink, handleAction } = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -107,12 +107,11 @@ function MenuItemResultsTable(props) {
           <TableRow>
             <TableCell className={classes.tableHeaders} >Name</TableCell>
             <TableCell className={classes.tableHeaders} >On Hand</TableCell>
-            <TableCell className={classes.tableHeaders} >Burn</TableCell>
+            <TableCell className={classes.tableHeaders} >Lead</TableCell>
+            <TableCell className={classes.tableHeaders} >Lead Cycle</TableCell>
             <TableCell className={classes.tableHeaders} >Package Details</TableCell>
             <TableCell className={classes.tableHeaders} >Measurement</TableCell>
             <TableCell className={classes.tableHeaders} >Package Price</TableCell>
-            <TableCell className={classes.tableHeaders} >Brand Name</TableCell>
-            <TableCell className={classes.tableHeaders} >DIY?</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -136,7 +135,20 @@ function MenuItemResultsTable(props) {
                 {`${menuItem.quantity.stock}`}
               </TableCell>
               <TableCell>
-                {`${calculateOverBurnRequiredBy(menuItem.quantity).daysToBurn} days away`}
+                {`${menuItem.quantity.leadQuantity} / ${calculateLeadAvailableBy(menuItem.quantity).daysToLead} days`}
+              </TableCell>
+              <TableCell>
+              <LocationTooltip
+                title={
+                  <React.Fragment>
+                  <em>
+                      {`Starts: ${formatDateNoTime(calculateLeadAvailableBy(menuItem.quantity).leadStartTime)}`}
+                  </em>
+                  </React.Fragment>
+                }
+              >
+                <span className={classes.linkText}>{`Ends: ${formatDateNoTime(calculateLeadAvailableBy(menuItem.quantity).leadFinishTime)}`}</span>
+              </LocationTooltip>
               </TableCell>
               <TableCell>
                   <LocationTooltip
@@ -157,10 +169,6 @@ function MenuItemResultsTable(props) {
               <TableCell>
                 {menuItem.quantity.pricePerUnit > 0 ? `$ ${formatNumbersWithCommas(menuItem.quantity.pricePerUnit)}` : 'donation'}
               </TableCell>
-              <TableCell>
-                {menuItem.brandName}
-              </TableCell>
-              <TableCell>{menuItem.isDIY ? 'True' : 'False'}</TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (
@@ -194,10 +202,10 @@ function MenuItemResultsTable(props) {
 
 
 
-MenuItemResultsTable.propTypes = {
+RetailerMenuItemResultsTable.propTypes = {
   menuItems: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
   handleAction: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(MenuItemResultsTable);
+export default withStyles(styles)(RetailerMenuItemResultsTable);
