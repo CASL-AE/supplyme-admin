@@ -154,8 +154,8 @@ class RegisterView extends Component {
             activationCode: '',
 
             // Contact Info
-            firstName: 'Denis',
-            lastName: 'Angell',
+            firstName: '',
+            lastName: '',
             firstName_error_text: null,
             lastName_error_text: null,
             location: toNewLocation(),
