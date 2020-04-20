@@ -154,8 +154,8 @@ class RegisterView extends Component {
             activationCode: '',
 
             // Contact Info
-            firstName: 'Denis',
-            lastName: 'Angell',
+            firstName: '',
+            lastName: '',
             firstName_error_text: null,
             lastName_error_text: null,
             location: toNewLocation(),
@@ -172,7 +172,6 @@ class RegisterView extends Component {
 
     componentDidMount() {
         const { actions, search } = this.props;
-        dispatchNewRoute('/login')
         const keys = getRegistrationSearch(search)
         if (keys.type === 'employee' && keys.code !== null) {
             this.setState({stepIndex: 2, activationCode: keys.code});

@@ -17,6 +17,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import { KeyboardDatePicker } from '@material-ui/pickers';
+
+import TablePaginationActions from '../../TablePaginationActions';
 
 import {
     formatDateWTime,
@@ -98,6 +101,17 @@ const LocationTooltip = withStyles((theme) => ({
 
 function BetaRequestFormTable(props) {
   const { classes, menuItems, approvedMenuItems, stockPerItem, handleCheckBox, handleChange } = props;
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, menuItems.length - page * rowsPerPage);
+  const handleChangePage = (e, newPage) => {
+    setPage(newPage);
+  };
+  const handleChangeRowsPerPage = e => {
+    setRowsPerPage(parseInt(e.target.value, 10));
+    setPage(0);
+  };
+
   console.warn(menuItems)
   const priorityTypes = renderPriorityType();
   return (
@@ -109,6 +123,7 @@ function BetaRequestFormTable(props) {
             <TableCell className={classes.tableHeaders} >Needed #</TableCell>
             <TableCell className={classes.tableHeaders} >Max Price</TableCell>
             <TableCell className={classes.tableHeaders} >Fill Priority</TableCell>
+            <TableCell className={classes.tableHeaders} >Fill By</TableCell>
             <TableCell className={classes.tableHeaders} >Will Fund</TableCell>
           </TableRow>
         </TableHead>
@@ -128,7 +143,7 @@ function BetaRequestFormTable(props) {
                       </React.Fragment>
                     }
                   >
-                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{menuItem.itemName}</a>
+                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName} - ${menuItem.measurement.nickname}`}</a>
                   </ImageTooltip>
               </TableCell>
               <TableCell>
@@ -138,9 +153,9 @@ function BetaRequestFormTable(props) {
                       type="number"
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].quantity : ''}
+                      value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].stock : ''}
                       style={{width: 75}}
-                      onChange={e => handleChange(e, 'quantity', menuItem.itemID)}
+                      onChange={e => handleChange(e, 'stock', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
@@ -173,13 +188,26 @@ function BetaRequestFormTable(props) {
                 </Select>
               </TableCell>
               <TableCell>
+                <KeyboardDatePicker
+                    autoOk
+                    value={formatDateNoTime(stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].requiredBy : new Date())}
+                    margin="normal"
+                    variant="outline"
+                    // helperText={birth_error_text}
+                    className={classes.pickerField}
+                    // onChange={this.handleDateChange('birthDate')}
+                    format="MM/DD/YYYY"
+                    id="date-picker-inline"
+                />
+              </TableCell>
+              <TableCell>
                 <TextField
                     placeholder="$/budget"
                     margin="dense"
                     type="number"
                     disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                     // helperText={name_error_text}
-                    value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].quantity : ''}
+                    value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].stock : ''}
                     style={{width: 75}}
                     // onChange={e => handleChange(e, 'leadTime', menuItem.itemID)}
                     // FormHelperTextProps={{ classes: { root: classes.helperText } }}
@@ -188,6 +216,24 @@ function BetaRequestFormTable(props) {
             </TableRow>
           ))}
         </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                colSpan={7}
+                count={menuItems.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                selectProps={{
+                  inputProps: { 'aria-label': 'rows per page' },
+                  native: true,
+                }}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+                actionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
       </Table>
     </Paper>
   );

@@ -15,6 +15,19 @@ import Paper from '@material-ui/core/Paper';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Checkbox from '@material-ui/core/Checkbox';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+
+function renderLeadTimeType() {
+    const array = [];
+    array.push(<MenuItem key={'default'} value={'default'} disabled>Lead Time</MenuItem>);
+    array.push(<MenuItem key={'1'} value={'1'}>1 Day</MenuItem>);
+    array.push(<MenuItem key={'7'} value={'7'}>1 Week</MenuItem>);
+    array.push(<MenuItem key={'21'} value={'21'}>3 Weeks</MenuItem>);
+    array.push(<MenuItem key={'28'} value={'28'}>1 Month</MenuItem>);
+    array.push(<MenuItem key={'56'} value={'56'}>2 Months</MenuItem>);
+    return array;
+}
 
 import {
     formatDateWTime,
@@ -22,9 +35,6 @@ import {
     formatDateNoTime,
     formatNumbersWithCommas
 } from '../../../utils/misc';
-import {
-  calculateOverBurnStock
-} from '../../../utils/inventory';
 
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
@@ -87,8 +97,11 @@ const LocationTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
-function BetaMenuItemFormTable(props) {
-  const { classes, menuItems, approvedMenuItems, stockPerItem, handleChange } = props;
+
+function BetaManuMenuItemFormTable(props) {
+  const { classes, menuItems, approvedMenuItems, stockPerItem, handleCheckBox, handleChange } = props;
+  console.warn(menuItems)
+  const leadTimeTypes = renderLeadTimeType();
   return (
     <Paper className={classes.root}>
       <Table size="small" className={classes.table}>
@@ -96,9 +109,9 @@ function BetaMenuItemFormTable(props) {
           <TableRow>
             <TableCell className={classes.tableHeaders} >Item</TableCell>
             <TableCell className={classes.tableHeaders} >On Hand</TableCell>
-            <TableCell className={classes.tableHeaders} >Acceptable Price</TableCell>
-            <TableCell className={classes.tableHeaders} >Current Burn (Daily)</TableCell>
-            <TableCell className={classes.tableHeaders} >Over Burn</TableCell>
+            <TableCell className={classes.tableHeaders} >Max Price</TableCell>
+            <TableCell className={classes.tableHeaders} >Resupply</TableCell>
+            <TableCell className={classes.tableHeaders} >Total Value</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -117,11 +130,11 @@ function BetaMenuItemFormTable(props) {
               </TableCell>
               <TableCell>
                   <TextField
-                      placeholder="#/boxes"
-                      label="#/boxes"
+                      placeholder="#/qty"
+                      label="#/qty"
                       margin="dense"
                       type="number"
-                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      // disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].stock !== 0 ? stockPerItem[menuItem.itemID].stock : ''}
                       style={{width: 100}}
@@ -135,7 +148,7 @@ function BetaMenuItemFormTable(props) {
                       label="$/unit"
                       margin="dense"
                       type="number"
-                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                      // disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
                       style={{width: 100}}
@@ -144,33 +157,33 @@ function BetaMenuItemFormTable(props) {
                   />
               </TableCell>
               <TableCell>
-                  <TextField
-                      placeholder={`#/boxes`}
-                      label={`#/boxes`}
-                      margin="dense"
-                      type="number"
-                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                      // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].burnQuantity !== 0 ? stockPerItem[menuItem.itemID].burnQuantity : ''}
-                      style={{width: 75, paddingRight: 10}}
-                      onChange={e => handleChange(e, 'burnQuantity', menuItem.itemID)}
-                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                  />
+              <TextField
+                  placeholder="#/qty"
+                  label="#/qty"
+                  margin="dense"
+                  type="number"
+                  disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                  // helperText={name_error_text}
+                  value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadQuantity !== 0 ? stockPerItem[menuItem.itemID].leadQuantity : ''}
+                  style={{width: 75, paddingRight: 10}}
+                  onChange={e => handleChange(e, 'leadQuantity', menuItem.itemID)}
+                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+              />
+              <TextField
+                  placeholder="#/days"
+                  label="#/days"
+                  margin="dense"
+                  type="number"
+                  disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                  // helperText={name_error_text}
+                  value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadDays !== 0 ? stockPerItem[menuItem.itemID].leadDays : ''}
+                  style={{width: 75}}
+                  onChange={e => handleChange(e, 'leadTime', menuItem.itemID)}
+                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+              />
               </TableCell>
               <TableCell>
-                  <TextField
-                      placeholder={`#/days`}
-                      label={`#/days`}
-                      margin="dense"
-                      type="number"
-                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                      // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].burnDays !== 0 ? stockPerItem[menuItem.itemID].burnDays : ''}
-                      style={{width: 75, marginRight: 10}}
-                      onChange={e => handleChange(e, 'burnDays', menuItem.itemID)}
-                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                  />
-                  {stockPerItem[menuItem.itemID] ? formatNumbersWithCommas(calculateOverBurnStock(stockPerItem[menuItem.itemID])) : 'N/A'}
+                {stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? formatNumbersWithCommas(stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].stock) : 'N/A'}
               </TableCell>
             </TableRow>
           ))}
@@ -182,11 +195,12 @@ function BetaMenuItemFormTable(props) {
 
 
 
-BetaMenuItemFormTable.propTypes = {
+BetaManuMenuItemFormTable.propTypes = {
   menuItems: PropTypes.array.isRequired,
   approvedMenuItems: PropTypes.array.isRequired,
   stockPerItem: PropTypes.object.isRequired,
+  handleCheckBox: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(BetaMenuItemFormTable);
+export default withStyles(styles)(BetaManuMenuItemFormTable);

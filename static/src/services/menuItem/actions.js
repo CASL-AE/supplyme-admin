@@ -23,7 +23,7 @@ export const receiveMenuItems = querySnapshot => (dispatch) => {
     if (querySnapshot) {
         querySnapshot.forEach((doc) => {
             const menuItem = doc.data();
-            menuItem.menuItemID = doc.id;
+            menuItem.itemID = doc.id;
             dispatch(addMenuItem(menuItem));
         });
         dispatch(receivedMenuItems());
@@ -31,6 +31,8 @@ export const receiveMenuItems = querySnapshot => (dispatch) => {
 };
 
 export const fetchMenuItems = (employeeID, accountID) => (dispatch) => {
+    console.log(employeeID)
+    console.log(accountID)
     dispatch(startFetchingMenuItems());
     db()
         .collection('Accounts')
@@ -63,7 +65,7 @@ export const receivePublicMenuItems = querySnapshot => (dispatch) => {
     if (querySnapshot) {
         querySnapshot.forEach((doc) => {
             const menuItem = doc.data();
-            menuItem.menuItemID = doc.id;
+            menuItem.itemID = doc.id;
             dispatch(addPublicMenuItem(menuItem));
         });
         dispatch(receivedPublicMenuItems());
@@ -377,9 +379,9 @@ export const deleteMenuItem = (employeeID, accountID, menuItem, redirectRoute) =
 
     dispatch(deleteMenuItemRequest());
 
-    const menuItemID = menuItem.menuItemID;
-    if (!validateKey(menuItemID)) {
-        errorAlert('Invalid MenuItem ID');
+    const itemID = menuItem.itemID;
+    if (!validateKey(itemID)) {
+        errorAlert('Invalid menu item ID');
         dispatch(updateMenuItemFailure({
             response: {
                 status: 403,
@@ -395,7 +397,7 @@ export const deleteMenuItem = (employeeID, accountID, menuItem, redirectRoute) =
     }
 
     const accountRef = db().collection('Accounts').doc(accountID);
-    const docRef = accountRef.collection('MenuItems').doc(menuItemID);
+    const docRef = accountRef.collection('MenuItems').doc(itemID);
 
     const updatedDate = Date.now();
     docRef.update({ "active": false, "deleted": true, "updatedDate": updatedDate }).then(() => {

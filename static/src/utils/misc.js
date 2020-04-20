@@ -39,18 +39,21 @@ export function formatDateWTime(date) {
 }
 
 export function formatDateNoTime(date) {
-    if (!validateDate(date)) {
+    var newDate = date;
+    if (!validateDate(newDate) && validateDate(parseFirestoreTimeStamp(newDate))) {
+        newDate = date.toDate();
+    } else {
         return 'Invalid Date';
     }
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
+    let hours = newDate.getHours();
+    let minutes = newDate.getMinutes();
     var monthNames = [
         "Jan", "Feb", "March",
         "April", "May", "June", "July",
         "Aug", "Sept", "Oct",
         "Nov", "Dec"
     ];
-    return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+    return `${monthNames[newDate.getMonth()]} ${newDate.getDate()}, ${newDate.getFullYear()}`;
 }
 
 export function parseFirestoreTimeStamp(stamp) {

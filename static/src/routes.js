@@ -31,6 +31,7 @@ import PublicRequestListView from './containers/Xupply/Request/PublicRequestList
 
 /* For Beta */
 import RequestCreateBetaView from './containers/Xupply/Beta/RequestCreateBetaView';
+import OrderCreateBetaView from './containers/Xupply/Beta/OrderCreateBetaView';
 import MenuItemCreateBetaView from './containers/Xupply/Beta/MenuItemCreateBetaView';
 
 import RequestCreateView from './containers/Xupply/Request/RequestCreateView';
@@ -39,10 +40,7 @@ import MenuItemListView from './containers/Xupply/MenuItem/MenuItemListView';
 import MenuItemDetailView from './containers/Xupply/MenuItem/MenuItemDetailView';
 import MenuItemCreateView from './containers/Xupply/MenuItem/MenuItemCreateView';
 import OrderListView from './containers/Xupply/Order/OrderListView';
-import OrderCreateView from './containers/Xupply/Order/OrderCreateView';
-import OrderDetailView from './containers/Xupply/Order/OrderDetailView';
-import OpportunityListView from './containers/Xupply/Opportunity/OpportunityListView';
-import OpportunityCreateView from './containers/Xupply/Opportunity/OpportunityCreateView';
+
 
 /* Public Components */
 import { requireNoAuthentication } from './components/NotAuthenticatedComponent';
@@ -82,10 +80,7 @@ export default (
             <Route exact path="/accounts/:id/menuItems/:id" component={requireAuthentication(MenuItemDetailView)} />
             <Route exact path="/accounts/:id/menuItems/:id/edit" component={requireAuthentication(MenuItemCreateView)} />
             <Route exact path="/accounts/:id/orders" component={requireAuthentication(OrderListView)} />
-            <Route exact path="/accounts/:id/orders/create" component={requireAuthentication(OrderCreateView)} />
-            <Route exact path="/accounts/:id/orders/:id" component={requireAuthentication(OrderDetailView)} />
-            <Route exact path="/accounts/:id/opportunities" component={requireAuthentication(OpportunityListView)} />
-            <Route exact path="/accounts/:id/opportunities/create/requests/:id" component={requireAuthentication(OpportunityCreateView)} />
+            <Route exact path="/accounts/:id/orders/create/requests/:id" component={requireAuthentication(OrderCreateBetaView)} />
 
             <Route exact path="/map" component={requireNoAuthentication(PublicRequestMapView)} />
             <Route exact path="/valor" component={requireNoAuthentication(ValorListView)} />

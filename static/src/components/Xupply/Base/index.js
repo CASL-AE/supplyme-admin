@@ -272,7 +272,6 @@ class Base extends Component {
                         'dashboard',
                         'orders',
                         'menuItems',
-                        'requests',
                         'manage',
                     ]
                     break;
@@ -284,12 +283,6 @@ class Base extends Component {
                     ]
                     break;
                 default:
-                    listItems = [
-                        'requests',
-                        'orders',
-                        'menuItems',
-                        'manage',
-                    ]
                     break;
             }
             console.log(listItems)

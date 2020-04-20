@@ -16,7 +16,8 @@ import AddIcon from '@material-ui/icons/Add';
 import LineStyleIcon from '@material-ui/icons/LineStyle';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
-import MenuItemResultsTable from '../../../components/Xupply/MenuItem/MenuItemResultsTable';
+import RetailerMenuItemResultsTable from '../../../components/Xupply/MenuItem/RetailerMenuItemResultsTable';
+import ManuMenuItemResultsTable from '../../../components/Xupply/MenuItem/ManuMenuItemResultsTable';
 import MenuItemCard from '../../../components/Xupply/MenuItem/MenuItemCard';
 import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
@@ -40,7 +41,6 @@ const styles = (theme) => ({
         marginBottom: 80,
     },
     headerCell: {
-        marginBottom: 40,
         display: 'block',
     },
     firstButton: {
@@ -65,6 +65,7 @@ function mapStateToProps(state) {
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
+        accountType: state.app.accountType,
         menuItems: state.menuItemData.menuItems,
         receivedAt: state.menuItemData.receivedAt,
     };
@@ -86,7 +87,7 @@ class MenuItemListView extends React.Component {
         this.state = {
             menuItem: {},
             showMenuItemDialog: false,
-            rows: [],
+            menuItems: [],
         };
     }
 
@@ -128,13 +129,14 @@ class MenuItemListView extends React.Component {
 
     receiveMenuItems = (menuItems) => {
         console.warn('Received MenuItems');
-        var rows = [];
-        filterBy(menuItems).forEach((m) => {
-              m.quantities.forEach((q) => {
-                    rows.push(menuItemRowObject(m, q));
+        var items = [];
+        filterBy(menuItems).forEach((menuItem) => {
+              menuItem.quantities.forEach((q) => {
+                    menuItem.quantity = q;
+                    items.push(menuItem);
               });
         });
-        this.setState({rows});
+        this.setState({menuItems: items});
     }
 
     loadCompData = () => {
@@ -149,34 +151,26 @@ class MenuItemListView extends React.Component {
         dispatchNewRoute(route);
     }
 
-    renderMenuItemCard = (row) => {
+    renderMenuItemCard = (menuItem) => {
         return (
             <Grid item xs={isMobileAndTablet() ? 12 : 4}>
-                <MenuItemCard row={row} />
+                <MenuItemCard menuItem={menuItem} />
             </Grid>
         )
     }
 
     render() {
-        const { classes, accountID } = this.props;
+        const { classes, accountID, accountType } = this.props;
         const {
-            rows,
+            menuItems,
         } = this.state;
 
-        console.error(rows)
+        console.error(menuItems)
 
-        return rows.length > 0
+        return menuItems.length > 0
         ? (
             <section>
             <div className={classes.headerCell}>
-                <Fab
-                    aria-label={'Add'}
-                    className={isMobileAndTablet() ? classes.fab : null}
-                    color={'primary'}
-                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create`)}
-                >
-                  <AddIcon />
-                </Fab>
                 <Fab
                     aria-label={'Beta'}
                     className={isMobileAndTablet() ? classes.fab : null}
@@ -186,17 +180,10 @@ class MenuItemListView extends React.Component {
                 >
                     <CloudUploadIcon />
                 </Fab>
-                <Fab
-                    aria-label={'Logs'}
-                    className={isMobileAndTablet() ? classes.fab : null}
-                    color={'primary'}
-                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/logs`)}
-                >
-                  <LineStyleIcon />
-                </Fab>
             </div>
             <Grid container className={classes.root} spacing={3}>
-                {rows.map(this.renderMenuItemCard, this)}
+                {accountType === 'retailer' && (<RetailerMenuItemResultsTable menuItems={menuItems} handleLink={this.dispatchNewMenuItem} />)}
+                {accountType === 'manufacturer' && (<ManuMenuItemResultsTable menuItems={menuItems} handleLink={this.dispatchNewMenuItem} />)}
             </Grid>
             </section>
         ) : (
@@ -232,6 +219,8 @@ MenuItemListView.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(MenuItemListView);
+
+// {rows.map(this.renderMenuItemCard, this)}
 
 /* For Prod App */
 // <Fab

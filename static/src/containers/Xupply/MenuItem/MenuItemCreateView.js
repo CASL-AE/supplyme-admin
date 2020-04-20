@@ -44,6 +44,7 @@ function renderItemType() {
 function renderPackageType() {
     const array = [];
     array.push(<MenuItem key={'piece'} value={'piece'}>Piece</MenuItem>);
+    array.push(<MenuItem key={'box'} value={'box'}>Box</MenuItem>);
     array.push(<MenuItem key={'case'} value={'case'}>Case</MenuItem>);
     array.push(<MenuItem key={'carton'} value={'carton'}>Carton</MenuItem>);
     array.push(<MenuItem key={'pallet'} value={'pallet'}>Pallet</MenuItem>);
@@ -252,10 +253,14 @@ class MenuItemCreateView extends React.Component {
         }
     }
 
-    handleChange = (e, name) => {
+    handleChange = (e, parent, name) => {
         const { value } = e.target;
         const next_state = this.state;
-        next_state.menuItem[name] = value;
+        if (parent !== null) {
+            next_state.menuItem[parent][name] = value;
+        } else {
+            next_state.menuItem[name] = value;
+        }
         this.setState(next_state, () => {});
     }
 
@@ -477,7 +482,7 @@ class MenuItemCreateView extends React.Component {
                 <div className={classes.textCell}>
                     <FormControl margin="dense" className={classes.textField}>
                         <Select
-                            onChange={e => this.handleChange(e, 'itemType')}
+                            onChange={e => this.handleChange(e, null, 'itemType')}
                             value={menuItem.itemType}
                             variant="outlined"
                             inputProps={{
@@ -498,9 +503,67 @@ class MenuItemCreateView extends React.Component {
                         helperText={name_error_text}
                         value={menuItem.itemName || ''}
                         className={classes.textField}
-                        onChange={e => this.handleChange(e, 'itemName')}
+                        onChange={e => this.handleChange(e, null, 'itemName')}
                         FormHelperTextProps={{ classes: { root: classes.helperText } }}
                     />
+                </div>
+                <div className={classes.childHeaderCell}>
+                    <div className={classes.childHeaders}>
+                        Measurement Information
+                    </div>
+                </div>
+                <div className={classes.flexCell}>
+                    <div className={classes.innerFlexCell}>
+                        <label className={classes.inputLabel}>Measurement Label</label>
+                        <div className={classes.textCell}>
+                            <TextField
+                              placeholder="Ex. oz"
+                              margin="dense"
+                              variant="outlined"
+                              type="text"
+                              // helperText={'thcContent_error_text'}
+                              value={menuItem.measurement.label || ''}
+                              className={classes.textSmallField}
+                              onChange={e => this.handleChange(e, 'measurement', 'label')}
+                              // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                              autoComplete=""
+                            />
+                        </div>
+                    </div>
+                    <div className={classes.innerFlexCell}>
+                        <label className={classes.inputLabel}>Measurement Units</label>
+                        <div className={classes.textCell}>
+                            <TextField
+                              placeholder="Ex. 10"
+                              margin="dense"
+                              variant="outlined"
+                              type="number"
+                              // helperText={'cbdContent_error_text'}
+                              value={menuItem.measurement.units || ''}
+                              className={classes.textSmallField}
+                              onChange={e => this.handleChange(e, 'measurement', 'units')}
+                              // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                              autoComplete=""
+                            />
+                        </div>
+                    </div>
+                    <div className={classes.innerFlexCell}>
+                        <label className={classes.inputLabel}>Measurement Nickname</label>
+                        <div className={classes.textCell}>
+                            <TextField
+                              placeholder="Ex. Small"
+                              margin="dense"
+                              variant="outlined"
+                              type="text"
+                              // helperText={'cbdContent_error_text'}
+                              value={menuItem.measurement.nickname || ''}
+                              className={classes.textSmallField}
+                              onChange={e => this.handleChange(e, 'measurement', 'nickname')}
+                              // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                              autoComplete=""
+                            />
+                        </div>
+                    </div>
                 </div>
                 <label className={classes.inputLabel}>Item Image</label>
                 <div className={classes.textCell}>
@@ -516,7 +579,7 @@ class MenuItemCreateView extends React.Component {
                         helperText={brand_error_text}
                         value={menuItem.brandName || ''}
                         className={classes.textField}
-                        onChange={e => this.handleChange(e, 'brandName')}
+                        onChange={e => this.handleChange(e, null, 'brandName')}
                         FormHelperTextProps={{ classes: { root: classes.helperText } }}
                     />
                 </div>
@@ -529,7 +592,7 @@ class MenuItemCreateView extends React.Component {
                         helperText={desc_error_text}
                         value={menuItem.description || ''}
                         className={classes.textField}
-                        onChange={e => this.handleChange(e, 'description')}
+                        onChange={e => this.handleChange(e, null, 'description')}
                         FormHelperTextProps={{ classes: { root: classes.helperText } }}
                     />
                 </div>
@@ -543,7 +606,7 @@ class MenuItemCreateView extends React.Component {
                         helperText={upc_error_text}
                         value={menuItem.upcID || ''}
                         className={classes.textField}
-                        onChange={e => this.handleChange(e, 'upcID')}
+                        onChange={e => this.handleChange(e, null, 'upcID')}
                         FormHelperTextProps={{ classes: { root: classes.helperText } }}
                     />
                 </div>
@@ -551,7 +614,7 @@ class MenuItemCreateView extends React.Component {
                 <div className={classes.textCell}>
                     <Switch
                         checked={menuItem.isDIY}
-                        onChange={e => this.handleSwitch(e, 'isDIY')}
+                        onChange={e => this.handleSwitch(e, null, 'isDIY')}
                         color="primary"
                     />
                 </div>
