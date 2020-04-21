@@ -16,6 +16,10 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Checkbox from '@material-ui/core/Checkbox';
 
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import {
     formatDateWTime,
     formatAddress,
@@ -95,6 +99,7 @@ function BetaMenuItemFormTable(props) {
         <TableHead>
           <TableRow>
             <TableCell className={classes.tableHeaders} >Item</TableCell>
+            <TableCell className={classes.tableHeaders} >Size</TableCell>
             <TableCell className={classes.tableHeaders} >On Hand</TableCell>
             <TableCell className={classes.tableHeaders} >Acceptable Price</TableCell>
             <TableCell className={classes.tableHeaders} >Current Burn (Daily)</TableCell>
@@ -112,8 +117,24 @@ function BetaMenuItemFormTable(props) {
                       </React.Fragment>
                     }
                   >
-                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName} - ${menuItem.measurement.nickname}`}</a>
+                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName}`}</a>
                   </ImageTooltip>
+              </TableCell>
+              <TableCell>
+                  <FormControl margin="dense" className={classes.textField}>
+                      <Select
+                          // onChange={e => this.handleChange(e, null, 'itemType')}
+                          value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].measurement.nickname !== null ? stockPerItem[menuItem.itemID].measurement.nickname : ''}
+                          variant="outlined"
+                          inputProps={{
+                              name: 'measurementName',
+                              id: 'measurementName',
+                          }}
+                      >
+                          {menuItem.quantities.map(q => (<MenuItem key={q.measurement.label} value={q.measurement.label}>{q.measurement.nickname}</MenuItem>))}
+                      </Select>
+                      <div onClick={e => handleDeleteAction(e, employeeCode)} style={{color: 'red', cursor: 'pointer'}}>+ Add More</div>
+                  </FormControl>
               </TableCell>
               <TableCell>
                   <TextField

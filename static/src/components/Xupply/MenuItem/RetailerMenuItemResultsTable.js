@@ -152,7 +152,7 @@ function MenuItemResultsTable(props) {
                   </LocationTooltip>
               </TableCell>
               <TableCell>
-                {`${menuItem.measurement.units} / ${menuItem.measurement.label} - ${menuItem.measurement.nickname}`}
+                {`${menuItem.quantity.measurement.units} / ${menuItem.quantity.measurement.label} - ${menuItem.quantity.measurement.nickname}`}
               </TableCell>
               <TableCell>
                 {menuItem.quantity.pricePerUnit > 0 ? `$ ${formatNumbersWithCommas(menuItem.quantity.pricePerUnit)}` : 'donation'}

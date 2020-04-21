@@ -77,7 +77,6 @@ export function getMenuItemFromSnapshot(menuItem) {
         description: menuItem.description,
         oldItemRef: menuItem.oldItemRef,
         quantities: menuItem.quantities,
-        measurement: menuItem.measurement,
         thumbItemImageURL: menuItem.thumbItemImageURL,
         updatedDate: parseFirestoreTimeStamp(menuItem.updatedDate),
         createdDate: parseFirestoreTimeStamp(menuItem.createdDate),
@@ -104,7 +103,6 @@ export function getPublicMenuItemFromSnapshot(menuItem) {
         description: menuItem.description,
         oldItemRef: menuItem.oldItemRef,
         quantities: menuItem.quantities,
-        measurement: menuItem.measurement,
         thumbItemImageURL: menuItem.thumbItemImageURL,
         updatedDate: parseFirestoreTimeStamp(menuItem.updatedDate),
         createdDate: parseFirestoreTimeStamp(menuItem.createdDate),
@@ -131,11 +129,6 @@ export function toNewMenuItem() {
         description: null,
         oldItemRef: null,
         quantities: [],
-        measurement: {
-            nickname: null,
-            label: null,
-            units: 0,
-        },
         thumbItemImageURL: null,
         updatedDate: null,
         createdDate: null,
@@ -158,8 +151,8 @@ export function toNewQuantity() {
     return {
         location: toNewLocation(),
         packageQuantity: 1,
-        packageType: 'piece',
-        weightType: null,
+        packageType: 'piece', // piece/box/carton/case/pallet
+        weightType: null, // grain/dram/ounce/pound/cwt/ton/lcwt
         weight: 0,
         pricePerUnit: 0,
         stock: 0,
@@ -167,6 +160,11 @@ export function toNewQuantity() {
             length: 0,
             width: 0,
             depth: 0,
+        },
+        measurement: {
+            nickname: null,
+            label: null,
+            units: 0,
         },
         leadQuantity: 0,
         leadDays: 0,
