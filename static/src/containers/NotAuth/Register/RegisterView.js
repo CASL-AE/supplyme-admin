@@ -137,7 +137,7 @@ class RegisterView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            stepIndex: -1,
+            stepIndex: 0,
             loading: false,
             redirectRoute: '/',
 

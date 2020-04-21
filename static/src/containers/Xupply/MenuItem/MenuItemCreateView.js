@@ -284,10 +284,14 @@ class MenuItemCreateView extends React.Component {
         });
     }
 
-    handleQuantityChange = (e, name) => {
+    handleQuantityChange = (e, parent, name) => {
         const { value } = e.target;
         const next_state = this.state;
-        next_state.quantity[name] = value;
+        if (parent !== null) {
+            next_state.quantity[parent][name] = value;
+        } else {
+            next_state.quantity[name] = value;
+        }
         this.setState(next_state, () => {});
     }
 
@@ -507,64 +511,6 @@ class MenuItemCreateView extends React.Component {
                         FormHelperTextProps={{ classes: { root: classes.helperText } }}
                     />
                 </div>
-                <div className={classes.childHeaderCell}>
-                    <div className={classes.childHeaders}>
-                        Measurement Information
-                    </div>
-                </div>
-                <div className={classes.flexCell}>
-                    <div className={classes.innerFlexCell}>
-                        <label className={classes.inputLabel}>Measurement Label</label>
-                        <div className={classes.textCell}>
-                            <TextField
-                              placeholder="Ex. oz"
-                              margin="dense"
-                              variant="outlined"
-                              type="text"
-                              // helperText={'thcContent_error_text'}
-                              value={menuItem.measurement.label || ''}
-                              className={classes.textSmallField}
-                              onChange={e => this.handleChange(e, 'measurement', 'label')}
-                              // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              autoComplete=""
-                            />
-                        </div>
-                    </div>
-                    <div className={classes.innerFlexCell}>
-                        <label className={classes.inputLabel}>Measurement Units</label>
-                        <div className={classes.textCell}>
-                            <TextField
-                              placeholder="Ex. 10"
-                              margin="dense"
-                              variant="outlined"
-                              type="number"
-                              // helperText={'cbdContent_error_text'}
-                              value={menuItem.measurement.units || ''}
-                              className={classes.textSmallField}
-                              onChange={e => this.handleChange(e, 'measurement', 'units')}
-                              // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              autoComplete=""
-                            />
-                        </div>
-                    </div>
-                    <div className={classes.innerFlexCell}>
-                        <label className={classes.inputLabel}>Measurement Nickname</label>
-                        <div className={classes.textCell}>
-                            <TextField
-                              placeholder="Ex. Small"
-                              margin="dense"
-                              variant="outlined"
-                              type="text"
-                              // helperText={'cbdContent_error_text'}
-                              value={menuItem.measurement.nickname || ''}
-                              className={classes.textSmallField}
-                              onChange={e => this.handleChange(e, 'measurement', 'nickname')}
-                              // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                              autoComplete=""
-                            />
-                        </div>
-                    </div>
-                </div>
                 <label className={classes.inputLabel}>Item Image</label>
                 <div className={classes.textCell}>
                     <UploadMedia media={menuItem.fullSizeItemImageURL} onFinishedSelecting={this.onFinishedMediaSelected} />
@@ -664,12 +610,17 @@ class MenuItemCreateView extends React.Component {
                       Create Quantity
                   </div>
               </div>
+              <div className={classes.childHeaderCell}>
+                  <div className={classes.childHeaders}>
+                      Package Information
+                  </div>
+              </div>
               <div className={classes.flexCell}>
                 <div className={classes.innerFlexCell}>
                     <label className={classes.inputLabel}>* Package Type</label>
                     <div className={classes.textCell}>
                         <Select
-                            onChange={e => this.handleQuantityChange(e, 'packageType')}
+                            onChange={e => this.handleQuantityChange(e, null, 'packageType')}
                             value={quantity.packageType}
                             margin="dense"
                             variant="outlined"
@@ -682,28 +633,23 @@ class MenuItemCreateView extends React.Component {
                         </Select>
                     </div>
                 </div>
-                {
-                  quantity.packageType === 'weight'
-                  ? (
-                    <div className={classes.innerFlexCell}>
-                        <label className={classes.inputLabel}>* Weight Type</label>
-                        <div className={classes.textCell}>
-                            <Select
-                                onChange={e => this.handleQuantityChange(e, 'weightType')}
-                                value={quantity.weightType}
-                                variant="outlined"
-                                margin="dense"
-                                inputProps={{
-                                    name: 'weightType',
-                                    id: 'weightType',
-                                }}
-                            >
-                                {weightTypes}
-                            </Select>
-                        </div>
+                <div className={classes.innerFlexCell}>
+                    <label className={classes.inputLabel}>* Package Weight Type</label>
+                    <div className={classes.textCell}>
+                        <Select
+                            onChange={e => this.handleQuantityChange(e, null, 'weightType')}
+                            value={quantity.weightType}
+                            variant="outlined"
+                            margin="dense"
+                            inputProps={{
+                                name: 'weightType',
+                                id: 'weightType',
+                            }}
+                        >
+                            {weightTypes}
+                        </Select>
                     </div>
-                  ) : null
-                }
+                </div>
                 <div className={classes.innerFlexCell}>
                     <label className={classes.inputLabel}>* Package Quantity</label>
                     <div className={classes.textCell}>
@@ -715,7 +661,7 @@ class MenuItemCreateView extends React.Component {
                           // helperText={'thcContent_error_text'}
                           value={quantity.packageQuantity || ''}
                           className={classes.textSmallField}
-                          onChange={e => this.handleQuantityChange(e, 'packageQuantity')}
+                          onChange={e => this.handleQuantityChange(e, null, 'packageQuantity')}
                           // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                           autoComplete=""
                         />
@@ -724,7 +670,7 @@ class MenuItemCreateView extends React.Component {
             </div>
             <div className={classes.flexCell}>
                 <div className={classes.innerFlexCell}>
-                    <label className={classes.inputLabel}>* Est. Price</label>
+                    <label className={classes.inputLabel}>* Package Est. Price</label>
                     <div className={classes.textCell}>
                         <TextField
                           placeholder="$ 10.00"
@@ -734,14 +680,14 @@ class MenuItemCreateView extends React.Component {
                           // helperText={'thcContent_error_text'}
                           value={quantity.pricePerUnit || ''}
                           className={classes.textSmallField}
-                          onChange={e => this.handleQuantityChange(e, 'pricePerUnit')}
+                          onChange={e => this.handleQuantityChange(e, null, 'pricePerUnit')}
                           // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                           autoComplete=""
                         />
                     </div>
                 </div>
                 <div className={classes.innerFlexCell}>
-                    <label className={classes.inputLabel}>* On Hand</label>
+                    <label className={classes.inputLabel}>* On Hand Packages</label>
                     <div className={classes.textCell}>
                         <TextField
                           placeholder="10"
@@ -751,18 +697,81 @@ class MenuItemCreateView extends React.Component {
                           // helperText={'cbdContent_error_text'}
                           value={quantity.stock || ''}
                           className={classes.textSmallField}
-                          onChange={e => this.handleQuantityChange(e, 'stock')}
+                          onChange={e => this.handleQuantityChange(e, null, 'stock')}
                           // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                           autoComplete=""
                         />
                     </div>
                 </div>
             </div>
+            <div className={classes.childHeaderCell}>
+                <div className={classes.childHeaders}>
+                    Location Information
+                </div>
+            </div>
             <div className={classes.outerFlexCell}>
                 <div className={classes.innerFlexCell}>
-                    <label className={classes.inputLabel}>* Location</label>
+                    <label className={classes.inputLabel}>* Package Location</label>
                     <div className={classes.textField}>
                         <AutoCompleteLocations name={quantity.location.name} onFinishedSelecting={this.handleLocationSelected}/>
+                    </div>
+                </div>
+            </div>
+            <div className={classes.childHeaderCell}>
+                <div className={classes.childHeaders}>
+                    Measurement Information
+                </div>
+            </div>
+            <div className={classes.flexCell}>
+                <div className={classes.innerFlexCell}>
+                    <label className={classes.inputLabel}>Measurement Label</label>
+                    <div className={classes.textCell}>
+                        <TextField
+                          placeholder="Ex. oz"
+                          margin="dense"
+                          variant="outlined"
+                          type="text"
+                          // helperText={'thcContent_error_text'}
+                          value={quantity.measurement.label || ''}
+                          className={classes.textSmallField}
+                          onChange={e => this.handleQuantityChange(e, 'measurement', 'label')}
+                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                          autoComplete=""
+                        />
+                    </div>
+                </div>
+                <div className={classes.innerFlexCell}>
+                    <label className={classes.inputLabel}>Measurement Units</label>
+                    <div className={classes.textCell}>
+                        <TextField
+                          placeholder="Ex. 10"
+                          margin="dense"
+                          variant="outlined"
+                          type="number"
+                          // helperText={'cbdContent_error_text'}
+                          value={quantity.measurement.units || ''}
+                          className={classes.textSmallField}
+                          onChange={e => this.handleQuantityChange(e, 'measurement', 'units')}
+                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                          autoComplete=""
+                        />
+                    </div>
+                </div>
+                <div className={classes.innerFlexCell}>
+                    <label className={classes.inputLabel}>Measurement Nickname</label>
+                    <div className={classes.textCell}>
+                        <TextField
+                          placeholder="Ex. Small"
+                          margin="dense"
+                          variant="outlined"
+                          type="text"
+                          // helperText={'cbdContent_error_text'}
+                          value={quantity.measurement.nickname || ''}
+                          className={classes.textSmallField}
+                          onChange={e => this.handleQuantityChange(e, 'measurement', 'nickname')}
+                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                          autoComplete=""
+                        />
                     </div>
                 </div>
             </div>
