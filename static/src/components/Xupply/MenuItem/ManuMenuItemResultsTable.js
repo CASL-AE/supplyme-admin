@@ -91,7 +91,7 @@ const LocationTooltip = withStyles((theme) => ({
 function RetailerMenuItemResultsTable(props) {
   const { classes, menuItems, handleLink, handleAction } = props;
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, menuItems.length - page * rowsPerPage);
   const handleChangePage = (e, newPage) => {
     setPage(newPage);
@@ -107,8 +107,6 @@ function RetailerMenuItemResultsTable(props) {
           <TableRow>
             <TableCell className={classes.tableHeaders} >Name</TableCell>
             <TableCell className={classes.tableHeaders} >On Hand</TableCell>
-            <TableCell className={classes.tableHeaders} >Lead</TableCell>
-            <TableCell className={classes.tableHeaders} >Lead Cycle</TableCell>
             <TableCell className={classes.tableHeaders} >Package Details</TableCell>
             <TableCell className={classes.tableHeaders} >Measurement</TableCell>
             <TableCell className={classes.tableHeaders} >Package Price</TableCell>
@@ -119,7 +117,7 @@ function RetailerMenuItemResultsTable(props) {
             ? menuItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : menuItems
           ).map(menuItem => (
-            <TableRow className={classes.tableRow} key={menuItem.itemID}>
+            <TableRow className={classes.tableRow} key={`${menuItem.itemID}${menuItem.index}`}>
               <TableCell>
                 <ImageTooltip
                   title={
@@ -135,22 +133,6 @@ function RetailerMenuItemResultsTable(props) {
                 {`${menuItem.quantity.stock}`}
               </TableCell>
               <TableCell>
-                {`${menuItem.quantity.leadQuantity} / ${calculateLeadAvailableBy(menuItem.quantity).daysToLead} days`}
-              </TableCell>
-              <TableCell>
-              <LocationTooltip
-                title={
-                  <React.Fragment>
-                  <em>
-                      {`Starts: ${formatDateNoTime(calculateLeadAvailableBy(menuItem.quantity).leadStartTime)}`}
-                  </em>
-                  </React.Fragment>
-                }
-              >
-                <span className={classes.linkText}>{`Ends: ${formatDateNoTime(calculateLeadAvailableBy(menuItem.quantity).leadFinishTime)}`}</span>
-              </LocationTooltip>
-              </TableCell>
-              <TableCell>
                   <LocationTooltip
                     title={
                       <React.Fragment>
@@ -164,7 +146,7 @@ function RetailerMenuItemResultsTable(props) {
                   </LocationTooltip>
               </TableCell>
               <TableCell>
-                {`${menuItem.quantity.measurement.units} / ${menuItem.quantity.measurement.label} - ${menuItem.quantity.measurement.nickname}`}
+                {menuItem.quantity.measurement.label !== null ? `${menuItem.quantity.measurement.units} / ${menuItem.quantity.measurement.label}` : `${menuItem.quantity.measurement.nickname}`}
               </TableCell>
               <TableCell>
                 {menuItem.quantity.pricePerUnit > 0 ? `$ ${formatNumbersWithCommas(menuItem.quantity.pricePerUnit)}` : 'donation'}
