@@ -224,17 +224,14 @@ class RequestListView extends React.Component {
           </Fade>
         ) : (
             <div className={classes.headerCell}>
-                <Fab
-                    aria-label={'Add'}
-                    className={isMobileAndTablet() ? classes.fab : null}
-                    color={'primary'}
-                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
-                >
-                  <CloudUploadIcon />
-                </Fab>
                 <EmptyResults
-                    title={`You haven't created any requests...`}
-                    message={`You will see active requests appear here. Create one to get started...`}
+                    header={'Xupply Requests'}
+                    title={'Create a request based on your inventory and we will match it with other Xupply Manufacturers'}
+                    emptyType={'requests'}
+                    handleLink={e => dispatchNewRoute(`/accounts/${accountID}/requests/create/beta`)}
+                    startedLink={f=>f}
+                    hiwLink={f=>f}
+                    whatLink={f=>f}
                 />
             </div>
         )
