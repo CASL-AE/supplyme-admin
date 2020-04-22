@@ -23,7 +23,7 @@ import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchMenuItems } from '../../../services/menuItem/actions';
-import { menuItemRowObject } from '../../../services/menuItem/model';
+import { getMenuItemFromSnapshot } from '../../../services/menuItem/model';
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
@@ -88,6 +88,7 @@ class MenuItemListView extends React.Component {
             menuItem: {},
             showMenuItemDialog: false,
             menuItems: [],
+            fMenuItems: [],
         };
     }
 
@@ -129,14 +130,17 @@ class MenuItemListView extends React.Component {
 
     receiveMenuItems = (menuItems) => {
         console.warn('Received MenuItems');
-        var items = [];
-        filterBy(menuItems).forEach((menuItem) => {
-              menuItem.quantities.forEach((q) => {
-                    menuItem.quantity = q;
-                    items.push(menuItem);
-              });
-        });
-        this.setState({menuItems: items});
+        const fMenuItems = filterBy(menuItems);
+        var newItems = [];
+        for (var i = 0; i < fMenuItems.length; i++) {
+            for (var q = 0; q < fMenuItems[i].quantities.length; q++) {
+                var tempItem = getMenuItemFromSnapshot(fMenuItems[i]);
+                tempItem.quantity = fMenuItems[i].quantities[q];
+                tempItem.index = q;
+                newItems.push(tempItem);
+            }
+        };
+        this.setState({fMenuItems: newItems});
     }
 
     loadCompData = () => {
@@ -162,15 +166,26 @@ class MenuItemListView extends React.Component {
     render() {
         const { classes, accountID, accountType } = this.props;
         const {
-            menuItems,
+            fMenuItems,
         } = this.state;
 
-        console.error(menuItems)
+        console.warn(fMenuItems)
 
-        return menuItems.length > 0
+        return fMenuItems.length > 0
         ? (
             <section>
             <div className={classes.headerCell}>
+                {accountType === 'manufacturer' && (
+                    <Fab
+                        aria-label={'Beta'}
+                        className={isMobileAndTablet() ? classes.fab : null}
+                        color={'primary'}
+                        onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create`)}
+                        style={{marginLeft: 20}}
+                    >
+                        <AddIcon />
+                    </Fab>
+                )}
                 <Fab
                     aria-label={'Beta'}
                     className={isMobileAndTablet() ? classes.fab : null}
@@ -182,25 +197,20 @@ class MenuItemListView extends React.Component {
                 </Fab>
             </div>
             <Grid container className={classes.root} spacing={3}>
-                {accountType === 'retailer' && (<RetailerMenuItemResultsTable menuItems={menuItems} handleLink={this.dispatchNewMenuItem} />)}
-                {accountType === 'manufacturer' && (<ManuMenuItemResultsTable menuItems={menuItems} handleLink={this.dispatchNewMenuItem} />)}
+                {accountType === 'retailer' && (<RetailerMenuItemResultsTable menuItems={fMenuItems} handleLink={this.dispatchNewMenuItem} />)}
+                {accountType === 'manufacturer' && (<ManuMenuItemResultsTable menuItems={fMenuItems} handleLink={this.dispatchNewMenuItem} />)}
             </Grid>
             </section>
         ) : (
           <div className={classes.headerCell}>
-
-                <Fab
-                    aria-label={'Beta'}
-                    className={isMobileAndTablet() ? classes.fab : null}
-                    color={'primary'}
-                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
-                    style={{marginLeft: 20}}
-                >
-                  <CloudUploadIcon />
-                </Fab>
                 <EmptyResults
-                    title={`You haven't created any menu items...`}
-                    message={`You will see active menu items appear here. Create one to get started...`}
+                    header={'Xupply Inventory'}
+                    title={'Enter your inventory so that we can track your burn rate and automate your Xupply requests.'}
+                    emptyType={'menuItems'}
+                    handleLink={e => dispatchNewRoute(`/accounts/${accountID}/menuItems/create/beta`)}
+                    startedLink={f=>f}
+                    hiwLink={f=>f}
+                    whatLink={f=>f}
                 />
             </div>
         )

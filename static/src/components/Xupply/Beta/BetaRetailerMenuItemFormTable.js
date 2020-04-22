@@ -121,20 +121,25 @@ function BetaMenuItemFormTable(props) {
                   </ImageTooltip>
               </TableCell>
               <TableCell>
-                  <FormControl margin="dense" className={classes.textField}>
-                      <Select
-                          // onChange={e => this.handleChange(e, null, 'itemType')}
-                          value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].measurement.nickname !== null ? stockPerItem[menuItem.itemID].measurement.nickname : ''}
-                          variant="outlined"
-                          inputProps={{
-                              name: 'measurementName',
-                              id: 'measurementName',
-                          }}
-                      >
-                          {menuItem.quantities.map(q => (<MenuItem key={q.measurement.label} value={q.measurement.label}>{q.measurement.nickname}</MenuItem>))}
-                      </Select>
-                      <div onClick={e => handleDeleteAction(e, employeeCode)} style={{color: 'red', cursor: 'pointer'}}>+ Add More</div>
-                  </FormControl>
+                  {
+                      menuItem.quantities.length > 1
+                      ? (
+                        <FormControl margin="dense" className={classes.textField}>
+                            <Select
+                                // onChange={e => this.handleChange(e, null, 'itemType')}
+                                value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].measurement.nickname !== null ? stockPerItem[menuItem.itemID].measurement.nickname : menuItem.quantities[0].measurement.nickname}
+                                variant="outlined"
+                                inputProps={{
+                                    name: 'measurementName',
+                                    id: 'measurementName',
+                                }}
+                            >
+                                {menuItem.quantities.map(q => (<MenuItem key={q.measurement.nickname} value={q.measurement.nickname}>{q.measurement.nickname}</MenuItem>))}
+                            </Select>
+                            <div onClick={e => handleDeleteAction(e, employeeCode)} style={{color: 'red', cursor: 'pointer'}}>+ Add More</div>
+                        </FormControl>
+                      ) : menuItem.quantities[0].measurement.nickname
+                  }
               </TableCell>
               <TableCell>
                   <TextField

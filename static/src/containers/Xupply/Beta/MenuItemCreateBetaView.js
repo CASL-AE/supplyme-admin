@@ -52,14 +52,13 @@ const styles = theme => ({
     dividerLine: {
         margin: 'auto',
         content: "",
-        borderTop: '10px solid #000000',
+        borderTop: '10px solid red',
         // flex: 1,
         width: 40,
         transform: 'translateY(50%)',
     },
     inputLabel: {
         fontSize: 13,
-        fontFamily: 'AvenirNext',
         paddingBottom: 5,
         display: 'inline-block',
         textAlign: 'left',
@@ -122,7 +121,6 @@ class MenuItemCreateBetaView extends Component {
             approvedMenuItems: [],
             stockPerItem: {},
             isCheckout: false,
-            disabled: true,
             loading: false,
             burnVariable: '', // Is saved to each menu item on submit. burn.variable
         };
@@ -165,6 +163,7 @@ class MenuItemCreateBetaView extends Component {
             const newQuantity = toNewQuantity();
             newQuantity.packageQuantity = m.quantities[0].packageQuantity;
             newQuantity.packageType = m.quantities[0].packageType;
+            newQuantity.packageType = m.quantities[0].measurement;
             stockPerItem[m.itemID] = newQuantity;
         })
         this.setState({ menuItems: _menuItems, approvedMenuItems:  _menuItems, stockPerItem});
@@ -185,18 +184,14 @@ class MenuItemCreateBetaView extends Component {
         console.log(value)
         const next_state = this.state;
         next_state.burnVariable = value;
-        this.setState(next_state, () => {
-            this.isRequestDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleChange = (e, name, itemID) => {
         const { value } = e.target;
         const next_state = this.state;
         next_state.stockPerItem[itemID][name] = value;
-        this.setState(next_state, () => {
-            this.isRequestDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleLocationSelected = (location) => {
@@ -263,10 +258,7 @@ class MenuItemCreateBetaView extends Component {
         this.setState({searchLocation: !searchLocation});
     }
 
-    isRequestDisabled(e) {
-        this.setState({
-            disabled: true,
-        });
+    isRetailerRequestDisabled(e) {
         let location_is_valid = false;
         let items_is_valid = false;
         let stock_is_valid = false;
@@ -326,7 +318,71 @@ class MenuItemCreateBetaView extends Component {
             items_is_valid &&
             stock_is_valid
         ) {
-            this.setState({disabled: false})
+            this.requestRetailerCheckout(e);
+        }
+    }
+
+    isManuRequestDisabled(e) {
+        let location_is_valid = false;
+        let items_is_valid = false;
+        let stock_is_valid = false;
+
+        // console.log(this.state.location)
+
+        // Validate Request Name
+        if (this.state.location.address.active === false && this.state.location.address.street1 === null) {
+            this.setState({
+                location_error_text: null,
+            });
+        } else if (validateAddress(this.state.location.address)) {
+            location_is_valid = true;
+            this.setState({
+                location_error_text: null,
+            });
+        } else {
+            this.setState({
+                location_error_text: `Please select a valid location`,
+            });
+        }
+
+        // Validate Request Items
+        if (this.state.menuItems === []) {
+            this.setState({
+                items_error_text: null,
+            });
+        } else if (this.state.menuItems.length > 0) {
+            items_is_valid = true;
+            this.setState({
+                items_error_text: null,
+            });
+        } else {
+            this.setState({
+                items_error_text: `Please select a valid item`,
+            });
+        }
+
+        // Validate Request Stock Per Item
+        if (this.state.stockPerItem === {}) {
+            this.setState({
+                stock_error_text: null,
+            });
+        } else if (Object.keys(this.state.stockPerItem).length > 0) {
+            stock_is_valid = true;
+            this.setState({
+                stock_error_text: null,
+            });
+        } else {
+            this.setState({
+                stock_error_text: `Please select a valid stock`,
+            });
+        }
+
+        if (
+            location_is_valid &&
+            items_is_valid &&
+            stock_is_valid
+        ) {
+            this.requestManufacturerCheckout(e);
         }
     }
 
@@ -346,7 +402,6 @@ class MenuItemCreateBetaView extends Component {
           approvedMenuItems,
           stockPerItem,
           isCheckout,
-          disabled,
           loading,
           burnVariable
         } = this.state;
@@ -360,7 +415,7 @@ class MenuItemCreateBetaView extends Component {
         const RetailerView = (
           <div className={classes.gridItemBoxInner}>
               <div>
-                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Bulk Update Menu Items'}</h4>
+                  <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Inventory Update'}</h4>
                   <div className={classes.divider} >
                       <div className={classes.dividerLine} />
                   </div>
@@ -410,8 +465,7 @@ class MenuItemCreateBetaView extends Component {
                             <Button
                                 disableRipple
                                 disableFocusRipple
-                                disabled={disabled}
-                                onClick={e => this.requestRetailerCheckout(e)}
+                                onClick={e => this.isRetailerRequestDisabled(e)}
                                 className={classes.continueButton}
                                 variant="outlined"
                             >
@@ -460,8 +514,7 @@ class MenuItemCreateBetaView extends Component {
                             <Button
                                 disableRipple
                                 disableFocusRipple
-                                disabled={disabled}
-                                onClick={e => this.requestManufacturerCheckout(e)}
+                                onClick={e => this.isManuRequestDisabled(e)}
                                 className={classes.continueButton}
                                 variant="outlined"
                             >

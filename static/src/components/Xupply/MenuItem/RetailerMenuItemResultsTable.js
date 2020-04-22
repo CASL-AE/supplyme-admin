@@ -91,7 +91,7 @@ const LocationTooltip = withStyles((theme) => ({
 function MenuItemResultsTable(props) {
   const { classes, menuItems, handleLink, handleAction } = props;
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, menuItems.length - page * rowsPerPage);
   const handleChangePage = (e, newPage) => {
     setPage(newPage);
@@ -120,7 +120,7 @@ function MenuItemResultsTable(props) {
             ? menuItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : menuItems
           ).map(menuItem => (
-            <TableRow className={classes.tableRow} key={menuItem.itemID}>
+            <TableRow className={classes.tableRow} key={`${menuItem.itemID}${menuItem.index}`}>
               <TableCell>
                 <ImageTooltip
                   title={
