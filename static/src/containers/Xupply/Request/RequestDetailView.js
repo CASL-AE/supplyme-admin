@@ -8,7 +8,9 @@ import { withStyles } from '@material-ui/core/styles';
 import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
 
 import { toNewRequest } from '../../../services/request/model';
 import { getKeys, dispatchNewRoute, formatDateWTime, dispatchNewObject } from '../../../utils/misc';
@@ -82,6 +84,7 @@ const styles = (theme) => ({
       backgroundColor: theme.palette.primary.appBar,
       borderRadius: 8,
       padding: 30,
+      position: 'relative',
     },
     detailListDt: {
       minWidth: '30%',
@@ -102,7 +105,13 @@ const styles = (theme) => ({
     img: {
         borderRadius: '50%',
         paddingRight: 10,
-    }
+    },
+    editButton: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
+        textTransform: 'none',
+    },
 });
 
 function mapStateToProps(state) {
@@ -203,7 +212,31 @@ class RequestDetailView extends React.Component {
         dispatchNewRoute(route);
     }
 
-    renderAction = () => {
+    renderEditAction = () => {
+        const { classes, accountType } = this.props;
+        const { request } = this.state;
+        switch(accountType) {
+            case 'retailer':
+                return (
+                    <Fab
+                        aria-label={'Edit'}
+                        className={classes.editButton}
+                        color={'primary'}
+                        onClick={(e) => dispatchNewObject(e, accountID, 'request', request.requestID, 'edit')}
+                    >
+                      <EditIcon />
+                    </Fab>
+                );
+            case 'manufacturer':
+                return null;
+            case 'financier':
+                return null;
+            default:
+                return null;
+        }
+    }
+
+    renderAddAction = () => {
         const { classes, accountType } = this.props;
         const { request } = this.state;
         switch(accountType) {
@@ -211,28 +244,15 @@ class RequestDetailView extends React.Component {
                 return null;
             case 'manufacturer':
                 return (
-                    <Button
-                      variant="contained"
-                      disableRipple
-                      disableFocusRipple
+                    <Fab
                       className={classes.button}
                       onClick={e => this.dispatchNewOrder(e, request.requestID)}
                     >
-                        {'Create Order'}
-                    </Button>
+                        <AddIcon />
+                    </Fab>
                 );
             case 'financier':
-                return (
-                    <Button
-                      variant="contained"
-                      disableRipple
-                      disableFocusRipple
-                      className={classes.button}
-                      onClick={e => this.dispatchNewOpportunity(e, request.requestID)}
-                    >
-                        {'Fund Request'}
-                    </Button>
-                );
+                return null;
             default:
                 return null;
         }
@@ -276,7 +296,7 @@ class RequestDetailView extends React.Component {
                                 <span>{request.active ? `Lat: ${request.location.address.location.lat} Lng: ${request.location.address.location.lng}` : null}</span>
                               </div>
                               <div className={classes.detailActions}>
-                                  {this.renderAction()}
+                                  {this.renderAddAction()}
                               </div>
                           </div>
                       </div>
@@ -305,14 +325,6 @@ class RequestDetailView extends React.Component {
                                   </div>
                                   <div className={classes.detailListFlex}>
                                   <dt className={classes.detailListDt}>
-                                      Priority
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {request.priority}
-                                  </dd>
-                                  </div>
-                                  <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
                                       Request Type
                                   </dt>
                                   <dd className={classes.detailListDd}>
@@ -320,12 +332,7 @@ class RequestDetailView extends React.Component {
                                   </dd>
                                   </div>
                                   <div className={classes.detailListFlex}>
-                                  <dt className={classes.detailListDt}>
-                                      Required By
-                                  </dt>
-                                  <dd className={classes.detailListDd}>
-                                      {formatDateWTime(request.requiredBy)}
-                                  </dd>
+                                      {this.renderEditAction()}
                                   </div>
                               </dl>
                           </div>
