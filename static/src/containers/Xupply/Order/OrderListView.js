@@ -180,17 +180,14 @@ class OrderListView extends React.Component {
 
         ) : (
             <div className={classes.headerCell}>
-                <Fab
-                    aria-label={'Add'}
-                    className={isMobileAndTablet() ? classes.fab : null}
-                    color={'primary'}
-                    onClick={e => dispatchNewRoute(`/accounts/${accountID}/requests/search`)}
-                >
-                  <AddIcon />
-                </Fab>
                 <EmptyResults
-                    title={`You haven't created any orders...`}
-                    message={`You will see active orders appear here. Create one to get started...`}
+                    header={'Xupply Orders'}
+                    title={'Manually create orders from other Xupply Requests'}
+                    emptyType={'orders'}
+                    handleLink={e => dispatchNewRoute(`/accounts/${accountID}/requests/search`)}
+                    startedLink={f=>f}
+                    hiwLink={f=>f}
+                    whatLink={f=>f}
                 />
             </div>
         )
