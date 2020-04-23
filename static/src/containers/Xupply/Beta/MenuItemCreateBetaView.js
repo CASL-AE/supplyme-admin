@@ -157,16 +157,9 @@ class MenuItemCreateBetaView extends Component {
 
     receiveMenuItems = (menuItems) => {
         console.warn('Received Search MenuItems');
-        const _menuItems = filterBy(menuItems);
-        var stockPerItem = {};
-        _menuItems.forEach((m) => {
-            const newQuantity = toNewQuantity();
-            newQuantity.packageQuantity = m.quantities[0].packageQuantity;
-            newQuantity.packageType = m.quantities[0].packageType;
-            newQuantity.packageType = m.quantities[0].measurement;
-            stockPerItem[m.itemID] = newQuantity;
-        })
-        this.setState({ menuItems: _menuItems, approvedMenuItems:  _menuItems, stockPerItem});
+        this.setState({
+            menuItems: filterBy(menuItems)
+        });
     }
 
     loadCompData = () => {
@@ -187,10 +180,36 @@ class MenuItemCreateBetaView extends Component {
         this.setState(next_state, () => {});
     }
 
-    handleChange = (e, name, itemID) => {
+    handleChange = (e, name, menuItem) => {
         const { value } = e.target;
         const next_state = this.state;
-        next_state.stockPerItem[itemID][name] = value;
+        const itemID = menuItem.itemID;
+        const found = this.state.approvedMenuItems.some(o => o.itemID === itemID);
+        // If item exists and pricePerUnit is now 0; Remove Item
+        if (found) {
+            console.log('Found')
+            console.log(name)
+            console.log(value)
+            if (name === 'stock' && value === '0' || value === '') {
+                console.log('Stock 0')
+                next_state.approvedMenuItems = this.state.approvedMenuItems.filter(o => o.itemID !== itemID);
+                delete next_state.stockPerItem[menuItem.itemID];
+            } else {
+                console.log('Updating Name')
+                next_state.stockPerItem[itemID][name] = value;
+            }
+        } else {
+            console.log('NOT Found')
+            next_state.approvedMenuItems = [...this.state.approvedMenuItems, menuItem];
+            // Add New Quantity
+            const newQuantity = toNewQuantity();
+            newQuantity.packageQuantity = menuItem.quantities[0].packageQuantity;
+            newQuantity.packageType = menuItem.quantities[0].packageType;
+            newQuantity.measurement = menuItem.quantities[0].measurement;
+            next_state.stockPerItem[itemID] = newQuantity;
+            // Update Stock
+            next_state.stockPerItem[itemID][name] = value;
+        }
         this.setState(next_state, () => {});
     }
 
@@ -216,6 +235,7 @@ class MenuItemCreateBetaView extends Component {
         next_state.isCheckout = true;
         next_state.approvedMenuItems.forEach((i, index) => {
             const itemStock = next_state.stockPerItem[i.itemID];
+            console.log(itemStock)
             itemStock.location = next_state.location;
             next_state.approvedMenuItems[index].quantities = [itemStock];
         });
@@ -393,7 +413,8 @@ class MenuItemCreateBetaView extends Component {
         actions.saveBetaMenuItem(idToken, employeeID, accountID, approvedMenuItems, redirectRoute);
     }
 
-    render() {
+
+    renderManufacturerView() {
         const { classes, accountType } = this.props;
         const {
           location,
@@ -401,18 +422,78 @@ class MenuItemCreateBetaView extends Component {
           menuItems,
           approvedMenuItems,
           stockPerItem,
+          items_error_text,
+          stock_error_text,
           isCheckout,
           loading,
           burnVariable
         } = this.state;
+        return (
+          <div className={classes.gridItemBoxInner}>
+              <div>
+                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Menu Items'}</h4>
+                  <div className={classes.divider} >
+                      <div className={classes.dividerLine} />
+                  </div>
+                  <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
+                      <HomeIcon className={classes.iconButton} />
+                      <span style={{ fontSize: 16, paddingLeft: 10 }}>{`${location.name}`}</span>
+                      <span onClick={e => this.toggleLocation(e)} style={{ fontSize: 14, paddingLeft: 10, color: 'blue', cursor: 'pointer' }}>Change Location</span>
+                  </div>
+                  {
+                    searchLocation
+                    ? (
+                      <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
+                          <AutoCompleteLocations
+                              name={location.name}
+                              onFinishedSelecting={this.handleLocationSelected}
+                          />
+                      </div>
+                    ) : null
+                  }
+                  <BetaManuMenuItemFormTable
+                      menuItems={menuItems}
+                      approvedMenuItems={approvedMenuItems}
+                      stockPerItem={stockPerItem}
+                      handleChange={this.handleChange}
+                  />
+                  {
+                    !searchLocation
+                    ? (
+                        <div style={{width: '50%', margin: 'auto'}}>
+                            <Button
+                                disableRipple
+                                disableFocusRipple
+                                onClick={e => this.isManuRequestDisabled(e)}
+                                className={classes.continueButton}
+                                variant="outlined"
+                            >
+                                {'Upload Menu Items'}
+                            </Button>
+                            <span className={classes.helperText}>{items_error_text}</span>
+                        </div>
+                    ) : null
+                  }
+              </div>
+          </div>
+        );
+    }
 
-        console.error(this.state)
-        // console.error(menuItems)
-        // console.error(approvedMenuItems)
-        // console.error(stockPerItem)
-        // console.error(isCheckout)
-
-        const RetailerView = (
+    renderRetailerView() {
+        const { classes, accountType } = this.props;
+        const {
+          location,
+          searchLocation,
+          menuItems,
+          approvedMenuItems,
+          stockPerItem,
+          items_error_text,
+          stock_error_text,
+          isCheckout,
+          loading,
+          burnVariable
+        } = this.state;
+        return (
           <div className={classes.gridItemBoxInner}>
               <div>
                   <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Inventory Update'}</h4>
@@ -471,69 +552,24 @@ class MenuItemCreateBetaView extends Component {
                             >
                                 {'Upload Menu Items'}
                             </Button>
+                            <span className={classes.helperText}>{items_error_text}</span>
                         </div>
                     ) : null
                   }
               </div>
           </div>
         );
+    }
 
-        const ManufacturerView = (
-          <div className={classes.gridItemBoxInner}>
-              <div>
-                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Menu Items'}</h4>
-                  <div className={classes.divider} >
-                      <div className={classes.dividerLine} />
-                  </div>
-                  <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
-                      <HomeIcon className={classes.iconButton} />
-                      <span style={{ fontSize: 16, paddingLeft: 10 }}>{`${location.name}`}</span>
-                      <span onClick={e => this.toggleLocation(e)} style={{ fontSize: 14, paddingLeft: 10, color: 'blue', cursor: 'pointer' }}>Change Location</span>
-                  </div>
-                  {
-                    searchLocation
-                    ? (
-                      <div style={{paddingTop: 30, paddingLeft: 40, paddingRight: 40}}>
-                          <AutoCompleteLocations
-                              name={location.name}
-                              onFinishedSelecting={this.handleLocationSelected}
-                          />
-                      </div>
-                    ) : null
-                  }
-                  <BetaManuMenuItemFormTable
-                      menuItems={menuItems}
-                      approvedMenuItems={approvedMenuItems}
-                      stockPerItem={stockPerItem}
-                      handleChange={this.handleChange}
-                  />
-                  {
-                    !searchLocation
-                    ? (
-                        <div style={{width: '50%', margin: 'auto'}}>
-                            <Button
-                                disableRipple
-                                disableFocusRipple
-                                onClick={e => this.isManuRequestDisabled(e)}
-                                className={classes.continueButton}
-                                variant="outlined"
-                            >
-                                {'Upload Menu Items'}
-                            </Button>
-                        </div>
-                    ) : null
-                  }
-              </div>
-          </div>
-
-        );
+    render() {
+        const { classes, accountType } = this.props;
 
         return (
             <Grid container alignItems="center" justify="center" className={classes.root} spacing={isMobileAndTablet() ? 0 : 2}>
                 <Grid item xs={12}>
                     <Paper className={classes.content}>
-                          {accountType === 'retailer' && RetailerView}
-                          {accountType === 'manufacturer' && ManufacturerView}
+                          {accountType === 'retailer' && this.renderRetailerView()}
+                          {accountType === 'manufacturer' && this.renderManufacturerView()}
                     </Paper>
                 </Grid>
             </Grid>
