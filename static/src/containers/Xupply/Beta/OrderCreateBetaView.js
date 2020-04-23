@@ -23,7 +23,7 @@ import BetaOrderFormTable from '../../../components/Xupply/Beta/BetaOrderFormTab
 import XupplyLoader from '../../../components/Xupply/Base/XupplyLoader';
 
 
-import { filterBy } from '../../../utils/misc';
+import { getKeys, filterBy } from '../../../utils/misc';
 import { validateAddress, validateString } from '../../../utils/validate';
 import { toNewOrder } from '../../../services/order/model';
 import { toNewRequest } from '../../../services/request/model';
@@ -56,7 +56,7 @@ const styles = theme => ({
     dividerLine: {
         margin: 'auto',
         content: "",
-        borderTop: '10px solid #000000',
+        borderTop: '10px solid red',
         // flex: 1,
         width: 40,
         transform: 'translateY(50%)',
@@ -93,6 +93,7 @@ const styles = theme => ({
 
 function mapStateToProps(state) {
     return {
+        pathname: state.router.location.pathname,
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
@@ -100,13 +101,15 @@ function mapStateToProps(state) {
         receivedAt: state.orderData.receivedAt,
         requests: state.requestData.requests,
         receivedRequestsAt: state.requestData.receivedAt,
+        menuItems: state.menuItemData.menuItems,
+        receivedMenuItemsAt: state.menuItemData.receivedAt,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: {
-            // fetchMenuItems: bindActionCreators(fetchMenuItems, dispatch),
+            fetchMenuItems: bindActionCreators(fetchMenuItems, dispatch),
             // saveNewOrder: bindActionCreators(saveNewOrder, dispatch)
         },
     };
@@ -131,25 +134,25 @@ class OrderCreateBetaView extends Component {
     }
 
     componentDidMount() {
-        // const { receivedAt, menuItems } = this.props;
-        // if (receivedAt === null) {
-        //     this.loadCompData();
-        // } else {
-        //     this.receiveMenuItems(menuItems);
-        // }
-        // const { receivedLocationsAt, locations } = this.props;
-        // if (receivedLocationsAt !== null) {
-        //     this.loadLocationData(locations[0]);
-        // }
+        const { receivedMenuItemsAt, menuItems } = this.props;
+        if (receivedMenuItemsAt === null) {
+            this.loadCompData();
+        } else {
+            this.receiveMenuItems(menuItems);
+        }
+        const { receivedRequestsAt, requests } = this.props;
+        if (receivedRequestsAt !== null) {
+            this.loadRequestData();
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-        // if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
-        //     this.receiveMenuItems(nextProps.menuItems);
-        // }
-        // if (nextProps.receivedLocationsAt !== null && this.props.receivedLocationsAt === null) {
-        //     this.loadLocationData(nextProps.locations[0]);
-        // }
+        if (nextProps.receivedMenuItemsAt !== null && this.props.receivedMenuItemsAt === null) {
+            this.receiveMenuItems(nextProps.menuItems);
+        }
+        if (nextProps.receivedRequestsAt !== null && this.props.receivedRequestsAt === null) {
+            this.loadRequestData(nextProps);
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -161,8 +164,7 @@ class OrderCreateBetaView extends Component {
 
     receiveMenuItems = (menuItems) => {
         console.warn('Received Search MenuItems');
-        const _menuItems = filterBy(menuItems);
-        this.setState({menuItems: _menuItems});
+        this.setState({menuItems: filterBy(menuItems)});
     }
 
     loadCompData = () => {
@@ -171,19 +173,24 @@ class OrderCreateBetaView extends Component {
         actions.fetchMenuItems(employeeID, accountID);
     }
 
-    loadLocationData = (location) => {
-        var { request } = this.state;
-        request.location = location
-        this.setState({request});
+    loadRequestData = (props = this.props) => {
+        const { actions, accountID, requests, pathname } = props;
+        const keys = getKeys(pathname);
+        const requestID = keys.second;
+        if (requestID && requestID !== null) {
+            requests.forEach((request) => {
+                if (request.requestID === requestID) {
+                    this.setState({request});
+                }
+            })
+        }
     }
 
     handleChange = (e, name, itemID) => {
         const { value } = e.target;
         const next_state = this.state;
         next_state.request.stockPerItem[itemID][name] = value;
-        this.setState(next_state, () => {
-            this.isOrderDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleCheckBox = (e, menuItem) => {
@@ -207,9 +214,7 @@ class OrderCreateBetaView extends Component {
             next_state.request.stockPerItem[itemID].priority = priority;
             next_state.request.stockPerItem[itemID].requiredBy = requiredBy.burnDate;
         }
-        this.setState(next_state, () => {
-            this.isOrderDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleLocationSelected = (location) => {
@@ -217,9 +222,7 @@ class OrderCreateBetaView extends Component {
         console.log(location)
         next_state.request.location = location;
         next_state.searchLocation = false;
-        this.setState(next_state, () => {
-            this.isOrderDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     requestCheckout = (e) => {
@@ -234,9 +237,7 @@ class OrderCreateBetaView extends Component {
         next_state.request.totals.total = next_state.request.totals.subTotal + next_state.request.totals.tax;
         next_state.request.totals.due = next_state.request.totals.total;
         next_state.isCheckout = true;
-        this.setState(next_state, () => {
-            this.isOrderDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleClose = (e) => {
@@ -321,17 +322,16 @@ class OrderCreateBetaView extends Component {
 
     createNewOrder = () => {
         const { actions, idToken, employeeID, accountID } = this.props;
-        const { request, redirectRoute } = this.state;
-        console.log(request)
+        const { order, redirectRoute } = this.state;
+        console.log(order)
         console.log(redirectRoute)
-        actions.saveNewOrder(idToken, employeeID, accountID, request, redirectRoute);
+        // actions.saveNewOrder(idToken, employeeID, accountID, request, redirectRoute);
     }
 
     render() {
         const { classes } = this.props;
         const {
           request,
-          searchLocation,
           menuItems,
           isCheckout,
           disabled,
@@ -346,7 +346,7 @@ class OrderCreateBetaView extends Component {
                     <Paper className={classes.content}>
                         <div className={classes.gridItemBoxInner}>
                             <div>
-                                <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Order'}</h4>
+                                <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Order From Request'}</h4>
                                 <div className={classes.divider} >
                                     <div className={classes.dividerLine} />
                                 </div>
