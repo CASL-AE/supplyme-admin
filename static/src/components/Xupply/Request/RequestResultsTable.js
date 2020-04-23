@@ -104,7 +104,7 @@ function RequestResultsTable(props) {
                   {`${request.stockPerItem[request.item.itemID].stock} / ${request.stockPerItem[request.item.itemID].packageType}`}
               </TableCell>
               <TableCell>
-                  {`${request.item.itemName} - ${request.item.measurement.nickname}`}
+                  {`${request.item.itemName}`}
               </TableCell>
               <TableCell>
                   {request.stockPerItem[request.item.itemID].priority}
@@ -113,8 +113,8 @@ function RequestResultsTable(props) {
                   {formatDateNoTime(request.stockPerItem[request.item.itemID].requiredBy)}
               </TableCell>
               <TableCell>
-                  <LinearProgress variant="determinate" value={(3/12)*100} style={{backgroundColor: 'black'}} color="primary" />
-                  {'# 3 of 12'}
+                  <LinearProgress variant="determinate" value={(0/request.stockPerItem[request.item.itemID].stock)*100} style={{backgroundColor: 'black'}} color="primary" />
+                  {`# ${0} of ${request.stockPerItem[request.item.itemID].stock}`}
               </TableCell>
             </TableRow>
           ))}
