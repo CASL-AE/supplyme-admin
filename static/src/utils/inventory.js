@@ -27,7 +27,7 @@ export function calculateOverBurnPriority(overBurn) {
     if (overBurn > 0) {
         return 'low';
     }
-    return overBurn;
+    return 'default';
 }
 
 // Utility Function
