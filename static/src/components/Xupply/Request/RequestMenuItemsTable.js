@@ -99,7 +99,7 @@ function RequestMenuItemsTable(props) {
                     </React.Fragment>
                   }
                 >
-                  <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName} - ${menuItem.measurement.nickname}`}</a>
+                  <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName}`}</a>
                 </ImageTooltip>
             </TableCell>
               <TableCell>
