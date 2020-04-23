@@ -55,7 +55,7 @@ const styles = theme => ({
     dividerLine: {
         margin: 'auto',
         content: "",
-        borderTop: '10px solid #000000',
+        borderTop: '10px solid red',
         // flex: 1,
         width: 40,
         transform: 'translateY(50%)',
@@ -204,6 +204,7 @@ class RequestCreateBetaView extends Component {
             next_state.request.stockPerItem[itemID].stock = Math.abs(stock);
             next_state.request.stockPerItem[itemID].priority = priority;
             next_state.request.stockPerItem[itemID].requiredBy = requiredBy.burnDate;
+            next_state.request.stockPerItem[itemID].packageType = menuItem.quantities[0].packageType;
         }
         this.setState(next_state, () => {
             this.isRequestDisabled();
@@ -344,7 +345,7 @@ class RequestCreateBetaView extends Component {
                     <Paper className={classes.content}>
                         <div className={classes.gridItemBoxInner}>
                             <div>
-                                <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Request'}</h4>
+                                <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Request'}</h4>
                                 <div className={classes.divider} >
                                     <div className={classes.dividerLine} />
                                 </div>
