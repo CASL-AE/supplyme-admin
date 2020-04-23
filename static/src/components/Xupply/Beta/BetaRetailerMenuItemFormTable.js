@@ -147,12 +147,9 @@ function BetaMenuItemFormTable(props) {
                       label="#/boxes"
                       margin="dense"
                       type="number"
-                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                      // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].stock !== 0 ? stockPerItem[menuItem.itemID].stock : ''}
                       style={{width: 100}}
-                      onChange={e => handleChange(e, 'stock', menuItem.itemID)}
-                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                      onChange={e => handleChange(e, 'stock', menuItem)}
                   />
               </TableCell>
               <TableCell>
@@ -165,7 +162,7 @@ function BetaMenuItemFormTable(props) {
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
                       style={{width: 100}}
-                      onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
+                      onChange={e => handleChange(e, 'pricePerUnit', menuItem)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
@@ -179,7 +176,7 @@ function BetaMenuItemFormTable(props) {
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].burnQuantity !== 0 ? stockPerItem[menuItem.itemID].burnQuantity : ''}
                       style={{width: 75, paddingRight: 10}}
-                      onChange={e => handleChange(e, 'burnQuantity', menuItem.itemID)}
+                      onChange={e => handleChange(e, 'burnQuantity', menuItem)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
@@ -193,7 +190,7 @@ function BetaMenuItemFormTable(props) {
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].burnDays !== 0 ? stockPerItem[menuItem.itemID].burnDays : ''}
                       style={{width: 75, marginRight: 10}}
-                      onChange={e => handleChange(e, 'burnDays', menuItem.itemID)}
+                      onChange={e => handleChange(e, 'burnDays', menuItem)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
                   {stockPerItem[menuItem.itemID] ? formatNumbersWithCommas(calculateOverBurnStock(stockPerItem[menuItem.itemID])) : 'N/A'}
