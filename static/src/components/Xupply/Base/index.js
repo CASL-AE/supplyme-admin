@@ -441,6 +441,13 @@ class Base extends Component {
             break;
           default:
             if (breadcrumbChild === currentBC) {
+                if (breadcrumbChild === 'search') {
+                    return (
+                        <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}/${breadcrumbChild}`)}>
+                            Search
+                        </Link>
+                    );
+                }
                 return (
                     <Link key={currentBC} className={classes.breadLink} onClick={e => this.dispatchNewRoute(e, `${baseDomain}/${breadcrumb}/${breadcrumbChild}`)}>
                         Details
