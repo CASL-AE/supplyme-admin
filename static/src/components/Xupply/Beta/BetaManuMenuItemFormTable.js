@@ -15,6 +15,8 @@ import Paper from '@material-ui/core/Paper';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Checkbox from '@material-ui/core/Checkbox';
+
+import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -129,6 +131,27 @@ function BetaManuMenuItemFormTable(props) {
                   </ImageTooltip>
               </TableCell>
               <TableCell>
+                  {
+                      menuItem.quantities.length > 1
+                      ? (
+                        <FormControl margin="dense" className={classes.textField}>
+                            <Select
+                                // onChange={e => this.handleChange(e, null, 'itemType')}
+                                value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].measurement.nickname !== null ? stockPerItem[menuItem.itemID].measurement.nickname : menuItem.quantities[0].measurement.nickname}
+                                variant="outlined"
+                                inputProps={{
+                                    name: 'measurementName',
+                                    id: 'measurementName',
+                                }}
+                            >
+                                {menuItem.quantities.map(q => (<MenuItem key={q.measurement.nickname} value={q.measurement.nickname}>{q.measurement.nickname}</MenuItem>))}
+                            </Select>
+                            <div onClick={e => handleDeleteAction(e, employeeCode)} style={{color: 'red', cursor: 'pointer'}}>+ Add More</div>
+                        </FormControl>
+                      ) : menuItem.quantities[0].measurement.nickname
+                  }
+              </TableCell>
+              <TableCell>
                   <TextField
                       placeholder="#/qty"
                       label="#/qty"
@@ -138,7 +161,7 @@ function BetaManuMenuItemFormTable(props) {
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].stock !== 0 ? stockPerItem[menuItem.itemID].stock : ''}
                       style={{width: 100}}
-                      onChange={e => handleChange(e, 'stock', menuItem.itemID)}
+                      onChange={e => handleChange(e, 'stock', menuItem)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
@@ -152,7 +175,7 @@ function BetaManuMenuItemFormTable(props) {
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
                       style={{width: 100}}
-                      onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
+                      onChange={e => handleChange(e, 'pricePerUnit', menuItem)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
@@ -166,7 +189,7 @@ function BetaManuMenuItemFormTable(props) {
                   // helperText={name_error_text}
                   value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadQuantity !== 0 ? stockPerItem[menuItem.itemID].leadQuantity : ''}
                   style={{width: 75, paddingRight: 10}}
-                  onChange={e => handleChange(e, 'leadQuantity', menuItem.itemID)}
+                  onChange={e => handleChange(e, 'leadQuantity', menuItem)}
                   // FormHelperTextProps={{ classes: { root: classes.helperText } }}
               />
               <TextField
@@ -178,7 +201,7 @@ function BetaManuMenuItemFormTable(props) {
                   // helperText={name_error_text}
                   value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadDays !== 0 ? stockPerItem[menuItem.itemID].leadDays : ''}
                   style={{width: 75}}
-                  onChange={e => handleChange(e, 'leadTime', menuItem.itemID)}
+                  onChange={e => handleChange(e, 'leadTime', menuItem)}
                   // FormHelperTextProps={{ classes: { root: classes.helperText } }}
               />
               </TableCell>
