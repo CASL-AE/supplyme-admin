@@ -32,7 +32,7 @@ import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 function renderPriorityType() {
     const array = [];
-    array.push(<MenuItem key={'default'} value={'default'}>Select Priority</MenuItem>);
+    array.push(<MenuItem key={'default'} value={'default'} disabled>Select Priority</MenuItem>);
     array.push(<MenuItem key={'high'} value={'high'}>High</MenuItem>);
     array.push(<MenuItem key={'med'} value={'med'}>Medium</MenuItem>);
     array.push(<MenuItem key={'low'} value={'low'}>Low</MenuItem>);
@@ -120,11 +120,12 @@ function BetaRequestFormTable(props) {
         <TableHead>
           <TableRow>
             <TableCell className={classes.tableHeaders} >Item</TableCell>
+            <TableCell className={classes.tableHeaders} >Size</TableCell>
             <TableCell className={classes.tableHeaders} >Needed #</TableCell>
             <TableCell className={classes.tableHeaders} >Max Price</TableCell>
             <TableCell className={classes.tableHeaders} >Fill Priority</TableCell>
             <TableCell className={classes.tableHeaders} >Fill By</TableCell>
-            <TableCell className={classes.tableHeaders} >Will Fund</TableCell>
+            <TableCell className={classes.tableHeaders} >Cost</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -143,8 +144,29 @@ function BetaRequestFormTable(props) {
                       </React.Fragment>
                     }
                   >
-                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName} - ${menuItem.measurement.nickname}`}</a>
+                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName}`}</a>
                   </ImageTooltip>
+              </TableCell>
+              <TableCell>
+                  {
+                      menuItem.quantities.length > 1
+                      ? (
+                        <FormControl margin="dense" className={classes.textField}>
+                            <Select
+                                // onChange={e => this.handleChange(e, null, 'itemType')}
+                                value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].measurement.nickname !== null ? stockPerItem[menuItem.itemID].measurement.nickname : menuItem.quantities[0].measurement.nickname}
+                                variant="outlined"
+                                inputProps={{
+                                    name: 'measurementName',
+                                    id: 'measurementName',
+                                }}
+                            >
+                                {menuItem.quantities.map(q => (<MenuItem key={q.measurement.nickname} value={q.measurement.nickname}>{q.measurement.nickname}</MenuItem>))}
+                            </Select>
+                            <div onClick={e => handleDeleteAction(e, employeeCode)} style={{color: 'red', cursor: 'pointer'}}>+ Add More</div>
+                        </FormControl>
+                      ) : menuItem.quantities[0].measurement.nickname
+                  }
               </TableCell>
               <TableCell>
                   <TextField
@@ -190,7 +212,7 @@ function BetaRequestFormTable(props) {
               <TableCell>
                 <KeyboardDatePicker
                     autoOk
-                    value={formatDateNoTime(stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].requiredBy : new Date())}
+                    value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].requiredBy : new Date()}
                     margin="normal"
                     variant="outline"
                     // helperText={birth_error_text}
@@ -202,7 +224,7 @@ function BetaRequestFormTable(props) {
               </TableCell>
               <TableCell>
                 <TextField
-                    placeholder="$/budget"
+                    placeholder="$/cost"
                     margin="dense"
                     type="number"
                     disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
