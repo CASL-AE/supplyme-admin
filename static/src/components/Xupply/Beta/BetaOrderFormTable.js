@@ -196,32 +196,10 @@ function BetaRequestFormTable(props) {
                   />
               </TableCell>
               <TableCell>
-                <Select
-                    // onChange={e => this.handleChange(e, 'priority')}
-                    value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].priority : 'default'}
-                    // margin="dense"
-                    style={{margin: 0, padding: 0}}
-                    disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                    inputProps={{
-                        name: 'priority',
-                        id: 'priority',
-                    }}
-                >
-                    {priorityTypes}
-                </Select>
+                {stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].priority : 'default'}
               </TableCell>
               <TableCell>
-                <KeyboardDatePicker
-                    autoOk
-                    value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].requiredBy : new Date()}
-                    margin="normal"
-                    variant="outline"
-                    // helperText={birth_error_text}
-                    className={classes.pickerField}
-                    // onChange={this.handleDateChange('birthDate')}
-                    format="MM/DD/YYYY"
-                    id="date-picker-inline"
-                />
+                {stockPerItem[menuItem.itemID] ? formatDateNoTime(stockPerItem[menuItem.itemID].requiredBy) : formatDateNoTime(new Date())}
               </TableCell>
               <TableCell>
                 <TextField
