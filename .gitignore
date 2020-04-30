@@ -20,7 +20,7 @@ celerybeat-schedule
 # Env Variables #
 ######################
 /xupply-dev
-envdeploy.sh
+/xupplykeys
 
 # OS generated files #
 ######################
