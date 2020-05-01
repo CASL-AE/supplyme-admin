@@ -202,6 +202,15 @@ export function filterBy(items) {
     });
 }
 
+export function filterForOrder(items, request) {
+    console.log(items);
+    const requestIDs = request.items.map(i => i.itemID);
+    console.log(requestIDs);
+    return items.filter((i) => {
+        return (requestIDs.includes(i.itemID));
+    });
+}
+
 /// RANDOM ///
 
 export function parseLabel(label) {

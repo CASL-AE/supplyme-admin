@@ -35,7 +35,7 @@ Right now we’re in the very early stages of project development, but moving ve
 # Tech Stack
 
 * [React](https://www.react.com/) - 16.5 - The web framework used
-* [Python](https://www.python.org/download/releases/3.5.1/) - 3.5.1 - Programing Language
+* [Python](https://www.python.org/download/releases/3.5.1/) - 3.7.5 - Programing Language
 * [Firebase](https://firebase.google.com/) - 4.6 - Realtime Database/Messaging/Auth/Analytics
 * [Firestore](https://firebase.google.com/docs/firestore/) - 4.6 - Realtime Big Data Database
 * [Nginx](https://nginx.org/en/) - HTTP and reverse proxy server

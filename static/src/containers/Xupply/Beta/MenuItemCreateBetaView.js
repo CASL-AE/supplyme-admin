@@ -123,6 +123,7 @@ class MenuItemCreateBetaView extends Component {
             isCheckout: false,
             loading: false,
             burnVariable: '', // Is saved to each menu item on submit. burn.variable
+            redirectRoute: `/accounts/${this.props.accountID}/menuItems`,
         };
     }
 
@@ -180,26 +181,23 @@ class MenuItemCreateBetaView extends Component {
         this.setState(next_state, () => {});
     }
 
-    handleChange = (e, name, menuItem) => {
+    handleChange = (e, name, itemID) => {
+        const next_state = this.state;
+        const {value} = e.target;
+        next_state.stockPerItem[itemID][name] = value;
+        this.setState(next_state, () => {});
+    }
+
+    handleCheckBox = (e, menuItem) => {
         const { value } = e.target;
         const next_state = this.state;
         const itemID = menuItem.itemID;
         const found = this.state.approvedMenuItems.some(o => o.itemID === itemID);
         // If item exists and pricePerUnit is now 0; Remove Item
         if (found) {
-            console.log('Found')
-            console.log(name)
-            console.log(value)
-            if (name === 'stock' && value === '0' || value === '') {
-                console.log('Stock 0')
-                next_state.approvedMenuItems = this.state.approvedMenuItems.filter(o => o.itemID !== itemID);
-                delete next_state.stockPerItem[menuItem.itemID];
-            } else {
-                console.log('Updating Name')
-                next_state.stockPerItem[itemID][name] = value;
-            }
+            next_state.approvedMenuItems = this.state.approvedMenuItems.filter(o => o.itemID !== itemID);
+            delete next_state.stockPerItem[menuItem.itemID];
         } else {
-            console.log('NOT Found')
             next_state.approvedMenuItems = [...this.state.approvedMenuItems, menuItem];
             // Add New Quantity
             const newQuantity = toNewQuantity();
@@ -207,8 +205,6 @@ class MenuItemCreateBetaView extends Component {
             newQuantity.packageType = menuItem.quantities[0].packageType;
             newQuantity.measurement = menuItem.quantities[0].measurement;
             next_state.stockPerItem[itemID] = newQuantity;
-            // Update Stock
-            next_state.stockPerItem[itemID][name] = value;
         }
         this.setState(next_state, () => {});
     }
@@ -431,7 +427,7 @@ class MenuItemCreateBetaView extends Component {
         return (
           <div className={classes.gridItemBoxInner}>
               <div>
-                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'New Menu Items'}</h4>
+                  <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Inventory Form'}</h4>
                   <div className={classes.divider} >
                       <div className={classes.dividerLine} />
                   </div>
@@ -455,6 +451,7 @@ class MenuItemCreateBetaView extends Component {
                       menuItems={menuItems}
                       approvedMenuItems={approvedMenuItems}
                       stockPerItem={stockPerItem}
+                      handleCheckBox={this.handleCheckBox}
                       handleChange={this.handleChange}
                   />
                   {
@@ -496,7 +493,7 @@ class MenuItemCreateBetaView extends Component {
         return (
           <div className={classes.gridItemBoxInner}>
               <div>
-                  <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Inventory Update'}</h4>
+                  <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Inventory Form'}</h4>
                   <div className={classes.divider} >
                       <div className={classes.dividerLine} />
                   </div>
@@ -537,6 +534,7 @@ class MenuItemCreateBetaView extends Component {
                       menuItems={menuItems}
                       approvedMenuItems={approvedMenuItems}
                       stockPerItem={stockPerItem}
+                      handleCheckBox={this.handleCheckBox}
                       handleChange={this.handleChange}
                   />
                   {

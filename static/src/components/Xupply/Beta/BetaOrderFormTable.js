@@ -100,7 +100,7 @@ const LocationTooltip = withStyles((theme) => ({
 
 
 function BetaRequestFormTable(props) {
-  const { classes, menuItems, approvedMenuItems, stockPerItem, handleCheckBox, handleChange } = props;
+  const { classes, requestStockPerItem, menuItems, approvedMenuItems, stockPerItem, handleCheckBox, handleChange } = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, menuItems.length - page * rowsPerPage);
@@ -112,7 +112,6 @@ function BetaRequestFormTable(props) {
     setPage(0);
   };
 
-  console.warn(menuItems)
   const priorityTypes = renderPriorityType();
   return (
     <Paper className={classes.root}>
@@ -122,7 +121,7 @@ function BetaRequestFormTable(props) {
             <TableCell className={classes.tableHeaders} >Item</TableCell>
             <TableCell className={classes.tableHeaders} >Size</TableCell>
             <TableCell className={classes.tableHeaders} >Requested Qty</TableCell>
-            <TableCell className={classes.tableHeaders} >Offer Price</TableCell>
+            <TableCell className={classes.tableHeaders} >Bid Price</TableCell>
             <TableCell className={classes.tableHeaders} >Fill Priority</TableCell>
             <TableCell className={classes.tableHeaders} >Fill By</TableCell>
             <TableCell className={classes.tableHeaders} >Revenue</TableCell>
@@ -177,10 +176,12 @@ function BetaRequestFormTable(props) {
                       disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].stock : ''}
+                      // max={requestStockPerItem ? requestStockPerItem[menuItem.itemID].stock : 0}
                       style={{width: 75}}
                       onChange={e => handleChange(e, 'stock', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
+                  <div style={{fontSize: 12, color: 'gray'}}>{`Reqested: # ${requestStockPerItem ? requestStockPerItem[menuItem.itemID].stock : 0}`}</div>
               </TableCell>
               <TableCell>
                   <TextField
@@ -194,6 +195,7 @@ function BetaRequestFormTable(props) {
                       onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
+                  <div style={{fontSize: 12, color: 'gray'}}>{`Price: $ ${requestStockPerItem ? requestStockPerItem[menuItem.itemID].pricePerUnit : 0}`}</div>
               </TableCell>
               <TableCell>
                 {stockPerItem[menuItem.itemID] ? stockPerItem[menuItem.itemID].priority : 'default'}
@@ -243,6 +245,7 @@ function BetaRequestFormTable(props) {
 BetaRequestFormTable.propTypes = {
   menuItems: PropTypes.array.isRequired,
   approvedMenuItems: PropTypes.array.isRequired,
+  requestStockPerItem: PropTypes.object.isRequired,
   stockPerItem: PropTypes.object.isRequired,
   handleCheckBox: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,

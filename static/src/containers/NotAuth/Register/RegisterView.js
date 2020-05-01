@@ -20,7 +20,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import AutoCompletePlaces from '../../../components/Xupply/AutoCompletes/AutoCompletePlaces';
+import LocationInfo from '../../../components/Xupply/Auth/LocationInfo';
 
 import { registerAccount } from '../../../services/accountRegistration/actions';
 import { registerEmployee } from '../../../services/employeeRegistration/actions';
@@ -209,12 +209,10 @@ class RegisterView extends Component {
         const value = e.target.value;
         const next_state = this.state;
         next_state[name] = value;
-        this.setState(next_state, () => {
-              this.isLocationDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
-    handleLocationChange(e, parent, name) {
+    handleLocationChange = (e, parent, name) => {
         const value = e.target.value;
         const next_state = this.state;
         if (parent !== null) {
@@ -222,9 +220,7 @@ class RegisterView extends Component {
         } else {
             next_state.location[name] = value;
         }
-        this.setState(next_state, () => {
-              this.isLocationDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleLocationSelected = (location) => {
@@ -232,12 +228,15 @@ class RegisterView extends Component {
         const { main_text } = location.structured_formatting;
         const { idToken, accountID } = this.props;
         const next_state = this.state;
-        next_state.location.name = description;
         next_state.location.placeID;
-        this.setState(next_state, () => {});
+        geocodeGooglePlace(null, null, description).then((result) => {
+            next_state.location.address = result;
+            this.setState(next_state, () => {});
+        });
     }
 
-    isLocationDisabled = () => {
+    isLocationDisabled = (e) => {
+        e.preventDefault();
         let firstName_is_valid = false;
         let lastName_is_valid = false;
         let placeID_is_valid = false;
@@ -388,7 +387,7 @@ class RegisterView extends Component {
           locationName_is_valid &&
           placeID_is_valid
         ) {
-            locationDisabled = false;
+            this.handleLocationFinished(e)
         } else if (
           firstName_is_valid &&
           lastName_is_valid &&
@@ -398,12 +397,11 @@ class RegisterView extends Component {
           region_is_valid &&
           postal_is_valid
         ) {
-            locationDisabled = false;
+            this.handleLocationFinished(e)
         }
-        this.setState({locationDisabled: locationDisabled})
     }
 
-    handleLocationFinished = () => {
+    handleLocationFinished = (e) => {
         const next_state = this.state;
         const { address } = this.state.location;
         const description = address.placeID ? next_state.location.name : `${address.street1} ${address.locality}, ${address.region} ${address.postal}`;
@@ -420,7 +418,7 @@ class RegisterView extends Component {
             next_state.location.address = result;
             next_state.stepIndex = next_state.stepIndex + 1;
             this.setState(next_state, () => {});
-        })
+        });
     };
 
     setSuggestedGeocode = () => {
@@ -441,12 +439,11 @@ class RegisterView extends Component {
         const value = e.target.value;
         const next_state = this.state;
         next_state[name] = value;
-        this.setState(next_state, () => {
-            this.isSignupDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
-    isSignupDisabled = () => {
+    isSignupDisabled = (e) => {
+        e.preventDefault();
         let email_is_valid = false;
         let password_is_valid = false;
         let accountType_is_valid = false;
@@ -495,11 +492,12 @@ class RegisterView extends Component {
           password_is_valid &&
           accountType_is_valid
         ) {
-            this.setState({disabled: false})
+            const { activationCode } = this.state;
+            activationCode ? e => this.createNewEmployee(e) : e => this.createNewAccount(e)
         }
     }
 
-    createNewAccount() {
+    createNewAccount(e) {
         const { actions }= this.props;
         const {
           accountType,
@@ -660,125 +658,9 @@ class RegisterView extends Component {
         }
     }
 
-    render() {
+    renderGetStarted = () => {
         const { classes } = this.props;
-        const {
-          stepIndex,
-          email,
-          email_error_text,
-          password,
-          password_error_text,
-          activationCode,
-          accountType,
-          firstName,
-          firstName_error_text,
-          lastName,
-          lastName_error_text,
-          location,
-          locationName_error_text,
-          street1_error_text,
-          locality_error_text,
-          region_error_text,
-          postal_error_text,
-          loading,
-          showEmail,
-          disabled,
-          locationDisabled,
-          sugestedGeocode,
-          invalidGeocode,
-        } = this.state;
-
-        const accountTypes = renderAccountType();
-
-        console.warn(location)
-
-        const CreateAccountContainer = (
-            <section style={{margin: 0, padding: 0}}>
-            <div style={{ margin: 'auto', textAlign: 'center', paddingTop: 40 }}>
-                <a style={{cursor: 'pointer'}} onClick={e => this.isDisabled(e)}><img alt="google_signup" height="48px" width="300px" src="/src/containers/App/styles/img/google.png" /></a>
-            </div>
-            <div style={{ margin: 'auto', textAlign: 'center', paddingTop: 10 }}>
-            {
-              showEmail
-              ? (
-                <div>
-                    <TextField
-                        placeholder="Email Address"
-                        label="Email Address"
-                        type="email"
-                        fullWidth
-                        variant="outlined"
-                        value={email || ''}
-                        autoComplete="email"
-                        className={classes.textField}
-                        helpertext={email_error_text}
-                        onChange={e => this.changeValue(e, 'email')}
-                    />
-                    < br/>
-                    <TextField
-                        placeholder="Password"
-                        label="Password"
-                        type="password"
-                        fullWidth
-                        value={this.state.password}
-                        variant="outlined"
-                        autoComplete="current-password"
-                        className={classes.textField}
-                        helpertext={password_error_text}
-                        onChange={e => this.changeValue(e, 'password')}
-                    />
-                    < br/>
-                    <Button
-                        disableRipple
-                        disableFocusRipple
-                        disabled={disabled}
-                        onClick={activationCode ? e => this.createNewEmployee(e) : e => this.createNewAccount(e)}
-                        className={classes.registerButton}
-                        variant="outlined"
-                    >
-                        {activationCode ? 'Register Employee' : 'Register Account'}
-                    </Button>
-                </div>
-              ) : (
-                <div>
-                    <a style={{cursor: 'pointer'}} onClick={e => this.emailSignup(e)}><img alt="google_signup" height="48px" width="300px" src="/src/containers/App/styles/img/email.png" /></a>
-                </div>
-              )
-            }
-            </div>
-
-            <div style={{ margin: 'auto', width: isMobileAndTablet() ? '100%' : '50%'}}>
-                <p style={{ fontSize: 14, textAlign: 'center', paddingTop: 20 }}>By creating an account, you confirm that you accept the<a style={{color: 'blue'}} href=""> terms and conditions.</a></p>
-            </div>
-            </section>
-        )
-
-        const SignupContainer = (
-          <div className={classes.gridItemBoxInner}>
-              <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
-                  <a onClick={e => this.handleBack(e)}>{this.renderAccountTypeLogo(accountType)}</a>
-              </div>
-              <div style={{ textAlign: 'center', paddingTop: 20 }}>
-                  {loading
-                    ? (<CircularProgress style={{marginBottom: 15}} color="inherit" />)
-                    : null}
-                  {
-                    activationCode
-                    ? (
-                        <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{!loading ? `Please sign in to create your ${accountType} employee` : 'Creating your employee...'}</h4>
-                    ) : (
-                        <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{!loading ? `Please sign in to create your ${accountType} account` : 'Creating your account...'}</h4>
-                    )
-                  }
-                  <div className={classes.divider} >
-                      <div className={classes.dividerLine} />
-                  </div>
-              </div>
-              {!loading ? CreateAccountContainer : null}
-          </div>
-        );
-
-        const GetStartedContainer = (
+        return (
           <div className={classes.gridItemBoxInner}>
               <div>
                   <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Let us help you get started?'}</h4>
@@ -840,9 +722,26 @@ class RegisterView extends Component {
                   </Paper>
               </div>
           </div>
-        );
+        )
+    }
 
-        const ContactInfoContainer = (
+    renderContactInfo = () => {
+        const { classes } = this.props;
+        const {
+          accountType,
+          firstName,
+          firstName_error_text,
+          lastName,
+          lastName_error_text,
+          location,
+          locationName_error_text,
+          street1_error_text,
+          locality_error_text,
+          region_error_text,
+          postal_error_text,
+          locationDisabled
+        } = this.state;
+        return (
           <div className={classes.gridItemBoxInner}>
               <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
                   <a onClick={e => this.handleBack(e)}>{this.renderAccountTypeLogo(accountType)}</a>
@@ -883,84 +782,24 @@ class RegisterView extends Component {
                       <Divider />
                   </div>
                   <div>
-                      <TextField
-                          placeholder="Location Name"
-                          label="Location Name"
-                          variant="outlined"
-                          margin="dense"
-                          helperText={locationName_error_text}
-                          value={location.name || ''}
-                          style={{width: '100%'}}
-                          onChange={e => this.handleLocationChange(e, null, 'name')}
-                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                      />
-                      <AutoCompletePlaces name={location.name} onFinishedSelecting={this.handleLocationSelected}/>
-                      <TextField
-                          placeholder="Street Address"
-                          label="Street Address"
-                          variant="outlined"
-                          margin="dense"
-                          helperText={street1_error_text}
-                          value={location.address.street1 || ''}
-                          style={{paddingRight: 20, width: '67%'}}
-                          onChange={e => this.handleLocationChange(e, 'address', 'street1')}
-                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                      />
-                      <TextField
-                          placeholder="Address 2"
-                          label="Address 2"
-                          variant="outlined"
-                          margin="dense"
-                          value={location.address.street2 || ''}
-                          style={{width: '33%'}}
-                          onChange={e => this.handleLocationChange(e, 'address', 'street2')}
-                      />
-                  </div>
-                  <div style={{paddingTop: 10}}>
-                      <TextField
-                          placeholder="Locality"
-                          label="Locality"
-                          variant="outlined"
-                          margin="dense"
-                          type="text"
-                          helperText={locality_error_text}
-                          value={location.address.locality || ''}
-                          style={{paddingRight: 20, width: '33%'}}
-                          onChange={e => this.handleLocationChange(e, 'address', 'locality')}
-                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                      />
-                      <TextField
-                          placeholder="Region"
-                          label="Region"
-                          variant="outlined"
-                          margin="dense"
-                          type="text"
-                          helperText={region_error_text}
-                          value={location.address.region || ''}
-                          style={{paddingRight: 20, width: '33%'}}
-                          onChange={e => this.handleLocationChange(e, 'address', 'region')}
-                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                      />
-                      <TextField
-                          placeholder="Zip Code"
-                          label="Zip Code"
-                          variant="outlined"
-                          margin="dense"
-                          type="number"
-                          helperText={postal_error_text}
-                          value={location.address.postal || ''}
-                          style={{float: 'right', width: '33%'}}
-                          onChange={e => this.handleLocationChange(e, 'address', 'postal')}
-                          FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                      />
+                  <LocationInfo
+                      location={location}
+                      locationName_error_text={locationName_error_text}
+                      street1_error_text={street1_error_text}
+                      locality_error_text={locality_error_text}
+                      region_error_text={region_error_text}
+                      postal_error_text={postal_error_text}
+                      handleLocationChange={this.handleLocationChange}
+                      handleLocationSelected={this.handleLocationSelected}
+                  />
                   </div>
               </div>
               <div style={{paddingTop: 25, textAlign: 'center'}}>
                   <Button
                       disableRipple
                       disableFocusRipple
-                      disabled={locationDisabled}
-                      onClick={e => this.handleLocationFinished(e)}
+                      // disabled={locationDisabled}
+                      onClick={e => this.isLocationDisabled(e)}
                       className={classes.registerButton}
                       variant="outlined"
                   >
@@ -969,15 +808,154 @@ class RegisterView extends Component {
               </div>
           </div>
         );
+    }
+
+    renderSignup = () => {
+        const { classes } = this.props;
+        const {
+            activationCode,
+            accountType,
+            loading
+        } = this.state;
+        return (
+          <div className={classes.gridItemBoxInner}>
+              <div style={{ cursor: 'pointer', margin: 'auto', textAlign: 'center' }}>
+                  <a onClick={e => this.handleBack(e)}>{this.renderAccountTypeLogo(accountType)}</a>
+              </div>
+              <div style={{ textAlign: 'center', paddingTop: 20 }}>
+                  {loading
+                    ? (<CircularProgress style={{marginBottom: 15}} color="inherit" />)
+                    : null}
+                  {
+                    activationCode
+                    ? (
+                        <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{!loading ? `Please sign in to create your ${accountType} employee` : 'Creating your employee...'}</h4>
+                    ) : (
+                        <h4 style={{ fontWeight: 300, fontSize: 20, paddingBottom: 15 }}>{!loading ? `Please sign in to create your ${accountType} account` : 'Creating your account...'}</h4>
+                    )
+                  }
+                  <div className={classes.divider} >
+                      <div className={classes.dividerLine} />
+                  </div>
+              </div>
+              {!loading ? this.renderCreateAccount() : null}
+          </div>
+        );
+    }
+
+    renderCreateAccount = () => {
+        const {classes} = this.props;
+        const {
+          email,
+          email_error_text,
+          password,
+          password_error_text,
+          activationCode,
+          showEmail,
+          disabled
+        } = this.state;
+        return (
+            <section style={{margin: 0, padding: 0}}>
+            <div style={{ margin: 'auto', textAlign: 'center', paddingTop: 40 }}>
+                <a style={{cursor: 'pointer'}} onClick={e => this.isDisabled(e)}><img alt="google_signup" height="48px" width="300px" src="/src/containers/App/styles/img/google.png" /></a>
+            </div>
+            <div style={{ margin: 'auto', textAlign: 'center', paddingTop: 10 }}>
+            {
+              showEmail
+              ? (
+                <div>
+                    <TextField
+                        placeholder="Email Address"
+                        label="Email Address"
+                        type="email"
+                        fullWidth
+                        variant="outlined"
+                        value={email || ''}
+                        autoComplete="email"
+                        className={classes.textField}
+                        helpertext={email_error_text}
+                        onChange={e => this.changeValue(e, 'email')}
+                    />
+                    < br/>
+                    <TextField
+                        placeholder="Password"
+                        label="Password"
+                        type="password"
+                        fullWidth
+                        value={this.state.password}
+                        variant="outlined"
+                        autoComplete="current-password"
+                        className={classes.textField}
+                        helpertext={password_error_text}
+                        onChange={e => this.changeValue(e, 'password')}
+                    />
+                    < br/>
+                    <Button
+                        disableRipple
+                        disableFocusRipple
+                        disabled={disabled}
+                        onClick={e => this.isSignupDisabled(e)}
+                        className={classes.registerButton}
+                        variant="outlined"
+                    >
+                        {activationCode ? 'Register Employee' : 'Register Account'}
+                    </Button>
+                </div>
+              ) : (
+                <div>
+                    <a style={{cursor: 'pointer'}} onClick={e => this.emailSignup(e)}><img alt="google_signup" height="48px" width="300px" src="/src/containers/App/styles/img/email.png" /></a>
+                </div>
+              )
+            }
+            </div>
+
+            <div style={{ margin: 'auto', width: isMobileAndTablet() ? '100%' : '50%'}}>
+                <p style={{ fontSize: 14, textAlign: 'center', paddingTop: 20 }}>By creating an account, you confirm that you accept the<a style={{color: 'blue'}} href=""> terms and conditions.</a></p>
+            </div>
+            </section>
+        );
+    }
+
+    render() {
+        const { classes } = this.props;
+        const {
+          stepIndex,
+          email,
+          email_error_text,
+          password,
+          password_error_text,
+          activationCode,
+          accountType,
+          firstName,
+          firstName_error_text,
+          lastName,
+          lastName_error_text,
+          location,
+          locationName_error_text,
+          street1_error_text,
+          locality_error_text,
+          region_error_text,
+          postal_error_text,
+          loading,
+          showEmail,
+          disabled,
+          locationDisabled,
+          sugestedGeocode,
+          invalidGeocode,
+        } = this.state;
+
+        const accountTypes = renderAccountType();
+
+        console.warn(location)
 
         return (
             <div className={classes.appFrame}>
                 <Grid container alignItems="center" justify="center" className={classes.root} spacing={2}>
                     <Grid item xs={isMobileAndTablet() ? 12 : 8}>
                         <Paper className={classes.content}>
-                            {stepIndex === 0 && GetStartedContainer}
-                            {stepIndex === 1 && ContactInfoContainer}
-                            {stepIndex === 2 && SignupContainer}
+                            {stepIndex === 0 && this.renderGetStarted()}
+                            {stepIndex === 1 && this.renderContactInfo()}
+                            {stepIndex === 2 && this.renderSignup()}
                         </Paper>
                     </Grid>
                 </Grid>

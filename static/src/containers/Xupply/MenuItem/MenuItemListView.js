@@ -175,7 +175,7 @@ class MenuItemListView extends React.Component {
         ? (
             <section>
             <div className={classes.headerCell}>
-                {accountType === 'manufacturer' && (
+                {accountID === process.env.SUPPLYME_ADMIN_KEY && (
                     <Fab
                         aria-label={'Beta'}
                         className={isMobileAndTablet() ? classes.fab : null}

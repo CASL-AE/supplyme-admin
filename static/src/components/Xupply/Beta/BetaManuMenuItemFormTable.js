@@ -102,7 +102,6 @@ const LocationTooltip = withStyles((theme) => ({
 
 function BetaManuMenuItemFormTable(props) {
   const { classes, menuItems, approvedMenuItems, stockPerItem, handleCheckBox, handleChange } = props;
-  console.warn(menuItems)
   const leadTimeTypes = renderLeadTimeType();
   return (
     <Paper className={classes.root}>
@@ -110,6 +109,7 @@ function BetaManuMenuItemFormTable(props) {
         <TableHead>
           <TableRow>
             <TableCell className={classes.tableHeaders} >Item</TableCell>
+            <TableCell className={classes.tableHeaders} >Size</TableCell>
             <TableCell className={classes.tableHeaders} >On Hand</TableCell>
             <TableCell className={classes.tableHeaders} >Max Price</TableCell>
             <TableCell className={classes.tableHeaders} >Resupply</TableCell>
@@ -117,99 +117,108 @@ function BetaManuMenuItemFormTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {menuItems.map(menuItem => (
-            <TableRow key={menuItem.itemID}>
-              <TableCell>
-                  <ImageTooltip
-                    title={
-                      <React.Fragment>
-                        <img src={menuItem.thumbItemImageURL ? menuItem.thumbItemImageURL : '/src/containers/App/styles/img/broken.png'} style={{height: 50, width: 50}} />
-                      </React.Fragment>
+          {menuItems.map((menuItem) => {
+            const selectItems = menuItem.quantities.map(q => (<MenuItem key={q.measurement.nickname} value={q.measurement.nickname}>{q.measurement.nickname}</MenuItem>));
+            const checked = approvedMenuItems.some(o => o.itemID === menuItem.itemID);
+            return (
+              <TableRow key={menuItem.itemID}>
+                <TableCell>
+                    <Checkbox
+                        checked={checked}
+                        onChange={e => handleCheckBox(e, menuItem)}
+                        color="primary"
+                    />
+                    <ImageTooltip
+                      title={
+                        <React.Fragment>
+                          <img src={menuItem.thumbItemImageURL ? menuItem.thumbItemImageURL : '/src/containers/App/styles/img/broken.png'} style={{height: 50, width: 50}} />
+                        </React.Fragment>
+                      }
+                    >
+                      <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName}`}</a>
+                    </ImageTooltip>
+                </TableCell>
+                <TableCell>
+                    {
+                        menuItem.quantities.length > 1
+                        ? (
+                          <FormControl margin="dense" className={classes.textField}>
+                              <Select
+                                  onChange={e => this.handleChange(e, 'packageType', menuItem.itemID)}
+                                  value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].measurement.nickname !== null ? stockPerItem[menuItem.itemID].measurement.nickname : menuItem.quantities[0].measurement.nickname}
+                                  variant="outlined"
+                                  inputProps={{
+                                      name: 'measurementName',
+                                      id: 'measurementName',
+                                  }}
+                              >
+                                  {selectItems}
+                              </Select>
+                              <div onClick={e => handleDeleteAction(e, employeeCode)} style={{color: 'red', cursor: 'pointer'}}>+ Add More</div>
+                          </FormControl>
+                        ) : menuItem.quantities[0].measurement.nickname
                     }
-                  >
-                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName}`}</a>
-                  </ImageTooltip>
-              </TableCell>
-              <TableCell>
-                  {
-                      menuItem.quantities.length > 1
-                      ? (
-                        <FormControl margin="dense" className={classes.textField}>
-                            <Select
-                                // onChange={e => this.handleChange(e, null, 'itemType')}
-                                value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].measurement.nickname !== null ? stockPerItem[menuItem.itemID].measurement.nickname : menuItem.quantities[0].measurement.nickname}
-                                variant="outlined"
-                                inputProps={{
-                                    name: 'measurementName',
-                                    id: 'measurementName',
-                                }}
-                            >
-                                {menuItem.quantities.map(q => (<MenuItem key={q.measurement.nickname} value={q.measurement.nickname}>{q.measurement.nickname}</MenuItem>))}
-                            </Select>
-                            <div onClick={e => handleDeleteAction(e, employeeCode)} style={{color: 'red', cursor: 'pointer'}}>+ Add More</div>
-                        </FormControl>
-                      ) : menuItem.quantities[0].measurement.nickname
-                  }
-              </TableCell>
-              <TableCell>
-                  <TextField
-                      placeholder="#/qty"
-                      label="#/qty"
-                      margin="dense"
-                      type="number"
-                      // disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                      // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].stock !== 0 ? stockPerItem[menuItem.itemID].stock : ''}
-                      style={{width: 100}}
-                      onChange={e => handleChange(e, 'stock', menuItem)}
-                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                  />
-              </TableCell>
-              <TableCell>
-                  <TextField
-                      placeholder="$/unit"
-                      label="$/unit"
-                      margin="dense"
-                      type="number"
-                      // disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                      // helperText={name_error_text}
-                      value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
-                      style={{width: 100}}
-                      onChange={e => handleChange(e, 'pricePerUnit', menuItem)}
-                      // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                  />
-              </TableCell>
-              <TableCell>
-              <TextField
-                  placeholder="#/qty"
-                  label="#/qty"
-                  margin="dense"
-                  type="number"
-                  disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                  // helperText={name_error_text}
-                  value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadQuantity !== 0 ? stockPerItem[menuItem.itemID].leadQuantity : ''}
-                  style={{width: 75, paddingRight: 10}}
-                  onChange={e => handleChange(e, 'leadQuantity', menuItem)}
-                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-              />
-              <TextField
-                  placeholder="#/days"
-                  label="#/days"
-                  margin="dense"
-                  type="number"
-                  disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
-                  // helperText={name_error_text}
-                  value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadDays !== 0 ? stockPerItem[menuItem.itemID].leadDays : ''}
-                  style={{width: 75}}
-                  onChange={e => handleChange(e, 'leadTime', menuItem)}
-                  // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-              />
-              </TableCell>
-              <TableCell>
-                {stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? formatNumbersWithCommas(stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].stock) : 'N/A'}
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+                <TableCell>
+                    <TextField
+                        placeholder="#/qty"
+                        label="#/qty"
+                        margin="dense"
+                        type="number"
+                        disabled={!checked}
+                        // helperText={name_error_text}
+                        value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].stock !== 0 ? stockPerItem[menuItem.itemID].stock : ''}
+                        style={{width: 100}}
+                        onChange={e => handleChange(e, 'stock', menuItem.itemID)}
+                        // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                    />
+                </TableCell>
+                <TableCell>
+                    <TextField
+                        placeholder="$/unit"
+                        label="$/unit"
+                        margin="dense"
+                        type="number"
+                        disabled={!checked}
+                        // helperText={name_error_text}
+                        value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
+                        style={{width: 100}}
+                        onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
+                        // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                    />
+                </TableCell>
+                <TableCell>
+                <TextField
+                    placeholder="#/qty"
+                    label="#/qty"
+                    margin="dense"
+                    type="number"
+                    disabled={!checked}
+                    // helperText={name_error_text}
+                    value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadQuantity !== 0 ? stockPerItem[menuItem.itemID].leadQuantity : ''}
+                    style={{width: 75, paddingRight: 10}}
+                    onChange={e => handleChange(e, 'leadQuantity', menuItem.itemID)}
+                    // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                />
+                <TextField
+                    placeholder="#/days"
+                    label="#/days"
+                    margin="dense"
+                    type="number"
+                    disabled={!checked}
+                    // helperText={name_error_text}
+                    value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].leadDays !== 0 ? stockPerItem[menuItem.itemID].leadDays : ''}
+                    style={{width: 75}}
+                    onChange={e => handleChange(e, 'leadTime', menuItem.itemID)}
+                    // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                />
+                </TableCell>
+                <TableCell>
+                  {stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? formatNumbersWithCommas(stockPerItem[menuItem.itemID].pricePerUnit * stockPerItem[menuItem.itemID].stock) : 'N/A'}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </Paper>

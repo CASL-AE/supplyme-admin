@@ -179,9 +179,7 @@ class RequestCreateBetaView extends Component {
         const { value } = e.target;
         const next_state = this.state;
         next_state.request.stockPerItem[itemID][name] = value;
-        this.setState(next_state, () => {
-            this.isRequestDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleCheckBox = (e, menuItem) => {
@@ -205,10 +203,9 @@ class RequestCreateBetaView extends Component {
             next_state.request.stockPerItem[itemID].priority = priority;
             next_state.request.stockPerItem[itemID].requiredBy = requiredBy.burnDate;
             next_state.request.stockPerItem[itemID].packageType = menuItem.quantities[0].packageType;
+            next_state.request.stockPerItem[itemID].pricePerUnit = menuItem.quantities[0].pricePerUnit;
         }
-        this.setState(next_state, () => {
-            this.isRequestDisabled();
-        });
+        this.setState(next_state, () => {});
     }
 
     handleLocationSelected = (location) => {
@@ -345,7 +342,7 @@ class RequestCreateBetaView extends Component {
                     <Paper className={classes.content}>
                         <div className={classes.gridItemBoxInner}>
                             <div>
-                                <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Request'}</h4>
+                                <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Request Form'}</h4>
                                 <div className={classes.divider} >
                                     <div className={classes.dividerLine} />
                                 </div>

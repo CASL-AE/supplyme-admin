@@ -2,7 +2,7 @@ import history from '../../history';
 import { db } from '../../store/firebase';
 import { parseJSON, formatFirestoreDateString, validateString, validateKey } from '../../utils/misc';
 import { apiBulkUploadRequests } from '../../utils/http_functions';
-import { toNewRequest, getRequestFromSnapshot } from './model';
+import { toNewRequest, parseRequest } from './model';
 import { errorAlert, successAlert } from '../../utils/alerts';
 import { xupplyAnalytic } from '../../utils/analytics';
 
@@ -107,10 +107,7 @@ export const saveNewRequest = (token, employeeID, accountID, request, redirectRo
     const createdDate = new Date();
 
     const accountRef = db().collection("Accounts").doc(accountID);
-    const newAccountRequestRef = accountRef.collection("Requests").doc();
-    const newRequestRef = db().collection("Requests").doc(newAccountRequestRef.id);
-
-    console.warn(request);
+    const newRequestRef = db().collection("Requests").doc();
 
     const requestInfo = request;
     const newEvent = {
@@ -121,22 +118,18 @@ export const saveNewRequest = (token, employeeID, accountID, request, redirectRo
     }
     requestInfo.active = true;
     requestInfo.deleted = false;
-    requestInfo.status.isStatus = 1;
+    requestInfo.status.isStatus = 0;
     requestInfo.status.isStatusTime = createdDate;
-    requestInfo.status.events = newEvent;
-    requestInfo.requestID = newAccountRequestRef.id;
+    requestInfo.status.events = [newEvent];
+    requestInfo.requestID = newRequestRef.id;
 
     return db().runTransaction((transaction) => {
-        transaction.set(newAccountRequestRef, getRequestFromSnapshot(requestInfo));
-        if (!requestInfo.private) {
-            transaction.set(newRequestRef, getRequestFromSnapshot(requestInfo));
-        }
+        transaction.set(newRequestRef, parseRequest(requestInfo));
         return Promise.resolve(requestInfo);
     }).then((requestInfo) => {
         console.log("Transaction successfully committed!");
         dispatch(saveNewRequestSuccess());
         xupplyAnalytic('save_request_success', null);
-        // dispatch(addRequest(request))
         history.push(redirectRoute)
     }).catch((error) => {
         console.log("Transaction failed: ", error);

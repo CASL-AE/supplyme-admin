@@ -93,6 +93,7 @@ const LocationTooltip = withStyles((theme) => ({
 
 function BetaMenuItemFormTable(props) {
   const { classes, menuItems, approvedMenuItems, stockPerItem, handleChange } = props;
+
   return (
     <Paper className={classes.root}>
       <Table size="small" className={classes.table}>
@@ -109,26 +110,32 @@ function BetaMenuItemFormTable(props) {
         <TableBody>
           {menuItems.map(menuItem => (
             <TableRow key={menuItem.itemID}>
-              <TableCell>
-                  <ImageTooltip
-                    title={
-                      <React.Fragment>
-                        <img src={menuItem.thumbItemImageURL ? menuItem.thumbItemImageURL : '/src/containers/App/styles/img/broken.png'} style={{height: 50, width: 50}} />
-                      </React.Fragment>
-                    }
-                  >
-                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName}`}</a>
-                  </ImageTooltip>
-              </TableCell>
+            <TableCell>
+                <Checkbox
+                    checked={approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
+                    onChange={e => handleCheckBox(e, menuItem)}
+                    color="primary"
+                />
+                <ImageTooltip
+                  title={
+                    <React.Fragment>
+                      <img src={menuItem.thumbItemImageURL ? menuItem.thumbItemImageURL : '/src/containers/App/styles/img/broken.png'} style={{height: 50, width: 50}} />
+                    </React.Fragment>
+                  }
+                >
+                  <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{`${menuItem.itemName}`}</a>
+                </ImageTooltip>
+            </TableCell>
               <TableCell>
                   {
                       menuItem.quantities.length > 1
                       ? (
                         <FormControl margin="dense" className={classes.textField}>
                             <Select
-                                // onChange={e => this.handleChange(e, null, 'itemType')}
+                                onChange={e => this.handleChange(e, 'packageType', menuItem.itemID)}
                                 value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].measurement.nickname !== null ? stockPerItem[menuItem.itemID].measurement.nickname : menuItem.quantities[0].measurement.nickname}
                                 variant="outlined"
+                                disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                                 inputProps={{
                                     name: 'measurementName',
                                     id: 'measurementName',
@@ -138,7 +145,10 @@ function BetaMenuItemFormTable(props) {
                             </Select>
                             <div onClick={e => handleDeleteAction(e, employeeCode)} style={{color: 'red', cursor: 'pointer'}}>+ Add More</div>
                         </FormControl>
-                      ) : menuItem.quantities[0].measurement.nickname
+                      ) : menuItem.quantities.length === 1
+                      ? (
+                        menuItem.quantities[0].measurement.nickname
+                      ) : 'N/A'
                   }
               </TableCell>
               <TableCell>
@@ -147,9 +157,10 @@ function BetaMenuItemFormTable(props) {
                       label="#/boxes"
                       margin="dense"
                       type="number"
+                      disabled={!approvedMenuItems.some(o => o.itemID === menuItem.itemID)}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].stock !== 0 ? stockPerItem[menuItem.itemID].stock : ''}
                       style={{width: 100}}
-                      onChange={e => handleChange(e, 'stock', menuItem)}
+                      onChange={e => handleChange(e, 'stock', menuItem.itemID)}
                   />
               </TableCell>
               <TableCell>
@@ -162,7 +173,7 @@ function BetaMenuItemFormTable(props) {
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].pricePerUnit !== 0 ? stockPerItem[menuItem.itemID].pricePerUnit : ''}
                       style={{width: 100}}
-                      onChange={e => handleChange(e, 'pricePerUnit', menuItem)}
+                      onChange={e => handleChange(e, 'pricePerUnit', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
@@ -176,7 +187,7 @@ function BetaMenuItemFormTable(props) {
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].burnQuantity !== 0 ? stockPerItem[menuItem.itemID].burnQuantity : ''}
                       style={{width: 75, paddingRight: 10}}
-                      onChange={e => handleChange(e, 'burnQuantity', menuItem)}
+                      onChange={e => handleChange(e, 'burnQuantity', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
               </TableCell>
@@ -190,7 +201,7 @@ function BetaMenuItemFormTable(props) {
                       // helperText={name_error_text}
                       value={stockPerItem[menuItem.itemID] && stockPerItem[menuItem.itemID].burnDays !== 0 ? stockPerItem[menuItem.itemID].burnDays : ''}
                       style={{width: 75, marginRight: 10}}
-                      onChange={e => handleChange(e, 'burnDays', menuItem)}
+                      onChange={e => handleChange(e, 'burnDays', menuItem.itemID)}
                       // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                   />
                   {stockPerItem[menuItem.itemID] ? formatNumbersWithCommas(calculateOverBurnStock(stockPerItem[menuItem.itemID])) : 'N/A'}
