@@ -40,6 +40,7 @@ import MenuItemListView from './containers/Xupply/MenuItem/MenuItemListView';
 import MenuItemDetailView from './containers/Xupply/MenuItem/MenuItemDetailView';
 import MenuItemCreateView from './containers/Xupply/MenuItem/MenuItemCreateView';
 import OrderListView from './containers/Xupply/Order/OrderListView';
+import OrderDetailView from './containers/Xupply/Order/OrderDetailView';
 
 
 /* Public Components */
@@ -81,6 +82,7 @@ export default (
             <Route exact path="/accounts/:id/menuItems/:id/edit" component={requireAuthentication(MenuItemCreateView)} />
             <Route exact path="/accounts/:id/orders" component={requireAuthentication(OrderListView)} />
             <Route exact path="/accounts/:id/orders/create/requests/:id" component={requireAuthentication(OrderCreateBetaView)} />
+            <Route exact path="/accounts/:id/orders/:id" component={requireAuthentication(OrderDetailView)} />
 
             <Route exact path="/map" component={requireNoAuthentication(PublicRequestMapView)} />
             <Route exact path="/valor" component={requireNoAuthentication(ValorListView)} />
