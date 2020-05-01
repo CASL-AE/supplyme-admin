@@ -61,10 +61,10 @@ const styles = (theme) => ({
 
 
 function OrderResultsTable(props) {
-  const { classes, type, rows, handleLink, handleAction } = props;
+  const { classes, orders, handleLink, handleAction } = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, orders.length - page * rowsPerPage);
   const handleChangePage = (e, newPage) => {
     setPage(newPage);
   };
@@ -87,24 +87,23 @@ function OrderResultsTable(props) {
         </TableHead>
         <TableBody>
           {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map(row => (
-            <TableRow key={row.id}>
-              <TableCell><a onClick={e => handleLink(e, row.id)} className={classes.linkText}>{row.id || 'Unkown Name'}</a></TableCell>
+            ? orders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : orders
+          ).map(order => (
+            <TableRow key={order.orderID}>
+              <TableCell><a onClick={e => handleLink(e, order.orderID)} className={classes.linkText}>{order.orderID || 'Unkown Name'}</a></TableCell>
               <TableCell>
-                {row.deliveryTo || 'Unknown Name'}
+                {order.orderID}
               </TableCell>
               <TableCell>
-                {formatDateNoTime(row.requiredBy)}
+                {order.totals.total}
               </TableCell>
               <TableCell>
-                {row.total}
+                {formatOrderStatus(order.status.isStatus)}
               </TableCell>
               <TableCell>
-                {formatOrderStatus(row.isStatus)}
+                {'order.updatedDate'}
               </TableCell>
-              <LinearProgress variant="determinate" value={50} style={{backgroundColor: 'black'}} color="primary" />
             </TableRow>
           ))}
           {emptyRows > 0 && (
@@ -118,7 +117,7 @@ function OrderResultsTable(props) {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
               colSpan={6}
-              count={rows.length}
+              count={orders.length}
               rowsPerPage={rowsPerPage}
               page={page}
               selectProps={{
@@ -139,8 +138,7 @@ function OrderResultsTable(props) {
 
 
 OrderResultsTable.propTypes = {
-  type: PropTypes.string.isRequired,
-  rows: PropTypes.array.isRequired,
+  orders: PropTypes.array.isRequired,
   handleLink: PropTypes.func.isRequired,
   handleAction: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
