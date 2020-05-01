@@ -65,6 +65,13 @@ const styles = (theme) => ({
   },
 });
 
+function getOrderRequestFilled(request) {
+    if (Object.keys(request.ordersPerItem).length > 0) {
+      return Object.entries(request.ordersPerItem[request.item.itemID]).map(i => i[1].stock).reduce((total, i) => total + i);
+    }
+    return 0;
+}
+
 function RequestResultsTable(props) {
   const { classes, requests, handleLink } = props;
   const [page, setPage] = React.useState(0);
@@ -113,8 +120,9 @@ function RequestResultsTable(props) {
                   {formatDateNoTime(request.stockPerItem[request.item.itemID].requiredBy)}
               </TableCell>
               <TableCell>
-                  <LinearProgress variant="determinate" value={(0/request.stockPerItem[request.item.itemID].stock)*100} style={{backgroundColor: 'black'}} color="primary" />
-                  {`# ${0} of ${request.stockPerItem[request.item.itemID].stock}`}
+                  {console.log(request.ordersPerItem)}
+                  <LinearProgress variant="determinate" value={(getOrderRequestFilled(request) / request.stockPerItem[request.item.itemID].stock)*100} style={{backgroundColor: 'black'}} color="primary" />
+                  {`# ${getOrderRequestFilled(request)} of ${request.stockPerItem[request.item.itemID].stock}`}
               </TableCell>
             </TableRow>
           ))}
