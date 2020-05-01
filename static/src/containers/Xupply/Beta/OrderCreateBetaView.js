@@ -99,8 +99,8 @@ function mapStateToProps(state) {
         accountID: state.app.accountID,
         orders: state.orderData.orders,
         receivedAt: state.orderData.receivedAt,
-        requests: state.requestData.publicRequests,
-        receivedRequestsAt: state.requestData.receivedPublicRequestsAt,
+        requests: state.requestData.requests,
+        receivedRequestsAt: state.requestData.receivedAt,
         menuItems: state.menuItemData.menuItems,
         receivedMenuItemsAt: state.menuItemData.receivedAt,
     };

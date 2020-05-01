@@ -17,6 +17,7 @@ import AddIcon from '@material-ui/icons/Add';
 import OrderResultsTable from '../../../components/Xupply/Order/OrderResultsTable';
 import OrderCard from '../../../components/Xupply/Order/OrderCard';
 import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
+import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletCheckoutDialog';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
 import { fetchOrders } from '../../../services/order/actions';

@@ -69,8 +69,8 @@ function mapStateToProps(state) {
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
-        requests: state.requestData.publicRequests,
-        receivedAt: state.requestData.receivedPublicRequestsAt,
+        requests: state.requestData.requests,
+        receivedAt: state.requestData.receivedAt,
     };
 }
 
