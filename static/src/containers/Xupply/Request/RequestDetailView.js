@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Fab from '@material-ui/core/Fab';
 import EditIcon from '@material-ui/icons/Edit';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import AddIcon from '@material-ui/icons/Add';
 
 import { toNewRequest } from '../../../services/request/model';
@@ -217,7 +218,8 @@ class RequestDetailView extends React.Component {
         const { request } = this.state;
         switch(accountType) {
             case 'retailer':
-                return (
+                return request.ordersPerItem === {}
+                ? (
                     <Fab
                         aria-label={'Edit'}
                         className={classes.editButton}
@@ -225,6 +227,15 @@ class RequestDetailView extends React.Component {
                         onClick={(e) => dispatchNewObject(e, accountID, 'request', request.requestID, 'edit')}
                     >
                       <EditIcon />
+                    </Fab>
+                ) : (
+                    <Fab
+                        aria-label={'Delete'}
+                        className={classes.editButton}
+                        color={'red'}
+                        // onClick={(e) => dispatchNewObject(e, accountID, 'request', request.requestID, 'edit')}
+                    >
+                      <DeleteForeverIcon />
                     </Fab>
                 );
             case 'manufacturer':
@@ -289,9 +300,7 @@ class RequestDetailView extends React.Component {
                                   }
                               </div>
                               <div className={classes.detailTitle}>
-                                <span className={classes.detailTitleText}>{`Total Funded:  $ ${request.budget || '0'}`}</span>
-                                <br />
-                                <span>{`${request.location.name}`}</span>
+                                <span className={classes.detailTitleText}>{request.location.name}</span>
                                 <br />
                                 <span>{request.active ? `Lat: ${request.location.address.location.lat} Lng: ${request.location.address.location.lng}` : null}</span>
                               </div>
@@ -320,7 +329,7 @@ class RequestDetailView extends React.Component {
                                       Created
                                   </dt>
                                   <dd className={classes.detailListDd}>
-                                      {'formatDateWTime(request.status.events[0].time)'}
+                                      {request.status.events.length > 0 ? formatDateWTime(request.status.events[request.status.isStatus].time) : 'Invalid Time'}
                                   </dd>
                                   </div>
                                   <div className={classes.detailListFlex}>
@@ -340,7 +349,7 @@ class RequestDetailView extends React.Component {
                               <div className={classes.section}>
                                   <span className={classes.detailTitleText}>{'Requested Menu Items'}</span>
                               </div>
-                              <RequestMenuItemsTable menuItems={request.items} stockPerItem={request.stockPerItem} />
+                              <RequestMenuItemsTable menuItems={request.items} stockPerItem={request.stockPerItem} ordersPerItem={request.ordersPerItem} />
                           </div>
                       </div>
                   </div>

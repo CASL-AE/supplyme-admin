@@ -317,7 +317,7 @@ class OrderDetailView extends React.Component {
                           <div className={classes.section}>
                               <span className={classes.detailTitleText}>{'Order Menu Items'}</span>
                           </div>
-                          <OrderMenuItemsTable menuItems={order.menuItems} />
+                          <OrderMenuItemsTable menuItems={order.items} />
                       </div>
                   </div>
               </div>
