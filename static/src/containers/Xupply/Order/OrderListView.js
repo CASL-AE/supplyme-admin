@@ -70,7 +70,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: {},
+        actions: {
+            fetchOrders: bindActionCreators(fetchOrders, dispatch)
+        },
     };
 }
 
@@ -80,17 +82,15 @@ class OrderListView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            order: {},
-            showOrderDialog: false,
-            rows: [],
+            orders: [],
         };
     }
 
     componentDidMount() {
         console.log('Orders View Mounted');
         const { receivedAt, orders } = this.props;
-        if (!receivedAt) {
-            // this.loadCompData();
+        if (receivedAt === null) {
+            this.loadCompData();
         } else {
             this.receiveOrders(orders);
         }
@@ -100,9 +100,6 @@ class OrderListView extends React.Component {
         if (nextProps.receivedAt && !this.props.receivedAt) {
             this.receiveOrders(nextProps.orders);
         }
-        // if (nextProps.order.isLoaded && this.props.order.isFetching) {
-        //     this.handledClose();
-        // }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -118,25 +115,23 @@ class OrderListView extends React.Component {
 
     componentWillUnmount() {
         console.log('Orders View UnMounted');
-        const { actions } = this.props;
-        // actions.unmountOrderListener();
-        this.receiveOrders = undefined;
-        this.loadCompData = undefined;
-        this.render = undefined;
+        // const { actions } = this.props;
+        // // actions.unmountOrderListener();
+        // this.receiveOrders = undefined;
+        // this.loadCompData = undefined;
+        // this.render = undefined;
     }
 
     receiveOrders = (orders) => {
         console.warn('Received Orders');
-        const rows = filterBy(orders).map(e => orderRowObject(e));
-
         this.setState({
-            rows,
+            orders: orders
         });
     }
 
     loadCompData = () => {
         const { actions, employeeID, accountID } = this.props;
-        actions.fetchOrders(accountID);
+        actions.fetchOrders(employeeID, accountID);
     }
 
     dispatchNewOrder = (e, orderID) => {
@@ -146,10 +141,10 @@ class OrderListView extends React.Component {
         dispatchNewRoute(route);
     }
 
-    renderOrderCard = (row) => {
+    renderOrderCard = (orders) => {
         return (
             <Grid item xs={isMobileAndTablet() ? 12 : 3}>
-              <OrderCard row={row} />
+              <OrderCard row={orders} />
             </Grid>
         )
     }
@@ -157,10 +152,10 @@ class OrderListView extends React.Component {
     render() {
         const { classes, accountID } = this.props;
         const {
-            rows,
+            orders,
         } = this.state;
 
-        return rows.length > 0
+        return orders.length > 0
         ? (
           <section>
           <div className={classes.headerCell}>
@@ -174,7 +169,7 @@ class OrderListView extends React.Component {
               </Fab>
           </div>
           <Grid container className={classes.root} spacing={2}>
-            {rows.map(this.renderOrderCard, this)}
+              <OrderResultsTable orders={orders} handleLink={this.dispatchNewOrder} />
           </Grid>
           </section>
 
