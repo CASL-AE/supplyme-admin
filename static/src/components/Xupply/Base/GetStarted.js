@@ -84,6 +84,7 @@ const styles = theme => ({
 function mapStateToProps(state) {
     return {
         accountID: state.app.accountID,
+        accountType: state.app.accountType,
     };
 }
 
@@ -119,14 +120,60 @@ class GetStarted extends Component {
         dispatchNewRoute(route);
     }
 
-    render() {
-        const { classes } = this.props;
-        const {} = this.state;
+    renderRetailer = () => {
+      const { classes } = this.props;
+      return (
+        <div className={classes.gridItemBoxInner}>
+            <div>
+                <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Get started by uploading your inventory.'}</h4>
+                <div className={classes.divider} >
+                    <div className={classes.dividerLine} />
+                </div>
+            </div>
+            <div style={{display: 'flex', paddingTop: 60, justifyContent: 'center', flexDirection: isMobileAndTablet() ? 'column' : 'row'}}>
+                <Paper style={{margin: 10, width: 300}}>
+                    <div style={{ margin: 'auto', textAlign: 'center', padding: 20 }}>
+                        <img alt="player_signup" height="100px" width="100px" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn0.iconfinder.com%2Fdata%2Ficons%2Fhealthcare-medicine%2F512%2Fhospital_building-512.png&f=1&nofb=1" />
+                        <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>Add Inventory</p>
+                        <Button
+                            disableRipple
+                            disableFocusRipple
+                            variant="outlined"
+                            style={{marginTop: 10}}
+                            className={classes.accountTypeButton}
+                            onClick={e => this.dispatchNewRoute(e, 'menuItems')}
+                        >
+                            {'Add Menu Items'}
+                        </Button>
+                    </div>
+                </Paper>
+                <Paper style={{margin: 10, width: 300}}>
+                    <div style={{ margin: 'auto', textAlign: 'center', padding: 20 }}>
+                        <img alt="create_request" height="100px" width="100px" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fcompany-business-assets%2F281%2Fcompany-asset-004-512.png&f=1&nofb=1" />
+                        <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>Create Request</p>
+                        <Button
+                            disableRipple
+                            disableFocusRipple
+                            variant="outlined"
+                            style={{marginTop: 10}}
+                            className={classes.accountTypeButton}
+                            onClick={e => this.dispatchNewRoute(e, 'requests')}
+                        >
+                            {'Create Request'}
+                        </Button>
+                    </div>
+                </Paper>
+            </div>
+        </div>
+      );
+    }
 
-        const RetailerGetStartedContainer = (
+    renderManu = () => {
+        const { classes } = this.props;
+        return (
           <div className={classes.gridItemBoxInner}>
               <div>
-                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Get started by adding a wallet.'}</h4>
+                  <h4 style={{ fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'Get started by uploading your inventory.'}</h4>
                   <div className={classes.divider} >
                       <div className={classes.dividerLine} />
                   </div>
@@ -142,7 +189,7 @@ class GetStarted extends Component {
                               variant="outlined"
                               style={{marginTop: 10}}
                               className={classes.accountTypeButton}
-                              onClick={e => this.dispatchNewRoute(e, 'ilp-wallet')}
+                              onClick={e => this.dispatchNewRoute(e, 'menuItems')}
                           >
                               {'Add Menu Items'}
                           </Button>
@@ -150,30 +197,35 @@ class GetStarted extends Component {
                   </Paper>
                   <Paper style={{margin: 10, width: 300}}>
                       <div style={{ margin: 'auto', textAlign: 'center', padding: 20 }}>
-                          <img alt="create_request" height="100px" width="100px" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fcompany-business-assets%2F281%2Fcompany-asset-004-512.png&f=1&nofb=1" />
-                          <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>Create Request</p>
+                          <img alt="create_order" height="100px" width="100px" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fcompany-business-assets%2F281%2Fcompany-asset-004-512.png&f=1&nofb=1" />
+                          <p style={{ fontWeight: 600, fontSize: 16, textAlign: 'center', paddingTop: 10, margin: 0 }}>Create Order</p>
                           <Button
                               disableRipple
                               disableFocusRipple
                               variant="outlined"
                               style={{marginTop: 10}}
                               className={classes.accountTypeButton}
-                              // onClick={e => this.dispatchNewRoute(e, 'xrp-wallet')}
+                              onClick={e => this.dispatchNewRoute(e, 'orders')}
                           >
-                              {'Create Request'}
+                              {'Create Order'}
                           </Button>
                       </div>
                   </Paper>
               </div>
           </div>
         );
+    }
+
+    render() {
+        const { classes, accountType } = this.props;
 
         return (
             <div className={classes.appFrame}>
                 <Grid container justify="center" className={classes.root} spacing={2}>
                     <Grid item xs={isMobileAndTablet() ? 12 : 10}>
                         <Paper className={classes.content}>
-                            {GetStartedContainer}
+                            {accountType === 'retailer' && this.renderRetailer()}
+                            {accountType === 'manufacturer' && this.renderManu()}
                         </Paper>
                     </Grid>
                 </Grid>
