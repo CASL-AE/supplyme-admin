@@ -90,7 +90,6 @@ function OrderMenuItemsTable(props) {
       <Table size="small" className={classes.table}>
         <TableHead>
           <TableRow>
-              <TableCell className={classes.tableHeaders} >Xupply</TableCell>
               <TableCell className={classes.tableHeaders} >Item</TableCell>
               <TableCell className={classes.tableHeaders} >Requested</TableCell>
               <TableCell className={classes.tableHeaders} >Package</TableCell>
@@ -100,26 +99,16 @@ function OrderMenuItemsTable(props) {
         </TableHead>
         <TableBody>
           {menuItems.map(menuItem => (
-            <TableRow key={menuItem.item.itemID}>
-              <TableCell>
-                  <TextField
-                      placeholder={menuItem.quantity}
-                      type="number"
-                      margin="dense"
-                      autoComplete=""
-                      className={classes.textField}
-                      onChange={e => handleChange(e, menuItem)}
-                  />
-              </TableCell>
+            <TableRow key={menuItem.itemID}>
               <TableCell>
                   <ImageTooltip
                     title={
                       <React.Fragment>
-                        <img src={menuItem.item.thumbItemImageURL ? menuItem.item.thumbItemImageURL : '/src/containers/App/styles/img/broken.png'} style={{height: 50, width: 50}} />
+                        <img src={menuItem.thumbItemImageURL ? menuItem.thumbItemImageURL : '/src/containers/App/styles/img/broken.png'} style={{height: 50, width: 50}} />
                       </React.Fragment>
                     }
                   >
-                    <a onClick={e => handleLink(e, menuItem.item.itemID)} className={classes.linkText}>{menuItem.item.itemName}</a>
+                    <a onClick={e => handleLink(e, menuItem.itemID)} className={classes.linkText}>{menuItem.itemName}</a>
                   </ImageTooltip>
               </TableCell>
                 <TableCell>
@@ -130,19 +119,19 @@ function OrderMenuItemsTable(props) {
                     title={
                       <React.Fragment>
                       <em>
-                          {`${menuItem.item.quantities[0].location.address.locality}, ${menuItem.item.quantities[0].location.address.region}`}
+                          {`${menuItem.quantities[0].location.address.locality}, ${menuItem.quantities[0].location.address.region}`}
                       </em>
                       </React.Fragment>
                     }
                   >
-                    <span className={classes.linkText}>{`${menuItem.item.quantities[0].packageQuantity} / ${menuItem.item.quantities[0].packageType}`}</span>
+                    <span className={classes.linkText}>{`${menuItem.quantities[0].packageQuantity} / ${menuItem.quantities[0].packageType}`}</span>
                   </LocationTooltip>
                 </TableCell>
                 <TableCell>
-                  {`$ ${menuItem.item.quantities[0].pricePerUnit}`}
+                  {`$ ${menuItem.quantities[0].pricePerUnit}`}
                 </TableCell>
                 <TableCell style={{fontWeight: 600, textDecoration: 'underline'}}>
-                  {`$ ${menuItem.quantity * menuItem.item.quantities[0].pricePerUnit}`}
+                  {`$ ${menuItem.quantity * menuItem.quantities[0].pricePerUnit}`}
                   <span></span>
                 </TableCell>
             </TableRow>

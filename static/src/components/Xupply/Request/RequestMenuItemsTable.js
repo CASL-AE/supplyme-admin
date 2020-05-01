@@ -14,7 +14,8 @@ import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import {
-  formatDateNoTime
+  formatDateNoTime,
+  formatNumbersWithCommas
 } from '../../../utils/misc';
 
 const styles = (theme) => ({
@@ -73,8 +74,15 @@ const LocationTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
+function getOrderRequestFilled(ordersPerItem, itemID) {
+    if (Object.keys(ordersPerItem).length > 0) {
+      return Object.entries(ordersPerItem[itemID]).map(i => i[1].stock).reduce((total, i) => total + i);
+    }
+    return 0;
+}
+
 function RequestMenuItemsTable(props) {
-  const { classes, menuItems, stockPerItem } = props;
+  const { classes, menuItems, stockPerItem, ordersPerItem } = props;
   console.log(menuItems)
   return (
     <Paper className={classes.root}>
@@ -83,6 +91,11 @@ function RequestMenuItemsTable(props) {
           <TableRow>
             <TableCell className={classes.tableHeaders} >Name</TableCell>
             <TableCell className={classes.tableHeaders} >Requested</TableCell>
+            {
+              ordersPerItem !== {}
+              ? (<TableCell className={classes.tableHeaders} >In Progress</TableCell>)
+              : null
+            }
             <TableCell className={classes.tableHeaders} >Package</TableCell>
             <TableCell className={classes.tableHeaders} >$/Package</TableCell>
             <TableCell className={classes.tableHeaders} >Total</TableCell>
@@ -103,8 +116,14 @@ function RequestMenuItemsTable(props) {
                 </ImageTooltip>
             </TableCell>
               <TableCell>
-                {stockPerItem[menuItem.itemID].quantity}
+                {stockPerItem[menuItem.itemID].stock || 0}
               </TableCell>
+              {ordersPerItem !== {}
+              ? (
+                <TableCell>
+                  {getOrderRequestFilled(ordersPerItem, menuItem.itemID)}
+                </TableCell>
+              ) : null}
               <TableCell>
                 <LocationTooltip
                   title={
@@ -121,8 +140,8 @@ function RequestMenuItemsTable(props) {
               <TableCell>
                 {`$ ${menuItem.quantities[0].pricePerUnit}`}
               </TableCell>
-              <TableCell style={{fontWeight: 600, textDecoration: 'underline'}}>
-                {`$ ${stockPerItem[menuItem.itemID].quantity * menuItem.quantities[0].pricePerUnit}` || 0}
+              <TableCell style={{fontWeight: 600}}>
+                {`$ ${formatNumbersWithCommas(stockPerItem[menuItem.itemID].stock * menuItem.quantities[0].pricePerUnit)}` || 0}
               </TableCell>
             </TableRow>
           ))}
@@ -137,6 +156,7 @@ function RequestMenuItemsTable(props) {
 RequestMenuItemsTable.propTypes = {
   menuItems: PropTypes.array.isRequired,
   stockPerItem: PropTypes.object.isRequired,
+  ordersPerItem: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(RequestMenuItemsTable);
