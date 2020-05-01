@@ -9,12 +9,26 @@ export function getOrderFromSnapshot(order) {
         active: order.active,
         deleted: order.deleted,
         status: order.status,
-        request: order.request,
-        menuItems: order.menuItems,
+        request: toNewRequest(),
+        items: order.items,
         totals: order.totals,
         stockPerItem: order.stockPerItem,
     };
 }
+
+export function parseOrder(order, requestRef) {
+    return {
+        orderID: order.orderID,
+        active: order.active,
+        deleted: order.deleted,
+        status: order.status,
+        requestRef: requestRef,
+        items: order.items,
+        totals: order.totals,
+        stockPerItem: order.stockPerItem,
+    };
+}
+
 export function toNewOrder() {
     return {
         orderID: null,

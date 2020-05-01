@@ -192,7 +192,6 @@ export const saveNewMenuItem = (token, employeeID, accountID, menuItem, redirect
     }).then((menuItemInfo) => {
         console.log("Transaction successfully committed!");
         dispatch(saveNewMenuItemSuccess());
-        // dispatch(addMenuItem(menuItem))
         xupplyAnalytic('save_menu_item_success');
         history.push(redirectRoute)
     }).catch((error) => {

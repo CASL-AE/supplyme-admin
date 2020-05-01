@@ -21,8 +21,21 @@ export function getRequestFromSnapshot(request) {
         location: request.location,
         items: request.items,
         stockPerItem: request.stockPerItem,
-        orders: request.orders,
-        transactions: request.transactions,
+        ordersPerItem: request.ordersPerItem,
+    };
+}
+export function parseRequest(request) {
+    return {
+        requestID: request.requestID,
+        active: request.active,
+        deleted: request.deleted,
+        totals: request.totals,
+        requestType: request.requestType,
+        status: request.status,
+        location: request.location,
+        items: request.items,
+        stockPerItem: request.stockPerItem,
+        ordersPerItem: request.ordersPerItem,
     };
 }
 export function toNewRequest() {
@@ -41,8 +54,7 @@ export function toNewRequest() {
         location: toNewLocation(),
         items: [],
         stockPerItem: {},
-        orders: [],
-        transactions: [],
+        ordersPerItem: {},
     };
 }
 

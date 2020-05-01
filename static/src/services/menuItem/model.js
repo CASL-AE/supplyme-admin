@@ -150,7 +150,7 @@ export function toNewMenuItem() {
 export function toNewQuantity() {
     return {
         location: toNewLocation(),
-        packageQuantity: 1,
+        packageQuantity: 0,
         packageType: 'piece', // piece/box/carton/case/pallet
         weightType: null, // grain/dram/ounce/pound/cwt/ton/lcwt
         weight: 0,
