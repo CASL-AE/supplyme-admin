@@ -21,7 +21,6 @@ import HomeIcon from '@material-ui/icons/Home';
 import AutoCompleteLocations from '../../../components/Xupply/AutoCompletes/AutoCompleteLocations';
 import BetaManuMenuItemFormTable from '../../../components/Xupply/Beta/BetaManuMenuItemFormTable';
 import BetaRetailerMenuItemFormTable from '../../../components/Xupply/Beta/BetaRetailerMenuItemFormTable';
-import WalletCheckoutDialog from '../../../components/Xupply/Wallet/WalletCheckoutDialog';
 
 
 import { filterBy } from '../../../utils/misc';

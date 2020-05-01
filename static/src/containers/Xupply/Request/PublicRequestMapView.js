@@ -15,7 +15,7 @@ import Loader from '../../../components/Xupply/Base/Loader';
 import PublicRequestMap from '../../../components/Xupply/Request/PublicRequestMap';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
-import { fetchPublicRequests } from '../../../services/request/actions';
+import { fetchRequests } from '../../../services/request/actions';
 import { requestMarkerObject } from '../../../services/request/model';
 
 const styles = (theme) => ({
@@ -57,15 +57,15 @@ function mapStateToProps(state) {
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
-        requests: state.requestData.publicRequests,
-        receivedAt: state.requestData.receivedPublicRequestsAt,
+        requests: state.requestData.requests,
+        receivedAt: state.requestData.receivedAt,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: {
-            fetchPublicRequests: bindActionCreators(fetchPublicRequests, dispatch),
+            fetchRequests: bindActionCreators(fetchRequests, dispatch),
         },
     };
 }
@@ -139,7 +139,7 @@ class PublicRequestMapView extends React.Component {
 
     loadCompData = () => {
         const { actions } = this.props;
-        actions.fetchPublicRequests();
+        actions.fetchRequests();
     }
 
     dispatchNewRequest = (e, requestID) => {
@@ -217,12 +217,12 @@ class PublicRequestMapView extends React.Component {
 PublicRequestMapView.defaultProps = {
     accountID: '',
     employeeID: '',
-    fetchPublicRequests: f => f,
+    fetchRequests: f => f,
 };
 PublicRequestMapView.propTypes = {
     accountID: PropTypes.string,
     employeeID: PropTypes.string,
-    fetchPublicRequests: PropTypes.func,
+    fetchRequests: PropTypes.func,
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(PublicRequestMapView);

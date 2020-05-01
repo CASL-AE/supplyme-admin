@@ -17,7 +17,7 @@ import RequestCard from '../../../components/Xupply/Request/RequestCard';
 import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
-import { fetchPublicRequests } from '../../../services/request/actions';
+import { fetchRequests } from '../../../services/request/actions';
 import { requestRowObject } from '../../../services/request/model';
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
@@ -56,15 +56,15 @@ function mapStateToProps(state) {
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
-        requests: state.requestData.publicRequests,
-        receivedAt: state.requestData.receivedPublicRequestsAt,
+        requests: state.requestData.requests,
+        receivedAt: state.requestData.receivedAt,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: {
-            fetchPublicRequests: bindActionCreators(fetchPublicRequests, dispatch),
+            fetchRequests: bindActionCreators(fetchRequests, dispatch),
         },
     };
 }
@@ -129,7 +129,7 @@ class PublicRequestListView extends React.Component {
 
     loadCompData = () => {
         const { actions } = this.props;
-        actions.fetchPublicRequests();
+        actions.fetchRequests();
     }
 
     dispatchNewRequest = (e, requestID) => {
@@ -172,12 +172,12 @@ class PublicRequestListView extends React.Component {
 PublicRequestListView.defaultProps = {
     accountID: '',
     employeeID: '',
-    fetchPublicRequests: f => f,
+    fetchRequests: f => f,
 };
 PublicRequestListView.propTypes = {
     accountID: PropTypes.string,
     employeeID: PropTypes.string,
-    fetchPublicRequests: PropTypes.func,
+    fetchRequests: PropTypes.func,
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(PublicRequestListView);
