@@ -37,12 +37,14 @@ import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 function renderItemType() {
     const array = [];
+    array.push(<MenuItem key={'default'} value={'default'}>Select One</MenuItem>);
     array.push(<MenuItem key={'product'} value={'product'}>Product</MenuItem>);
     array.push(<MenuItem key={'material'} value={'material'}>Material</MenuItem>);
     return array;
 }
 function renderPackageType() {
     const array = [];
+    array.push(<MenuItem key={'default'} value={'default'}>Select One</MenuItem>);
     array.push(<MenuItem key={'piece'} value={'piece'}>Piece</MenuItem>);
     array.push(<MenuItem key={'box'} value={'box'}>Box</MenuItem>);
     array.push(<MenuItem key={'case'} value={'case'}>Case</MenuItem>);
@@ -53,6 +55,7 @@ function renderPackageType() {
 }
 function renderWeightType() {
     const array = [];
+    array.push(<MenuItem key={'default'} value={'default'}>Select One</MenuItem>);
     array.push(<MenuItem key={'grain'} value={'grain'}>Grain</MenuItem>);
     array.push(<MenuItem key={'dr'} value={'dr'}>Dram</MenuItem>);
     array.push(<MenuItem key={'oz'} value={'oz'}>Ounce</MenuItem>);
@@ -487,7 +490,7 @@ class MenuItemCreateView extends React.Component {
                     <FormControl margin="dense" className={classes.textField}>
                         <Select
                             onChange={e => this.handleChange(e, null, 'itemType')}
-                            value={menuItem.itemType}
+                            value={menuItem.itemType || 'default'}
                             variant="outlined"
                             inputProps={{
                                 name: 'itemType',
@@ -621,7 +624,7 @@ class MenuItemCreateView extends React.Component {
                     <div className={classes.textCell}>
                         <Select
                             onChange={e => this.handleQuantityChange(e, null, 'packageType')}
-                            value={quantity.packageType}
+                            value={quantity.packageType || 'default'}
                             margin="dense"
                             variant="outlined"
                             inputProps={{
@@ -638,7 +641,7 @@ class MenuItemCreateView extends React.Component {
                     <div className={classes.textCell}>
                         <Select
                             onChange={e => this.handleQuantityChange(e, null, 'weightType')}
-                            value={quantity.weightType}
+                            value={quantity.weightType || 'default'}
                             variant="outlined"
                             margin="dense"
                             inputProps={{
@@ -648,23 +651,6 @@ class MenuItemCreateView extends React.Component {
                         >
                             {weightTypes}
                         </Select>
-                    </div>
-                </div>
-                <div className={classes.innerFlexCell}>
-                    <label className={classes.inputLabel}>* Package Quantity</label>
-                    <div className={classes.textCell}>
-                        <TextField
-                          placeholder="Ex. 10"
-                          margin="dense"
-                          variant="outlined"
-                          type="number"
-                          // helperText={'thcContent_error_text'}
-                          value={quantity.packageQuantity || ''}
-                          className={classes.textSmallField}
-                          onChange={e => this.handleQuantityChange(e, null, 'packageQuantity')}
-                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
-                          autoComplete=""
-                        />
                     </div>
                 </div>
             </div>
@@ -698,6 +684,23 @@ class MenuItemCreateView extends React.Component {
                           value={quantity.stock || ''}
                           className={classes.textSmallField}
                           onChange={e => this.handleQuantityChange(e, null, 'stock')}
+                          // FormHelperTextProps={{ classes: { root: classes.helperText } }}
+                          autoComplete=""
+                        />
+                    </div>
+                </div>
+                <div className={classes.innerFlexCell}>
+                    <label className={classes.inputLabel}>* Package Quantity</label>
+                    <div className={classes.textCell}>
+                        <TextField
+                          placeholder="Ex. 10"
+                          margin="dense"
+                          variant="outlined"
+                          type="number"
+                          // helperText={'thcContent_error_text'}
+                          value={quantity.packageQuantity || ''}
+                          className={classes.textSmallField}
+                          onChange={e => this.handleQuantityChange(e, null, 'packageQuantity')}
                           // FormHelperTextProps={{ classes: { root: classes.helperText } }}
                           autoComplete=""
                         />

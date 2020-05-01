@@ -23,11 +23,11 @@ import BetaOrderFormTable from '../../../components/Xupply/Beta/BetaOrderFormTab
 import XupplyLoader from '../../../components/Xupply/Base/XupplyLoader';
 
 
-import { getKeys, filterBy } from '../../../utils/misc';
+import { getKeys, filterBy, filterForOrder } from '../../../utils/misc';
 import { validateAddress, validateString } from '../../../utils/validate';
 import { toNewOrder } from '../../../services/order/model';
 import { toNewRequest } from '../../../services/request/model';
-// import { saveNewOrder } from '../../../services/request/actions';
+import { saveNewOrder } from '../../../services/order/actions';
 import { fetchMenuItems } from '../../../services/menuItem/actions';
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 import {
@@ -99,8 +99,8 @@ function mapStateToProps(state) {
         accountID: state.app.accountID,
         orders: state.orderData.orders,
         receivedAt: state.orderData.receivedAt,
-        requests: state.requestData.requests,
-        receivedRequestsAt: state.requestData.receivedAt,
+        requests: state.requestData.publicRequests,
+        receivedRequestsAt: state.requestData.receivedPublicRequestsAt,
         menuItems: state.menuItemData.menuItems,
         receivedMenuItemsAt: state.menuItemData.receivedAt,
     };
@@ -110,7 +110,7 @@ function mapDispatchToProps(dispatch) {
     return {
         actions: {
             fetchMenuItems: bindActionCreators(fetchMenuItems, dispatch),
-            // saveNewOrder: bindActionCreators(saveNewOrder, dispatch)
+            saveNewOrder: bindActionCreators(saveNewOrder, dispatch)
         },
     };
 }
@@ -122,7 +122,6 @@ class OrderCreateBetaView extends Component {
         super(props);
         this.state = {
             order: toNewOrder(),
-            request: toNewRequest(),
             searchLocation: false,
             menuItemOpen: false,
             menuItems: [],
@@ -134,6 +133,7 @@ class OrderCreateBetaView extends Component {
     }
 
     componentDidMount() {
+        console.log(this.props)
         const { receivedMenuItemsAt, menuItems } = this.props;
         if (receivedMenuItemsAt === null) {
             this.loadCompData();
@@ -163,24 +163,27 @@ class OrderCreateBetaView extends Component {
     }
 
     receiveMenuItems = (menuItems) => {
-        console.warn('Received Search MenuItems');
+        console.warn('Received MenuItems');
         this.setState({menuItems: filterBy(menuItems)});
     }
 
     loadCompData = () => {
         const { actions, employeeID, accountID } = this.props;
-        console.warn('Fetching Search MenuItems');
+        console.warn('Fetching MenuItems');
         actions.fetchMenuItems(employeeID, accountID);
     }
 
     loadRequestData = (props = this.props) => {
+        console.warn('Loading Order Request');
         const { actions, accountID, requests, pathname } = props;
         const keys = getKeys(pathname);
-        const requestID = keys.second;
+        const requestID = keys.third;
+        const next_state = this.state;
         if (requestID && requestID !== null) {
             requests.forEach((request) => {
                 if (request.requestID === requestID) {
-                    this.setState({request});
+                    next_state.order.request = request;
+                    this.setState(next_state, () => {});
                 }
             })
         }
@@ -189,30 +192,30 @@ class OrderCreateBetaView extends Component {
     handleChange = (e, name, itemID) => {
         const { value } = e.target;
         const next_state = this.state;
-        next_state.request.stockPerItem[itemID][name] = value;
+        next_state.order.stockPerItem[itemID][name] = value;
         this.setState(next_state, () => {});
     }
 
     handleCheckBox = (e, menuItem) => {
         const next_state = this.state;
         const itemID = menuItem.itemID;
-        const found = this.state.request.items.some(o => o.itemID === itemID);
+        console.log(itemID)
+        const found = this.state.order.items.some(o => o.itemID === itemID);
         if (found) {
-            next_state.request.items = this.state.request.items.filter(o => o.itemID !== itemID);
-            delete next_state.request.stockPerItem[menuItem.itemID];
+            next_state.order.items = this.state.order.items.filter(o => o.itemID !== itemID);
+            delete next_state.order.stockPerItem[menuItem.itemID];
         } else {
-            next_state.request.items = [...this.state.request.items, menuItem];
-            next_state.request.stockPerItem[itemID] = {};
-            next_state.request.stockPerItem[itemID].priority = 'default';
-            const stock = calculateOverBurnStock(menuItem.quantities[0]);
-            const priority = calculateOverBurnPriority(stock);
-            const requiredBy = calculateOverBurnRequiredBy(menuItem.quantities[0]);
-            console.warn(stock)
-            console.warn(priority)
-            console.warn(requiredBy)
-            next_state.request.stockPerItem[itemID].stock = Math.abs(stock);
-            next_state.request.stockPerItem[itemID].priority = priority;
-            next_state.request.stockPerItem[itemID].requiredBy = requiredBy.burnDate;
+            next_state.order.items = [...this.state.order.items, menuItem];
+            next_state.order.stockPerItem[itemID] = {};
+            next_state.order.stockPerItem[itemID].priority = this.state.order.request.stockPerItem[itemID].priority;
+            next_state.order.stockPerItem[itemID].requiredBy = this.state.order.request.stockPerItem[itemID].requiredBy;
+            // Calc amount of stock the manu can fulfil if stock(Manu) < stock(Request), fill all of stock(Manu) if > stock fill all of stock(Request)
+            // const stock = calculateOverBurnStock(menuItem.quantities[0]);
+            // const availableBy = calculateOverBurnRequiredBy(menuItem.quantities[0]);
+            // next_state.order.stockPerItem[itemID].stock = parseInt(Math.abs(stock));
+            // next_state.order.stockPerItem[itemID].availableBy = availableBy.leadDate;
+            next_state.order.stockPerItem[itemID].packageType = menuItem.quantities[0].packageType;
+            next_state.order.stockPerItem[itemID].pricePerUnit = menuItem.quantities[0].pricePerUnit;
         }
         this.setState(next_state, () => {});
     }
@@ -220,7 +223,7 @@ class OrderCreateBetaView extends Component {
     handleLocationSelected = (location) => {
         const next_state = this.state;
         console.log(location)
-        next_state.request.location = location;
+        next_state.order.location = location;
         next_state.searchLocation = false;
         this.setState(next_state, () => {});
     }
@@ -228,14 +231,14 @@ class OrderCreateBetaView extends Component {
     requestCheckout = (e) => {
         e.preventDefault();
         const next_state = this.state;
-        Object.entries(next_state.request.stockPerItem).forEach((s) => {
-            next_state.request.totals.items += s[1].stock * s[1].pricePerUnit;
+        Object.entries(next_state.order.stockPerItem).forEach((s) => {
+            next_state.order.totals.items += s[1].stock * s[1].pricePerUnit;
         });
-        next_state.request.totals.serviceCharges = (next_state.request.totals.items * 0.025) + .30;
-        next_state.request.totals.subTotal = next_state.request.totals.items + next_state.request.totals.serviceCharges;
-        next_state.request.totals.tax = next_state.request.totals.subTotal * 0.085;
-        next_state.request.totals.total = next_state.request.totals.subTotal + next_state.request.totals.tax;
-        next_state.request.totals.due = next_state.request.totals.total;
+        next_state.order.totals.serviceCharges = (next_state.order.totals.items * 0.025) + .30;
+        next_state.order.totals.subTotal = next_state.order.totals.items + next_state.order.totals.serviceCharges;
+        next_state.order.totals.tax = next_state.order.totals.subTotal * 0.085;
+        next_state.order.totals.total = next_state.order.totals.subTotal + next_state.order.totals.tax;
+        next_state.order.totals.due = next_state.order.totals.total;
         next_state.isCheckout = true;
         this.setState(next_state, () => {});
     }
@@ -258,14 +261,14 @@ class OrderCreateBetaView extends Component {
         let items_is_valid = false;
         let stock_is_valid = false;
 
-        console.log(this.state.request)
+        console.log(this.state.order)
 
         // Validate Order Name
-        if (this.state.request.location.address.active === false && this.state.request.location.address.street1 === null) {
+        if (this.state.order.location.address.active === false && this.state.order.location.address.street1 === null) {
             this.setState({
                 location_error_text: null,
             });
-        } else if (validateAddress(this.state.request.location.address)) {
+        } else if (validateAddress(this.state.order.location.address)) {
             location_is_valid = true;
             this.setState({
                 location_error_text: null,
@@ -277,11 +280,11 @@ class OrderCreateBetaView extends Component {
         }
 
         // Validate Order Items
-        if (this.state.request.items === []) {
+        if (this.state.order.items === []) {
             this.setState({
                 items_error_text: null,
             });
-        } else if (this.state.request.items.length > 0) {
+        } else if (this.state.order.items.length > 0) {
             items_is_valid = true;
             this.setState({
                 items_error_text: null,
@@ -293,11 +296,11 @@ class OrderCreateBetaView extends Component {
         }
 
         // Validate Order Stock Per Item
-        if (this.state.request.stockPerItem === {}) {
+        if (this.state.order.stockPerItem === {}) {
             this.setState({
                 stock_error_text: null,
             });
-        } else if (Object.keys(this.state.request.stockPerItem).length > 0) {
+        } else if (Object.keys(this.state.order.stockPerItem).length > 0) {
             stock_is_valid = true;
             this.setState({
                 stock_error_text: null,
@@ -308,7 +311,7 @@ class OrderCreateBetaView extends Component {
             });
         }
 
-        // console.warn(this.state.request)
+        // console.warn(this.state.order)
         // console.warn(name_is_valid)
 
         if (
@@ -325,20 +328,20 @@ class OrderCreateBetaView extends Component {
         const { order, redirectRoute } = this.state;
         console.log(order)
         console.log(redirectRoute)
-        // actions.saveNewOrder(idToken, employeeID, accountID, request, redirectRoute);
+        actions.saveNewOrder(idToken, employeeID, accountID, order, redirectRoute);
     }
 
     render() {
         const { classes } = this.props;
         const {
-          request,
+          order,
           menuItems,
           isCheckout,
           disabled,
           loading,
         } = this.state;
 
-        console.error(request)
+        console.error(order)
 
         return (
             <Grid container alignItems="center" justify="center" className={classes.root} spacing={isMobileAndTablet() ? 0 : 2}>
@@ -346,14 +349,15 @@ class OrderCreateBetaView extends Component {
                     <Paper className={classes.content}>
                         <div className={classes.gridItemBoxInner}>
                             <div>
-                                <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Order From Request'}</h4>
+                                <h4 style={{ color: 'red', fontWeight: 300, fontSize: 20, textAlign: 'center', paddingBottom: 15 }}>{'COVID19 PPE Order Form'}</h4>
                                 <div className={classes.divider} >
                                     <div className={classes.dividerLine} />
                                 </div>
                                 <BetaOrderFormTable
-                                    menuItems={menuItems}
-                                    approvedMenuItems={request.items}
-                                    stockPerItem={request.stockPerItem}
+                                    menuItems={filterForOrder(menuItems, this.state.order.request)}
+                                    approvedMenuItems={order.items}
+                                    stockPerItem={order.stockPerItem}
+                                    requestStockPerItem={order.request.stockPerItem}
                                     handleCheckBox={this.handleCheckBox}
                                     handleChange={this.handleChange}
                                 />
@@ -361,8 +365,8 @@ class OrderCreateBetaView extends Component {
                                     <Button
                                         disableRipple
                                         disableFocusRipple
-                                        disabled={disabled}
-                                        // onClick={e => this.createNewOrder(e)}
+                                        // disabled={disabled}
+                                        onClick={e => this.createNewOrder(e)}
                                         className={classes.continueButton}
                                         variant="outlined"
                                     >
