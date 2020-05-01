@@ -15,13 +15,13 @@ import IconButton from '@material-ui/core/IconButton';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 
-import RequestResultsTable from '../../../components/Xupply/Request/RequestResultsTable';
-import RequestCard from '../../../components/Xupply/Request/RequestCard';
-import EmptyResults from '../../../components/Xupply/Base/EmptyResults';
+import OrderResultsTable from '../../../components/Xupply/Order/OrderResultsTable';
+import OrderCard from '../../../components/Xupply/Order/OrderCard';
+import GetStarted from '../../../components/Xupply/Base/GetStarted';
 
 import { validateString, dispatchNewRoute, filterBy } from '../../../utils/misc';
-import { fetchRequests } from '../../../services/request/actions';
-import { requestRowObject } from '../../../services/request/model';
+import { fetchOrders } from '../../../services/order/actions';
+import { orderRowObject } from '../../../services/order/model';
 import { isMobileAndTablet } from '../../../utils/isMobileAndTablet';
 
 const styles = (theme) => ({
@@ -68,8 +68,8 @@ function mapStateToProps(state) {
         idToken: state.app.idToken,
         employeeID: state.app.employeeID,
         accountID: state.app.accountID,
-        requests: state.requestData.requests,
-        receivedAt: state.requestData.receivedAt,
+        orders: state.orderData.orders,
+        receivedAt: state.orderData.receivedAt,
     };
 }
 
@@ -85,24 +85,24 @@ class DashboardView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            requests: [],
+            orders: [],
         };
     }
 
     componentDidMount() {
-        console.log('Requests View Mounted');
-        const { receivedAt, requests } = this.props;
+        console.log('Orders View Mounted');
+        const { receivedAt, orders } = this.props;
         if (!receivedAt === null) {
             this.loadCompData();
         } else {
-            this.receiveRequests(requests);
+            this.receiveOrders(orders);
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        console.warn('Requests View Received Props')
+        console.warn('Orders View Received Props')
         if (nextProps.receivedAt !== null && this.props.receivedAt === null) {
-            this.receiveRequests(nextProps.requests);
+            this.receiveOrders(nextProps.orders);
         }
     }
 
@@ -114,91 +114,45 @@ class DashboardView extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log('Requests View Updated');
+        console.log('Orders View Updated');
     }
 
     componentWillUnmount() {
-        console.log('Requests View UnMounted');
+        console.log('Orders View UnMounted');
         const { actions } = this.props;
-        // actions.unmountRequestListener();
-        this.receiveRequests = undefined;
+        // actions.unmountOrderListener();
+        this.receiveOrders = undefined;
         this.loadCompData = undefined;
         this.render = undefined;
     }
 
-    receiveRequests = (requests) => {
-        console.warn('Received Requests');
-        const _requests = [];
-        filterBy(requests).forEach((request) => {
-              request.items.forEach((i) => {
-                    request.item = i;
-                    _requests.push(request);
-              });
-        });
-        this.setState({requests: _requests});
+    receiveOrders = (orders) => {
+        console.warn('Received Orders');
+        this.setState({orders: filterBy(orders)});
     }
 
     loadCompData = () => {
         const { actions, employeeID, accountID } = this.props;
-        actions.fetchRequests(accountID);
+        actions.fetchOrders(accountID);
     }
 
-    dispatchNewRequest = (e, requestID) => {
+    dispatchNewOrder = (e, orderID) => {
         e.preventDefault();
         const { accountID } = this.props;
-        const route = `/accounts/${accountID}/requests/${requestID}`;
+        const route = `/accounts/${accountID}/orders/${orderID}`;
         dispatchNewRoute(route);
-    }
-
-    deleteActiveRequest = (e, request) => {
-        const {
-            actions,
-            idToken,
-            employeeID,
-            accountID,
-        } = this.props;
-        const { redirectRoute } = this.state;
-        e.preventDefault();
-        swal({
-            title: `Delete this Request?`,
-            text: `Doing so will permanently delete the data for this Request?.`,
-            icon: 'warning',
-            buttons: {
-                cancel: 'Cancel',
-                request: {
-                    text: 'Delete',
-                    value: 'delete',
-                },
-            },
-        }).then((value) => {
-            switch (value) {
-                case 'delete':
-                    console.log(`Delete Request`);
-                    actions.deleteRequest(employeeID, accountID, request, redirectRoute);
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
-
-    renderRequestCard = (request) => {
-        return (
-            <Grid key={request.requestID} item xs={isMobileAndTablet() ? 12 : 4}>
-                <RequestCard request={request} handleLink={this.dispatchNewRequest} handleDelete={this.deleteActiveRequest} />
-            </Grid>
-        )
     }
 
     render() {
         const { classes, accountID } = this.props;
         const {
-            requests,
+            orders,
         } = this.state;
 
-        console.error(requests)
+        console.error(orders)
 
-        return (
+        return orders.length > 0
+        ? (
           <Fade
               in={true}
               style={{ transformOrigin: '0 0 0' }}
@@ -206,10 +160,12 @@ class DashboardView extends React.Component {
           >
               <section>
                   <Grid container className={classes.root} spacing={2}>
-                      <RequestResultsTable requests={requests} />
+                      <OrderResultsTable orders={orders} handleLink={this.dispatchNewOrder} />
                   </Grid>
               </section>
           </Fade>
+        ) : (
+          <GetStarted />
         );
     }
 }
@@ -217,14 +173,14 @@ class DashboardView extends React.Component {
 DashboardView.defaultProps = {
     accountID: '',
     employeeID: '',
-    fetchRequests: f => f,
-    bulkUploadRequests: f => f,
+    fetchOrders: f => f,
+    bulkUploadOrders: f => f,
 };
 DashboardView.propTypes = {
     accountID: PropTypes.string,
     employeeID: PropTypes.string,
-    fetchRequests: PropTypes.func,
-    bulkUploadRequests: PropTypes.func,
+    fetchOrders: PropTypes.func,
+    bulkUploadOrders: PropTypes.func,
     classes: PropTypes.object.isRequired,
 };
 export default withStyles(styles)(DashboardView);
