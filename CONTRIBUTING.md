@@ -12,42 +12,21 @@ These instructions will get you a copy of the project up and running on your loc
 
 If you didn't understand that, please skip "Launch Development API Python" and "Launch Development Node Server" and go right to "Install Development Environment on New Machine"
 
-## Clone Project Repo
-```
-git clone https://github.com/dangell7/supplyme-admin.git
-```
-
-### Launch Development API Python
-
-```
-cd supplyme-admin
-workon xupplynet
-pip3 install -U -r requirements.txt
-python3 wsgi.py
-```
-
-### Launch Development Node Server
-
-```
-cd supplyme-admin/static
-npm i
-npm run dev
-```
-
 ### Install Development Environment on New Machine
 
 ```
 iOS X.X.X
+Linux X.X.X
 ```
 
 ### Confirm/Install Node Env
-Install Node/NPM OSX
+Install Node/NPM (OSX)
 
 ```
 brew install node
 ```
 
-Install Node/NPM Linux
+Install Node/NPM (Linux)
 
 ```
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -72,7 +51,13 @@ npm install -g node-pre-gyp
 ```
 
 ### Confirm/Install Python
-Install Linux
+Install Python (OSX)
+
+```
+You should already have python, i need to revisit this...
+```
+
+Install Python (Linux)
 
 ```
 sudo apt-get update
@@ -98,20 +83,30 @@ Fix With
 ```
 find / -name virtualenvwrapper.sh
 ```
-Add to Profile (OSX) or Bash (Linux)
+Add to Profile (OSX)
 ```
-sudo nano ~/.bash_profile
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.5
+export APP_ENV="server.config.DevelopmentConfig"
+export PATH=/usr/local/bin:$PATH
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+```
+
+Add to Bash (OSX)
+```
+sudo nano ~/.bashrc
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.7
 export WORKON_HOME=$HOME/.virtualenvs
 source ~/.local/bin/virtualenvwrapper.sh
 ```
+
 ### Clone
 ```
 git clone https://github.com/CASL-AE/supplyme-admin.git
-&& mkvirtualenv supplyme \
+&& mkvirtualenv supplymenet \
 && cd supplyme-admin \
 && pip3 install -U -r requirements.txt \
 ```
+
 ### Confirm Nginx
 Install Nginx (OSX)
 ```
@@ -229,4 +224,20 @@ sudo systemctl restart nginx
 
 ```
 denis@caslnpo.org
+```
+
+### Launch Development API Python
+
+```
+cd supplyme-admin
+workon supplymenet
+python3 wsgi.py
+```
+
+### Launch Development Node Server
+
+```
+cd supplyme-admin/static
+npm i
+npm run dev
 ```
