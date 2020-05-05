@@ -41,18 +41,46 @@ iOS X.X.X
 ```
 
 ### Confirm/Install Node Env
- Install
+Install Node/NPM OSX
+
 ```
 brew install node
 ```
 
-Version
+Install Node/NPM Linux
+
 ```
-X.X.X
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo apt-get install build-essential
+```
+
+```
+npm config get prefix
+npm config set prefix '/usr/local'
+sudo mkdir /usr/local/lib/node_modules
+sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
+npm install -g npm
+npm root -g
+```
+
+Install NPM Dependencies (OSX & Linux)
+
+```
+npm install -g node-gyp
+npm install -g node-pre-gyp
+```
+
+### Confirm/Install Python
+Install Linux
+
+```
+sudo apt-get update
+sudo apt-get install python3-pip python3-dev libpq-dev nginx
 ```
 
 ### Confirm/Install Virtual Env
-Install
+Install OSX/Linux
 ```
 pip3 install virtualenv virtualenvwrapper
 rm -rf ~/.cache/pip
@@ -70,7 +98,7 @@ Fix With
 ```
 find / -name virtualenvwrapper.sh
 ```
-Add to Profile or Bash
+Add to Profile (OSX) or Bash (Linux)
 ```
 sudo nano ~/.bash_profile
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.5
@@ -79,22 +107,34 @@ source ~/.local/bin/virtualenvwrapper.sh
 ```
 ### Clone
 ```
-git clone https://bitbucket.org/ae/supplyme-admin/src/master/
-&& mkvirtualenv xupply \
+git clone https://github.com/CASL-AE/supplyme-admin.git
+&& mkvirtualenv supplyme \
 && cd supplyme-admin \
-&& pip3 uninstall -r requirements.txt -y \
 && pip3 install -U -r requirements.txt \
 ```
 ### Confirm Nginx
-Install Nginx
+Install Nginx (OSX)
 ```
 brew install nginx
 ```
-Create SSL
+
+Install Nginx (OSX)
+```
+sudo apt-get install nginx
+```
+
+Create SSL (OSX)
 ```
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /private/localhost.key -out /private/localhost.crt
 sudo openssl dhparam -out /private/dhparam.pem 2048
 ```
+
+Create SSL (Linux)
+```
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/localhost.key -out /etc/ssl/localhost.crt
+sudo openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
+```
+
 Output
 ```
 Output
@@ -106,11 +146,16 @@ Organizational Unit Name (eg, section) []:Ministry of Water Slides
 Common Name (e.g. server FQDN or YOUR name) []:server_IP_address
 Email Address []:admin@your_domain.com
 ```
-Config Nginx
+
+Config Nginx (OSX)
 ```
 sudo nano /usr/local/etc/nginx/nginx.conf
 ```
 
+Config Nginx (Linux)
+```
+sudo nano /etc/nginx/sites-available/localhost
+```
 
 ## For Public Html
 ```
@@ -159,13 +204,24 @@ server {
 }
 ```
 
+Enable (Linux)
+
+```
+sudo ln -s /etc/nginx/sites-available/localhost /etc/nginx/sites-enabled
+```
+
 Test
 ```
 sudo nginx -t
 ```
-Restart (After Computer Restart)
+Restart Nginx (OSX)
 ```
 sudo nginx
+```
+
+Restart Nginx (Linux)
+```
+sudo systemctl restart nginx
 ```
 
 
