@@ -10,7 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 **Also** The functions below get the environment setup ASSUMING that your have updated python and node installed. You will also need to have nginx running over HTTPS to use the server functions.
 
-If you didn't understand that, please skip "Launch Development API Python" and "Launch Development Node Server" and go right to "Install Development Environment on New Machine" 
+If you didn't understand that, please skip "Launch Development API Python" and "Launch Development Node Server" and go right to "Install Development Environment on New Machine"
 
 ## Clone Project Repo
 ```
@@ -92,7 +92,7 @@ brew install nginx
 ```
 Create SSL
 ```
-sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /private/localhost.key -out /private localhost.crt
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /private/localhost.key -out /private/localhost.crt
 sudo openssl dhparam -out /private/dhparam.pem 2048
 ```
 Output

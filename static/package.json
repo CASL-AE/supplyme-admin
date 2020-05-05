@@ -7,6 +7,7 @@
   },
   "scripts": {
     "clean": "rimraf dist",
+    "preinstall": "npm config set package-lock false",
     "build": "webpack -p --progress --verbose --colors --display-error-details --config webpack/common.config.js",
     "build:production": "npm run clean && npm run build",
     "prestart": "npm run build:production",
