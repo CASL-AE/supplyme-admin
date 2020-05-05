@@ -61,7 +61,7 @@ Install Python (Linux)
 
 ```
 sudo apt-get update
-sudo apt-get install python3-pip python3-dev libpq-dev nginx
+sudo apt-get install python3-pip python3-dev libpq-dev
 ```
 
 ### Confirm/Install Virtual Env
@@ -113,7 +113,7 @@ Install Nginx (OSX)
 brew install nginx
 ```
 
-Install Nginx (OSX)
+Install Nginx (Linux)
 ```
 sudo apt-get install nginx
 ```
@@ -231,6 +231,7 @@ denis@caslnpo.org
 ```
 cd supplyme-admin
 workon supplymenet
+pip3 install -U -r requirements.txt
 python3 wsgi.py
 ```
 
