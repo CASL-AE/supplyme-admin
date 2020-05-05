@@ -85,7 +85,8 @@ find / -name virtualenvwrapper.sh
 ```
 Add to Profile (OSX)
 ```
-export APP_ENV="server.config.DevelopmentConfig"
+sudo nano ~/.bash_profile
+export APP_SETTINGS="server.config.DevelopmentConfig"
 export PATH=/usr/local/bin:$PATH
 export WORKON_HOME=$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
@@ -94,8 +95,10 @@ source /usr/local/bin/virtualenvwrapper.sh
 Add to Bash (OSX)
 ```
 sudo nano ~/.bashrc
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.7
-export WORKON_HOME=$HOME/.virtualenvs
+export APP_SETTINGS="server.config.DevelopmentConfig"
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+export WORKON_HOME=~/.virtualenvs
+export VIRTUALENVWRAPPER_VIRTUALENV=/home/dorian/.local/bin/virtualenv
 source ~/.local/bin/virtualenvwrapper.sh
 ```
 
