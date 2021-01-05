@@ -48,7 +48,7 @@
     "@material-ui/pickers": "^3.2.8",
     "autoprefixer": "^9.7.4",
     "autosuggest-highlight": "^3.1.1",
-    "axios": "^0.19.1",
+    "axios": "^0.21.1",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
     "babel-preset-react-hmre": "^1.1.1",
